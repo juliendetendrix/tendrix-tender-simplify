@@ -6,15 +6,15 @@ const HowItWorks = () => {
   return (
     <section id="how-it-works" className="section-padding bg-primary relative overflow-hidden">
       {/* Floating Title - positioned to straddle sections */}
-      <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 z-20">
-        <div className="text-center">
-          <h2 className="text-3xl lg:text-5xl font-bold text-primary mb-6 px-8 py-4 bg-white border border-white/20 rounded-2xl shadow-medium">
+      <div className="absolute -top-16 left-0 right-0 z-30 flex justify-center">
+        <div className="bg-card border-2 border-primary rounded-3xl px-12 py-6 shadow-strong mx-4">
+          <h2 className="text-2xl lg:text-4xl font-bold text-primary text-center whitespace-nowrap">
             Unlock an untapped market
           </h2>
         </div>
       </div>
 
-      <div className="container-max relative z-10 pt-16">{/* Added padding-top to account for floating title */}
+      <div className="container-max relative z-10 pt-20">{/* Increased padding-top */}
 
         {/* First Block: Respond to tenders under 4 hours */}
         <div className="bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8">
