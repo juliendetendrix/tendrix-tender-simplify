@@ -33,7 +33,7 @@ const TenderPreview = () => {
             Recent tender opportunities
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Découvrez les projets disponibles en accord avec votre localisation
+            Tender opportunities near you
           </p>
         </div>
 
