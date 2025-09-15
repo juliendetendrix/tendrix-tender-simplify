@@ -1,4 +1,5 @@
 import dashboardMockup from '@/assets/dashboard-mockup.jpg';
+import franceNetwork from '@/assets/france-network.jpg';
 
 const HowItWorks = () => {
   return (
@@ -42,8 +43,38 @@ const HowItWorks = () => {
           </div>
         </div>
 
-        {/* Placeholder for additional blocks */}
-        {/* Additional blocks will be added here */}
+        {/* Second Block: Network of certified business managers */}
+        <div className="bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8">
+          <div className="grid lg:grid-cols-2 gap-8 items-center">
+            {/* Right Content - France Network Image */}
+            <div className="relative order-2 lg:order-1">
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium">
+                <img 
+                  src={franceNetwork} 
+                  alt="France business network map showing certified managers" 
+                  className="w-full h-auto rounded-xl"
+                />
+              </div>
+              
+              {/* Floating elements for visual appeal */}
+              <div className="absolute -top-2 -left-2 w-4 h-4 bg-accent/40 rounded-lg blur-sm"></div>
+              <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-primary/30 rounded-xl blur-sm"></div>
+            </div>
+
+            {/* Left Content */}
+            <div className="text-center lg:text-left order-1 lg:order-2">
+              <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
+                A certified business development network
+              </h3>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Our extensive network of certified business managers across France ensures local expertise and personalized support for your tender applications, providing you with regional insights and dedicated assistance.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Placeholder for third block */}
+        {/* Third block will be added here */}
       </div>
     </section>
   );
