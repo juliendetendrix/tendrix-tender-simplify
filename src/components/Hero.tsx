@@ -33,17 +33,26 @@ const Hero = () => {
           </div>
 
           {/* Dashboard Preview */}
-          <div className="relative max-w-4xl mx-auto">
-            <div className="relative z-10">
-              <img
-                src={dashboardMockup}
-                alt="Tendrix dashboard preview showing tender management interface"
-                className="w-full h-auto rounded-2xl shadow-strong"
-              />
+          <div className="relative max-w-5xl mx-auto mt-16">
+            {/* Main container with sophisticated border */}
+            <div className="relative bg-card/50 backdrop-blur-sm border border-border/50 rounded-3xl p-8 shadow-strong">
+              {/* Inner frame for the dashboard image */}
+              <div className="relative bg-white rounded-2xl p-4 shadow-medium">
+                <img
+                  src={dashboardMockup}
+                  alt="Tendrix dashboard preview showing tender management interface"
+                  className="w-full h-auto rounded-xl shadow-soft"
+                />
+              </div>
+              
+              {/* Decorative elements around the frame */}
+              <div className="absolute -top-4 -left-4 w-24 h-24 bg-primary/20 rounded-2xl blur-2xl"></div>
+              <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-accent/20 rounded-3xl blur-3xl"></div>
+              <div className="absolute top-1/2 -right-6 w-16 h-16 bg-secondary/30 rounded-full blur-xl"></div>
             </div>
             
-            {/* Background Gradient */}
-            <div className="absolute inset-0 bg-gradient-primary opacity-20 rounded-2xl blur-3xl transform scale-110"></div>
+            {/* Background gradient glow */}
+            <div className="absolute inset-0 bg-gradient-primary opacity-10 rounded-3xl blur-3xl transform scale-110 -z-10"></div>
           </div>
         </div>
       </div>
