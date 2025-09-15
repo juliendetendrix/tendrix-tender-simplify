@@ -3,25 +3,25 @@ import { Calendar, Building, Euro } from 'lucide-react';
 const TenderPreview = () => {
   const tenders = [
     {
-      title: 'IT Infrastructure Modernization',
-      buyer: 'Ville de Lyon',
-      budget: '€150,000 - €300,000',
+      title: 'Rénovation énergétique des bâtiments publics',
+      buyer: 'Mairie du 13ème arrondissement de Paris',
+      budget: '€180,000 - €320,000',
       deadline: '2024-02-15',
-      summary: 'Complete overhaul of municipal IT systems including network infrastructure, security protocols, and cloud migration services.',
+      summary: 'Modernisation énergétique des équipements municipaux incluant isolation thermique, installation de pompes à chaleur et systèmes de ventilation.',
     },
     {
-      title: 'Green Energy Consulting Services',
-      buyer: 'Région Provence-Alpes-Côte d\'Azur',
-      budget: '€75,000 - €120,000',
+      title: 'Services informatiques et cybersécurité',
+      buyer: 'Hôpital de la Pitié-Salpêtrière',
+      budget: '€95,000 - €150,000',
       deadline: '2024-01-30',
-      summary: 'Strategic consulting for renewable energy transition, including solar panel installation planning and energy efficiency audits.',
+      summary: 'Mise en place d\'une infrastructure de sécurité informatique renforcée avec solutions de sauvegarde et protection des données de santé.',
     },
     {
-      title: 'Digital Marketing & Communication',
-      buyer: 'Métropole de Toulouse',
-      budget: '€45,000 - €80,000',
+      title: 'Aménagement d\'espaces verts urbains',
+      buyer: 'Ville de Paris - Secteur 13ème',
+      budget: '€60,000 - €110,000',
       deadline: '2024-02-08',
-      summary: 'Comprehensive digital marketing strategy development including social media management, content creation, and SEO optimization.',
+      summary: 'Conception et réalisation d\'espaces verts écologiques dans le quartier de la Butte-aux-Cailles avec végétalisation et mobilier urbain.',
     },
   ];
 
@@ -33,7 +33,7 @@ const TenderPreview = () => {
             Recent tender opportunities
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            See the kind of projects you could be bidding on
+            Découvrez les projets disponibles en accord avec votre localisation
           </p>
         </div>
 
