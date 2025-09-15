@@ -106,7 +106,7 @@ const HowItWorks = () => {
 
         {/* CTA Button */}
         <div className="text-center mt-12">
-          <button className="btn-primary">
+          <button className="btn-secondary">
             Start your first rapid response
           </button>
         </div>
