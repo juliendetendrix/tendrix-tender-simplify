@@ -12,7 +12,9 @@ const Hero = () => {
       </div>
 
       <div className="container-max relative z-10">
-        <div className="text-center max-w-4xl mx-auto">
+        {/* Subtle background shape */}
+        <div className="absolute inset-0 bg-muted/30 rounded-[3rem] -mx-8 -my-8 blur-[1px]"></div>
+        <div className="text-center max-w-4xl mx-auto relative z-10">
           <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
             Tenders, finally{' '}
             <span className="gradient-text">simplified</span>{' '}
