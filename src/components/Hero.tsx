@@ -1,4 +1,5 @@
 import dashboardMockup from '@/assets/dashboard-mockup.jpg';
+import tendrixBrandingBar from '@/assets/tendrix-branding-bar.png';
 
 const Hero = () => {
   return (
@@ -29,6 +30,15 @@ const Hero = () => {
 
           {/* Right Content - Mockup */}
           <div className="relative">
+            {/* Tendrix Branding Bar - Behind dashboard */}
+            <div className="absolute -top-8 -right-12 w-64 h-32 opacity-60 z-0">
+              <img
+                src={tendrixBrandingBar}
+                alt=""
+                className="w-full h-full object-contain"
+              />
+            </div>
+            
             <div className="relative z-10">
               <img
                 src={dashboardMockup}
