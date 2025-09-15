@@ -31,11 +31,16 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <img 
-              src={logo} 
-              alt="Tendrix" 
-              className="h-8 w-auto"
-            />
+            <button 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
+            >
+              <img 
+                src={logo} 
+                alt="Tendrix" 
+                className="h-8 w-auto"
+              />
+            </button>
           </div>
 
           {/* Desktop Navigation */}
