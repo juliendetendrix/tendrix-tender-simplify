@@ -103,6 +103,13 @@ const HowItWorks = () => {
             </div>
           </div>
         </div>
+
+        {/* CTA Button */}
+        <div className="text-center mt-12">
+          <button className="btn-primary">
+            Start your first rapid response
+          </button>
+        </div>
       </div>
     </section>
   );
