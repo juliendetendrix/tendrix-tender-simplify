@@ -1,5 +1,6 @@
 import dashboardMockup from '@/assets/dashboard-mockup.jpg';
 import franceNetwork from '@/assets/france-network.jpg';
+import notificationMockup from '@/assets/notification-mockup.jpg';
 
 const HowItWorks = () => {
   return (
@@ -46,8 +47,8 @@ const HowItWorks = () => {
         {/* Second Block: Network of certified business managers */}
         <div className="bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8">
           <div className="grid lg:grid-cols-2 gap-8 items-center">
-            {/* Right Content - France Network Image */}
-            <div className="relative order-2 lg:order-1">
+            {/* Left Content - France Network Image */}
+            <div className="relative">
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium">
                 <img 
                   src={franceNetwork} 
@@ -61,8 +62,8 @@ const HowItWorks = () => {
               <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-primary/30 rounded-xl blur-sm"></div>
             </div>
 
-            {/* Left Content */}
-            <div className="text-center lg:text-left order-1 lg:order-2">
+            {/* Right Content */}
+            <div className="text-center lg:text-left">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
                 A certified business development network
               </h3>
@@ -73,8 +74,35 @@ const HowItWorks = () => {
           </div>
         </div>
 
-        {/* Placeholder for third block */}
-        {/* Third block will be added here */}
+        {/* Third Block: Instant request triggering */}
+        <div className="bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8">
+          <div className="grid lg:grid-cols-2 gap-8 items-center">
+            {/* Left Content */}
+            <div className="text-center lg:text-left">
+              <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
+                Trigger your request instantly
+              </h3>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Get notified immediately when new tender opportunities match your business profile. Our intelligent system ensures you never miss a relevant opportunity with real-time alerts delivered directly to your device.
+              </p>
+            </div>
+
+            {/* Right Content - Notification Image */}
+            <div className="relative">
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium">
+                <img 
+                  src={notificationMockup} 
+                  alt="Business professional receiving Tendrix notification on mobile device" 
+                  className="w-full h-auto rounded-xl"
+                />
+              </div>
+              
+              {/* Floating elements for visual appeal */}
+              <div className="absolute -top-2 -right-2 w-4 h-4 bg-primary/40 rounded-lg blur-sm"></div>
+              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-accent/30 rounded-xl blur-sm"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
