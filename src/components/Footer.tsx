@@ -3,7 +3,9 @@ import logo from '@/assets/tendrix-logo.png';
 
 const Footer = () => {
   return (
-    <footer id="contact" className="bg-foreground text-background py-16">
+    <footer id="contact" className="bg-foreground text-background py-16 relative">
+      {/* Decorative top line with gradient */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary via-primary to-secondary"></div>
       <div className="container-max">
         <div className="grid lg:grid-cols-4 gap-8 mb-12">
           {/* Logo and Slogan */}
