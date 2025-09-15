@@ -2,41 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Tendrix Design System - Modern SaaS Landing Page */
 
 @layer base {
   :root {
+    /* Tendrix Brand Colors */
+    --primary: 231 85% 32%; /* #0c1c98 - Tendrix Blue */
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 231 85% 28%;
+    
+    --secondary: 43 94% 63%; /* #f9bd43 - Tendrix Orange */
+    --secondary-foreground: 231 85% 32%;
+    --secondary-hover: 43 94% 58%;
+    
+    /* UI Colors */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    --foreground: 231 20% 15%;
+    
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
+    --card-foreground: 231 20% 15%;
+    
+    --muted: 231 15% 96%;
+    --muted-foreground: 231 10% 45%;
+    
+    --accent: 231 15% 96%;
+    --accent-foreground: 231 85% 32%;
+    
+    --border: 231 20% 88%;
+    --input: 231 20% 88%;
+    --ring: 231 85% 32%;
+    
+    /* Design System Tokens */
+    --radius: 0.75rem;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(231 85% 32%), hsl(231 85% 42%));
+    --gradient-secondary: linear-gradient(135deg, hsl(43 94% 63%), hsl(43 94% 73%));
+    --gradient-hero: linear-gradient(135deg, hsl(231 15% 98%), hsl(231 25% 96%));
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -2px hsl(231 85% 32% / 0.1);
+    --shadow-medium: 0 10px 30px -4px hsl(231 85% 32% / 0.15);
+    --shadow-strong: 0 20px 50px -8px hsl(231 85% 32% / 0.25);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 
@@ -100,6 +111,31 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  
+  /* Custom Component Classes */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-6 py-3 font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-xl px-6 py-3 font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-xl px-6 py-3 font-semibold transition-all duration-300;
+  }
+  
+  .container-max {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .section-padding {
+    @apply py-16 lg:py-24;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
   }
 }
