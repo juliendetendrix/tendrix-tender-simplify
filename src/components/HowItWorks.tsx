@@ -8,7 +8,7 @@ const HowItWorks = () => {
       {/* Floating Title - positioned to straddle sections */}
       <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 z-20">
         <div className="text-center">
-          <h2 className="text-3xl lg:text-5xl font-bold text-primary-foreground mb-6 px-8 py-4 bg-primary/90 backdrop-blur rounded-2xl border border-white/20 shadow-strong">
+          <h2 className="text-3xl lg:text-5xl font-bold text-primary-foreground mb-6 px-8 py-4 bg-white/10 backdrop-blur border border-white/20 rounded-2xl shadow-medium">
             Unlock an untapped market
           </h2>
         </div>
