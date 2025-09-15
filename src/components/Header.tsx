@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import logo from '@/assets/tendrix-logo.png';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -30,9 +31,11 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <div className="text-2xl font-bold gradient-text">
-              Tendrix
-            </div>
+            <img 
+              src={logo} 
+              alt="Tendrix" 
+              className="h-8 w-auto"
+            />
           </div>
 
           {/* Desktop Navigation */}

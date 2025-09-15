@@ -1,4 +1,5 @@
 import { Twitter, Linkedin, Mail } from 'lucide-react';
+import logo from '@/assets/tendrix-logo.png';
 
 const Footer = () => {
   return (
@@ -7,8 +8,12 @@ const Footer = () => {
         <div className="grid lg:grid-cols-4 gap-8 mb-12">
           {/* Logo and Slogan */}
           <div className="lg:col-span-2">
-            <div className="text-3xl font-bold mb-4">
-              <span className="text-secondary">Tendrix</span>
+            <div className="mb-4">
+              <img 
+                src={logo} 
+                alt="Tendrix" 
+                className="h-10 w-auto brightness-0 invert"
+              />
             </div>
             <p className="text-lg mb-6 text-background/80">
               Simplicity and Expertise
