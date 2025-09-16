@@ -16,7 +16,6 @@ const HowItWorks = () => {
           <h2 className="text-xl lg:text-3xl font-bold text-primary text-center">
             Unlock an untapped market
           </h2>
-          <div className="w-16 h-1 bg-gradient-to-r from-primary to-secondary rounded-full mx-auto mt-2"></div>
         </div>
       </div>
 
