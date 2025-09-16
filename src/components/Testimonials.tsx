@@ -7,21 +7,21 @@ const Testimonials = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation();
   const testimonials = [
     {
-      quote: "Tendrix has completely transformed how we approach public tenders. What used to take weeks now takes hours.",
+      quote: "Tendrix a complètement transformé notre approche des appels d'offres publics. Ce qui prenait des semaines ne prend maintenant que quelques heures.",
       author: "Sarah Martinez",
-      role: "CEO, TechSolutions France",
+      role: "PDG, TechSolutions France",
       avatar: testimonial1,
     },
     {
-      quote: "The quality of responses we get through Tendrix is exceptional. We've won 3 major contracts in just 2 months.",
+      quote: "La qualité des réponses que nous obtenons via Tendrix est exceptionnelle. Nous avons remporté 3 contrats majeurs en seulement 2 mois.",
       author: "Pierre Dubois",
-      role: "Director, GreenBuild Consulting",
+      role: "Directeur, GreenBuild Consulting",
       avatar: testimonial2,
     },
     {
-      quote: "Finally, a solution that understands SMEs. Simple, efficient, and incredibly effective.",
+      quote: "Enfin, une solution qui comprend les PME. Simple, efficace et incroyablement performante.",
       author: "Marie Lefebvre",
-      role: "Founder, Digital Innovations",
+      role: "Fondatrice, Digital Innovations",
       avatar: testimonial3,
     },
   ];
@@ -31,10 +31,10 @@ const Testimonials = () => {
       <div className="container-max">
         <div className={`text-center mb-16 transition-all duration-800 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
-            What our clients say
+            Ce que disent nos clients
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Real results from real businesses
+            De vrais résultats pour de vraies entreprises
           </p>
         </div>
 

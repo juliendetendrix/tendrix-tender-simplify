@@ -7,44 +7,44 @@ const Pricing = () => {
     {
       name: 'Starter',
       price: '€99',
-      period: '/month',
-      description: 'Perfect for small businesses getting started',
+      period: '/mois',
+      description: 'Parfait pour les petites entreprises qui démarrent',
       features: [
-        'Up to 5 tender responses per month',
-        'Basic tender matching',
-        'Email support',
-        'Standard response templates',
+        'Jusqu\'à 5 réponses d\'appels d\'offres par mois',
+        'Correspondance d\'appels d\'offres de base',
+        'Support par email',
+        'Modèles de réponse standard',
       ],
       popular: false,
     },
     {
       name: 'Pro',
       price: '€299',
-      period: '/month',
-      description: 'For growing businesses that need more',
+      period: '/mois',
+      description: 'Pour les entreprises en croissance qui ont besoin de plus',
       features: [
-        'Up to 20 tender responses per month',
-        'Advanced AI matching',
-        'Priority support',
-        'Custom response templates',
-        'Success analytics',
-        'Dedicated account manager',
+        'Jusqu\'à 20 réponses d\'appels d\'offres par mois',
+        'Correspondance IA avancée',
+        'Support prioritaire',
+        'Modèles de réponse personnalisés',
+        'Analyses de succès',
+        'Gestionnaire de compte dédié',
       ],
       popular: true,
     },
     {
       name: 'Enterprise',
-      price: 'Custom',
+      price: 'Sur mesure',
       period: '',
-      description: 'Tailored solutions for large organizations',
+      description: 'Solutions personnalisées pour les grandes organisations',
       features: [
-        'Unlimited tender responses',
-        'Enterprise-grade matching',
-        '24/7 phone support',
-        'Fully custom templates',
-        'Advanced analytics & reporting',
-        'API access',
-        'White-label options',
+        'Réponses d\'appels d\'offres illimitées',
+        'Correspondance de niveau entreprise',
+        'Support téléphonique 24/7',
+        'Modèles entièrement personnalisés',
+        'Analyses et rapports avancés',
+        'Accès API',
+        'Options marque blanche',
       ],
       popular: false,
     },
@@ -55,10 +55,10 @@ const Pricing = () => {
       <div className="container-max">
         <div className={`text-center mb-16 transition-all duration-800 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
-            Simple, transparent pricing
+            Tarification simple et transparente
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Choose the plan that fits your business needs
+            Choisissez le plan qui correspond aux besoins de votre entreprise
           </p>
         </div>
 
@@ -78,7 +78,7 @@ const Pricing = () => {
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <span className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold">
-                    Most Popular
+                    Le plus populaire
                   </span>
                 </div>
               )}
@@ -116,7 +116,7 @@ const Pricing = () => {
                     : 'btn-outline'
                 }`}
               >
-                Choose this plan
+                Choisir ce plan
               </button>
             </div>
           ))}

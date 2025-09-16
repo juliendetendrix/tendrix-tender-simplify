@@ -12,7 +12,7 @@ const SocialProof = () => {
       <div className="container-max">
         <div className="text-center">
           <p className="text-muted-foreground mb-8 text-lg">
-            Already trusted by ambitious companies in France
+            Déjà adopté par des entreprises ambitieuses en France
           </p>
           
           <div className="flex flex-wrap justify-center items-center gap-8 lg:gap-12 opacity-60">

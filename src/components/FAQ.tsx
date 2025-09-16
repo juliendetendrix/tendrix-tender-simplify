@@ -8,24 +8,24 @@ const FAQ = () => {
 
   const faqs = [
     {
-      question: 'How does Tendrix find relevant tenders for my business?',
-      answer: 'Our AI-powered matching system analyzes your business profile, capabilities, and past performance to identify the most relevant tender opportunities from thousands of public procurement notices published daily.',
+      question: 'Comment Tendrix trouve-t-il les appels d\'offres pertinents pour mon entreprise ?',
+      answer: 'Notre système de correspondance alimenté par l\'IA analyse votre profil d\'entreprise, vos capacités et vos performances passées pour identifier les opportunités d\'appels d\'offres les plus pertinentes parmi les milliers d\'avis de marchés publics publiés quotidiennement.',
     },
     {
-      question: 'How quickly can I get a tender response?',
-      answer: 'Most tender responses are delivered within 24-48 hours. For urgent deadlines, we offer express service with responses delivered within 6-12 hours for an additional fee.',
+      question: 'À quelle vitesse puis-je obtenir une réponse d\'appel d\'offres ?',
+      answer: 'La plupart des réponses d\'appels d\'offres sont livrées dans les 24-48 heures. Pour les échéances urgentes, nous offrons un service express avec des réponses livrées dans les 6-12 heures moyennant des frais supplémentaires.',
     },
     {
-      question: 'What makes your tender responses different?',
-      answer: 'Our responses are crafted by experienced tender specialists who understand both the public procurement process and your specific industry. Each response is tailored to your company and optimized for the specific tender requirements.',
+      question: 'Qu\'est-ce qui rend vos réponses d\'appels d\'offres différentes ?',
+      answer: 'Nos réponses sont élaborées par des spécialistes expérimentés des appels d\'offres qui comprennent à la fois le processus de marchés publics et votre secteur spécifique. Chaque réponse est adaptée à votre entreprise et optimisée pour les exigences spécifiques de l\'appel d\'offres.',
     },
     {
-      question: 'Can I customize the tender responses?',
-      answer: 'Absolutely! All responses are fully customizable. You can review, edit, and approve each response before submission. We also create custom templates based on your preferences and past successful bids.',
+      question: 'Puis-je personnaliser les réponses d\'appels d\'offres ?',
+      answer: 'Absolument ! Toutes les réponses sont entièrement personnalisables. Vous pouvez réviser, modifier et approuver chaque réponse avant soumission. Nous créons également des modèles personnalisés basés sur vos préférences et vos offres passées réussies.',
     },
     {
-      question: 'What if I need help with the tender submission process?',
-      answer: 'Our team provides full support throughout the entire process, from initial tender discovery to final submission. Pro and Enterprise customers get dedicated account managers for personalized assistance.',
+      question: 'Que faire si j\'ai besoin d\'aide avec le processus de soumission d\'appel d\'offres ?',
+      answer: 'Notre équipe fournit un support complet tout au long du processus, de la découverte initiale de l\'appel d\'offres à la soumission finale. Les clients Pro et Enterprise bénéficient de gestionnaires de comptes dédiés pour une assistance personnalisée.',
     },
   ];
 
@@ -38,10 +38,10 @@ const FAQ = () => {
       <div className="container-max">
         <div className={`text-center mb-16 transition-all duration-800 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
-            Frequently asked questions
+            Questions fréquemment posées
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Everything you need to know about Tendrix
+            Tout ce que vous devez savoir sur Tendrix
           </p>
         </div>
 

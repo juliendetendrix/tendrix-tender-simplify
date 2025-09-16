@@ -17,7 +17,7 @@ const HowItWorks = () => {
           titleVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-4'
         }`}>
           <h2 className="text-xl lg:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-center">
-            Unlock an untapped market
+            Débloquez un marché inexploité
           </h2>
         </div>
       </div>
@@ -32,11 +32,11 @@ const HowItWorks = () => {
             {/* Left Content */}
             <div className="text-center lg:text-left order-1">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
-                Respond to a tender in under 4 hours
+                Répondre à un appel d'offres en moins de 4 heures
               </h3>
               <p className="text-base text-muted-foreground leading-relaxed">
-                Thanks to the Tendrix winning deck and our extensive knowledge and close proximity to our clients, 
-                we optimize and streamline all administrative paperwork to respond to certain tenders in less than 4 hours.
+                Grâce au deck gagnant Tendrix et à notre connaissance approfondie et proximité avec nos clients, 
+                nous optimisons et rationalisons toute la paperasserie administrative pour répondre à certains appels d'offres en moins de 4 heures.
               </p>
             </div>
 
@@ -45,7 +45,7 @@ const HowItWorks = () => {
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
                 <img 
                   src={dashboardMockup} 
-                  alt="Tendrix Dashboard Software Interface" 
+                  alt="Interface logicielle du tableau de bord Tendrix" 
                   className="w-full h-full object-cover rounded-xl"
                 />
               </div>
@@ -65,10 +65,10 @@ const HowItWorks = () => {
             {/* Text Content - Mobile First */}
             <div className="text-center lg:text-left order-1 lg:order-2">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
-                A certified business development network
+                Un réseau de développement commercial certifié
               </h3>
               <p className="text-base text-muted-foreground leading-relaxed">
-                Our extensive network of certified business managers across France ensures local expertise and personalized support for your tender applications, providing you with regional insights and dedicated assistance.
+                Notre vaste réseau de managers commerciaux certifiés à travers la France garantit une expertise locale et un accompagnement personnalisé pour vos candidatures d'appels d'offres, vous offrant des insights régionaux et une assistance dédiée.
               </p>
             </div>
 
@@ -97,10 +97,10 @@ const HowItWorks = () => {
             {/* Left Content */}
             <div className="text-center lg:text-left order-1">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
-                Trigger your request instantly
+                Déclenchez votre demande instantanément
               </h3>
               <p className="text-base text-muted-foreground leading-relaxed">
-                Get notified immediately when new tender opportunities match your business profile. Our intelligent system ensures you never miss a relevant opportunity with real-time alerts delivered directly to your device.
+                Soyez notifié immédiatement lorsque de nouvelles opportunités d'appels d'offres correspondent à votre profil d'entreprise. Notre système intelligent vous assure de ne jamais manquer une opportunité pertinente avec des alertes en temps réel livrées directement sur votre appareil.
               </p>
             </div>
 
@@ -109,7 +109,7 @@ const HowItWorks = () => {
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
                 <img 
                   src={notificationIllustration} 
-                  alt="Professional receiving Tendrix notification about new tender opportunity for energy renovation of public buildings" 
+                  alt="Professionnel recevant une notification Tendrix sur une nouvelle opportunité d'appel d'offres pour la rénovation énergétique des bâtiments publics" 
                   className="w-full h-full object-cover rounded-xl"
                   style={{ objectPosition: '50% 80%' }}
                 />
@@ -127,7 +127,7 @@ const HowItWorks = () => {
           <button className={`btn-secondary ${
             vCta ? 'animate-bounce-in' : 'opacity-0 translate-y-8'
           }`} style={{animationDelay: '1.2s'}}>
-            Start your first rapid response
+            Commencer votre première réponse rapide
           </button>
         </div>
       </div>

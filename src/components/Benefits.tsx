@@ -6,23 +6,23 @@ const Benefits = () => {
   const benefits = [
     {
       icon: Clock,
-      title: 'Simplicity',
-      description: 'No more complex tender platforms. Everything you need in one intuitive interface.',
+      title: 'Simplicité',
+      description: 'Fini les plateformes d\'appels d\'offres complexes. Tout ce dont vous avez besoin dans une interface intuitive.',
     },
     {
       icon: Target,
-      title: 'Speed',
-      description: 'Get professional tender responses in hours, not weeks. Save time and win more.',
+      title: 'Rapidité',
+      description: 'Obtenez des réponses professionnelles en quelques heures, pas en semaines. Gagnez du temps et remportez plus.',
     },
     {
       icon: Users,
       title: 'Expertise',
-      description: 'Our team of tender specialists ensures every response meets industry standards.',
+      description: 'Notre équipe de spécialistes en appels d\'offres garantit que chaque réponse respecte les standards du secteur.',
     },
     {
       icon: Eye,
-      title: 'Transparency',
-      description: 'Clear pricing, no hidden fees. You know exactly what you get and what you pay.',
+      title: 'Transparence',
+      description: 'Tarifs clairs, aucun frais caché. Vous savez exactement ce que vous obtenez et ce que vous payez.',
     },
   ];
 
@@ -31,10 +31,10 @@ const Benefits = () => {
       <div className="container-max">
         <div className={`text-center mb-16 transition-all duration-800 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
-            Why choose Tendrix?
+            Pourquoi choisir Tendrix ?
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            The benefits that make us different
+            Les avantages qui nous différencient
           </p>
         </div>
 

@@ -16,8 +16,8 @@ const Header = () => {
   }, []);
 
   const navLinks = [
-    { label: 'How it works', href: '#how-it-works' },
-    { label: 'Pricing', href: '#pricing' },
+    { label: 'Comment ça marche', href: '#how-it-works' },
+    { label: 'Tarification', href: '#pricing' },
     { label: 'Contact', href: '#contact' },
   ];
 
@@ -59,7 +59,7 @@ const Header = () => {
           {/* CTA Button */}
           <div className="hidden md:block">
             <button className="btn-primary">
-              Join the waitlist
+              Rejoindre la liste d'attente
             </button>
           </div>
 
@@ -92,7 +92,7 @@ const Header = () => {
               ))}
               <div className="pt-4">
                 <button className="btn-primary w-full">
-                  Join the waitlist
+                  Rejoindre la liste d'attente
                 </button>
               </div>
             </nav>

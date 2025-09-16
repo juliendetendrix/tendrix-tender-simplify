@@ -18,25 +18,25 @@ const Footer = () => {
               />
             </div>
             <p className="text-lg mb-6 text-background/80">
-              Simplicity and Expertise
+              Simplicité et Expertise
             </p>
             <p className="text-background/60 leading-relaxed max-w-md">
-              Helping SMEs discover the right tenders and win more contracts through intelligent automation and expert support.
+              Aider les PME à découvrir les bons appels d'offres et remporter plus de contrats grâce à l'automatisation intelligente et au support d'experts.
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold mb-4 text-lg">Quick Links</h4>
+            <h4 className="font-semibold mb-4 text-lg">Liens rapides</h4>
             <ul className="space-y-3">
               <li>
                 <a href="#how-it-works" className="text-background/80 hover:text-background transition-colors">
-                  How it works
+                  Comment ça marche
                 </a>
               </li>
               <li>
                 <a href="#pricing" className="text-background/80 hover:text-background transition-colors">
-                  Pricing
+                  Tarification
                 </a>
               </li>
               <li>
@@ -49,7 +49,7 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h4 className="font-semibold mb-4 text-lg">Get in Touch</h4>
+            <h4 className="font-semibold mb-4 text-lg">Contactez-nous</h4>
             <div className="space-y-3">
               <a
                 href="mailto:contact@tendrix.com"
@@ -81,7 +81,7 @@ const Footer = () => {
         <div className="border-t border-background/20 pt-8">
           <div className="flex justify-center items-center">
             <p className="text-background/60 text-sm">
-              © 2025 Tendrix. All rights reserved.
+              © 2025 Tendrix. Tous droits réservés.
             </p>
           </div>
         </div>

@@ -16,21 +16,21 @@ const Hero = () => {
         <div className="absolute inset-0 bg-muted/30 rounded-[3rem] -mx-8 -my-8 blur-[1px]"></div>
         <div className="text-center max-w-4xl mx-auto relative z-10">
           <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6 leading-tight animate-fade-in" style={{animationDelay: '0.2s'}}>
-            Tenders, finally{' '}
-            <span className="gradient-text">simplified</span>{' '}
-            and answered in one click.
+            Les appels d'offres, enfin{' '}
+            <span className="gradient-text">simplifiés</span>{' '}
+            et traités en un clic.
           </h1>
           
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in" style={{animationDelay: '0.4s'}}>
-            Tendrix helps SMEs discover the right tenders and request a response instantly.
+            Tendrix aide les PME à découvrir les bons appels d'offres et à demander une réponse instantanément.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in" style={{animationDelay: '0.6s'}}>
             <button className="btn-primary text-lg px-8 py-4">
-              Discover tenders for your business
+              Découvrir les appels d'offres pour votre entreprise
             </button>
             <button className="btn-outline text-lg px-8 py-4">
-              Join the private beta
+              Rejoindre la bêta privée
             </button>
           </div>
 
@@ -42,7 +42,7 @@ const Hero = () => {
               <div className="relative bg-white rounded-2xl p-4 shadow-medium">
                 <img
                   src={dashboardMockup}
-                  alt="Tendrix dashboard preview showing tender management interface"
+                  alt="Aperçu du tableau de bord Tendrix montrant l'interface de gestion des appels d'offres"
                   className="w-full h-auto rounded-xl shadow-soft"
                 />
               </div>

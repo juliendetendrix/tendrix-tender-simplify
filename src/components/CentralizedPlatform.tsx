@@ -11,7 +11,7 @@ const CentralizedPlatform = () => {
         {/* Centered Title */}
         <div className={`text-center mb-16 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6 max-w-4xl mx-auto">
-            All tender opportunities centralized in one application
+            Toutes les opportunités d'appels d'offres centralisées dans une seule application
           </h2>
         </div>
 
@@ -31,7 +31,7 @@ const CentralizedPlatform = () => {
           <div className={`flex justify-center ${isVisible ? 'animate-slide-in-right' : 'opacity-0 translate-x-16'}`} style={{ animationDelay: '0.7s' }}>
             <img 
               src={mobileMockup} 
-              alt="Tendrix mobile application interface showing centralized tender management" 
+              alt="Application mobile Tendrix montrant l'interface de gestion centralisée des appels d'offres" 
               className="w-full max-w-sm drop-shadow-2xl hover:scale-105 transition-transform duration-300"
             />
           </div>
