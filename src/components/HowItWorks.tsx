@@ -30,7 +30,7 @@ const HowItWorks = () => {
         }`}>
           <div className="grid lg:grid-cols-2 gap-6 items-center">
             {/* Left Content */}
-            <div className="text-center lg:text-left">
+            <div className="text-center lg:text-left order-1">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
                 Respond to a tender in under 4 hours
               </h3>
@@ -41,7 +41,7 @@ const HowItWorks = () => {
             </div>
 
             {/* Right Content - Software Image */}
-            <div className="relative">
+            <div className="relative order-2">
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
                 <img 
                   src={dashboardMockup} 
@@ -62,8 +62,18 @@ const HowItWorks = () => {
           v2 ? 'animate-slide-in-right' : 'opacity-0 translate-x-16'
         }`} style={{animationDelay: '0.3s'}}>
           <div className="grid lg:grid-cols-2 gap-6 items-center">
+            {/* Text Content - Mobile First */}
+            <div className="text-center lg:text-left order-1 lg:order-2">
+              <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
+                A certified business development network
+              </h3>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Our extensive network of certified business managers across France ensures local expertise and personalized support for your tender applications, providing you with regional insights and dedicated assistance.
+              </p>
+            </div>
+
             {/* Left Content - France Network Image */}
-            <div className="relative">
+            <div className="relative order-2 lg:order-1">
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
                 <img 
                   src={franceNetwork} 
@@ -76,16 +86,6 @@ const HowItWorks = () => {
               <div className="absolute -top-2 -left-2 w-4 h-4 bg-accent/40 rounded-lg blur-sm"></div>
               <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-primary/30 rounded-xl blur-sm"></div>
             </div>
-
-            {/* Right Content */}
-            <div className="text-center lg:text-left">
-              <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
-                A certified business development network
-              </h3>
-              <p className="text-base text-muted-foreground leading-relaxed">
-                Our extensive network of certified business managers across France ensures local expertise and personalized support for your tender applications, providing you with regional insights and dedicated assistance.
-              </p>
-            </div>
           </div>
         </div>
 
@@ -95,7 +95,7 @@ const HowItWorks = () => {
         }`} style={{animationDelay: '0.6s'}}>
           <div className="grid lg:grid-cols-2 gap-6 items-center">
             {/* Left Content */}
-            <div className="text-center lg:text-left">
+            <div className="text-center lg:text-left order-1">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
                 Trigger your request instantly
               </h3>
@@ -105,7 +105,7 @@ const HowItWorks = () => {
             </div>
 
             {/* Right Content - Notification Image */}
-            <div className="relative">
+            <div className="relative order-2">
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
                 <img 
                   src={notificationMockup} 
