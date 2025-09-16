@@ -27,7 +27,7 @@ const Hero = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in" style={{animationDelay: '0.6s'}}>
             <button className="btn-primary text-lg px-8 py-4">
-              Découvrir les appels d'offres pour votre entreprise
+              Découvrez les marchés qui correspondent à votre savoir-faire
             </button>
             <button className="btn-outline text-lg px-8 py-4">
               Rejoindre la bêta privée
