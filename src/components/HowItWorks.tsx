@@ -4,6 +4,7 @@ import notificationMockup from '@/assets/notification-mockup.jpg';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const HowItWorks = () => {
+  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
   const { ref: block1Ref, isVisible: v1 } = useScrollAnimation();
   const { ref: block2Ref, isVisible: v2 } = useScrollAnimation();
   const { ref: block3Ref, isVisible: v3 } = useScrollAnimation();
@@ -11,8 +12,10 @@ const HowItWorks = () => {
   return (
     <section id="how-it-works" className="section-padding bg-primary relative z-40 overflow-visible">
       {/* Floating Title - positioned to straddle sections */}
-      <div className="absolute -top-8 left-0 right-0 z-30 flex justify-center">
-        <div className="bg-white/95 backdrop-blur-md border border-border rounded-3xl px-8 py-4 shadow-medium mx-4 animate-fade-in z-50">
+      <div ref={titleRef} className="absolute -top-8 left-0 right-0 z-30 flex justify-center">
+        <div className={`bg-white/95 backdrop-blur-md border border-border rounded-3xl px-8 py-4 shadow-medium mx-4 z-50 transition-all duration-800 ${
+          titleVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-4'
+        }`}>
           <h2 className="text-xl lg:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-center">
             Unlock an untapped market
           </h2>
