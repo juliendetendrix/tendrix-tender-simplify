@@ -22,7 +22,7 @@ const Hero = () => {
           </h1>
           
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in" style={{animationDelay: '0.4s'}}>
-            Tendrix aide les PME à découvrir les bons appels d'offres et à demander une réponse instantanément.
+            Trouvez vos appels d'offres et déclenchez une réponse en quelques secondes.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in" style={{animationDelay: '0.6s'}}>
