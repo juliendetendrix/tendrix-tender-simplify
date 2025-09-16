@@ -12,10 +12,11 @@ const HowItWorks = () => {
     <section id="how-it-works" className="section-padding bg-primary relative overflow-hidden">
       {/* Floating Title - positioned to straddle sections */}
       <div className="absolute -top-16 left-0 right-0 z-30 flex justify-center">
-        <div className="bg-card border-2 border-primary rounded-3xl px-12 py-6 shadow-strong mx-4">
-          <h2 className="text-2xl lg:text-4xl font-bold text-primary text-center whitespace-nowrap">
+        <div className="bg-white/95 backdrop-blur-md border-2 border-primary/20 rounded-3xl px-12 py-6 shadow-strong mx-4 hover:shadow-xl transition-all duration-300 hover:scale-105 animate-fade-in" style={{animationDelay: '0.5s'}}>
+          <h2 className="text-2xl lg:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-center whitespace-nowrap">
             Unlock an untapped market
           </h2>
+          <div className="w-16 h-1 bg-gradient-to-r from-primary to-secondary rounded-full mx-auto mt-2"></div>
         </div>
       </div>
 
