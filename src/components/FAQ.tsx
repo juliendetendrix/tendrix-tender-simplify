@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Plus, Minus } from 'lucide-react';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const FAQ = () => {
+  const { ref: sectionRef, isVisible } = useScrollAnimation();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const faqs = [
@@ -32,9 +34,9 @@ const FAQ = () => {
   };
 
   return (
-    <section className="section-padding bg-white">
+    <section ref={sectionRef} className="section-padding bg-white">
       <div className="container-max">
-        <div className="text-center mb-16">
+        <div className={`text-center mb-16 transition-all duration-800 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
             Frequently asked questions
           </h2>
@@ -47,7 +49,10 @@ const FAQ = () => {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="border border-border rounded-2xl mb-4 overflow-hidden"
+              className={`border border-border rounded-2xl mb-4 overflow-hidden transition-all duration-600 ${
+                isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-4'
+              }`}
+              style={{ animationDelay: `${0.1 + index * 0.1}s` }}
             >
               <button
                 className="w-full p-6 text-left flex items-center justify-between hover:bg-muted/50 transition-colors duration-200"
@@ -64,7 +69,7 @@ const FAQ = () => {
               </button>
               
               {openIndex === index && (
-                <div className="px-6 pb-6 border-t border-border">
+                <div className="px-6 pb-6 border-t border-border animate-accordion-down">
                   <p className="text-muted-foreground leading-relaxed pt-4">
                     {faq.answer}
                   </p>

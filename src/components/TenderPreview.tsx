@@ -1,6 +1,10 @@
 import { Calendar, Building, Euro } from 'lucide-react';
 
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+
 const TenderPreview = () => {
+  const { ref: sectionRef, isVisible } = useScrollAnimation();
+  
   const tenders = [
     {
       title: 'Rénovation énergétique des bâtiments publics',
@@ -26,9 +30,9 @@ const TenderPreview = () => {
   ];
 
   return (
-    <section className="section-padding bg-gradient-hero">
+    <section ref={sectionRef} className="section-padding bg-gradient-hero">
       <div className="container-max">
-        <div className="text-center mb-16">
+        <div className={`text-center mb-16 transition-all duration-800 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
             Recent tender opportunities
           </h2>
@@ -41,7 +45,10 @@ const TenderPreview = () => {
           {tenders.map((tender, index) => (
             <div
               key={index}
-              className="bg-white rounded-2xl p-6 shadow-soft hover:shadow-medium transition-all duration-300 border border-border group hover:scale-105"
+              className={`bg-white rounded-2xl p-6 shadow-soft hover:shadow-medium transition-all duration-300 border border-border group hover:scale-105 ${
+                isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
+              }`}
+              style={{ animationDelay: `${0.2 + index * 0.2}s` }}
             >
               <h3 className="text-xl font-semibold text-foreground mb-4 line-clamp-2">
                 {tender.title}
@@ -68,7 +75,7 @@ const TenderPreview = () => {
                 {tender.summary}
               </p>
               
-              <button className="btn-secondary w-full group-hover:bg-secondary-hover transition-colors">
+              <button className="btn-secondary w-full group-hover:bg-secondary-hover hover:scale-105 transition-all duration-300">
                 Request a response
               </button>
             </div>

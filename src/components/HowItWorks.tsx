@@ -1,10 +1,12 @@
 import dashboardMockup from '@/assets/dashboard-mockup.jpg';
 import franceNetwork from '@/assets/france-network.jpg';
 import notificationMockup from '@/assets/notification-mockup.jpg';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const HowItWorks = () => {
+  const { ref: sectionRef, isVisible } = useScrollAnimation();
   return (
-    <section id="how-it-works" className="section-padding bg-primary relative overflow-hidden">
+    <section ref={sectionRef} id="how-it-works" className="section-padding bg-primary relative overflow-hidden">
       {/* Floating Title - positioned to straddle sections */}
       <div className="absolute -top-16 left-0 right-0 z-30 flex justify-center">
         <div className="bg-card border-2 border-primary rounded-3xl px-12 py-6 shadow-strong mx-4">
@@ -17,10 +19,14 @@ const HowItWorks = () => {
       <div className="container-max relative z-10 pt-20">{/* Increased padding-top */}
 
         {/* First Block: Respond to tenders under 4 hours */}
-        <div className="bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 animate-fade-in">
+        <div className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 transition-all duration-800 ${
+          isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
+        }`}>
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             {/* Left Content */}
-            <div className="text-center lg:text-left animate-fade-in" style={{animationDelay: '0.2s'}}>
+            <div className={`text-center lg:text-left transition-all duration-600 ${
+              isVisible ? 'animate-fade-in-right' : 'opacity-0 -translate-x-8'
+            }`} style={{animationDelay: '0.2s'}}>
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
                 Respond to a tender in under 4 hours
               </h3>
@@ -31,8 +37,10 @@ const HowItWorks = () => {
             </div>
 
             {/* Right Content - Software Image */}
-            <div className="relative animate-fade-in" style={{animationDelay: '0.4s'}}>
-              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover-scale">
+            <div className={`relative transition-all duration-600 ${
+              isVisible ? 'animate-slide-in-left' : 'opacity-0 translate-x-8'
+            }`} style={{animationDelay: '0.4s'}}>
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
                 <img 
                   src={dashboardMockup} 
                   alt="Tendrix Dashboard Software Interface" 
@@ -41,18 +49,22 @@ const HowItWorks = () => {
               </div>
               
               {/* Floating elements for visual appeal */}
-              <div className="absolute -top-2 -right-2 w-4 h-4 bg-primary/40 rounded-lg blur-sm animate-fade-in" style={{animationDelay: '0.6s'}}></div>
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-accent/30 rounded-xl blur-sm animate-fade-in" style={{animationDelay: '0.8s'}}></div>
+              <div className="absolute -top-2 -right-2 w-4 h-4 bg-primary/40 rounded-lg blur-sm"></div>
+              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-accent/30 rounded-xl blur-sm"></div>
             </div>
           </div>
         </div>
 
         {/* Second Block: Network of certified business managers */}
-        <div className="bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8">
+        <div className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 transition-all duration-800 ${
+          isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
+        }`} style={{animationDelay: '0.3s'}}>
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             {/* Left Content - France Network Image */}
-            <div className="relative">
-              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium">
+            <div className={`relative transition-all duration-600 ${
+              isVisible ? 'animate-slide-in-right' : 'opacity-0 -translate-x-8'
+            }`} style={{animationDelay: '0.5s'}}>
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
                 <img 
                   src={franceNetwork} 
                   alt="France business network map showing certified managers" 
@@ -66,7 +78,9 @@ const HowItWorks = () => {
             </div>
 
             {/* Right Content */}
-            <div className="text-center lg:text-left">
+            <div className={`text-center lg:text-left transition-all duration-600 ${
+              isVisible ? 'animate-fade-in-left' : 'opacity-0 translate-x-8'
+            }`} style={{animationDelay: '0.7s'}}>
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
                 A certified business development network
               </h3>
@@ -78,10 +92,14 @@ const HowItWorks = () => {
         </div>
 
         {/* Third Block: Instant request triggering */}
-        <div className="bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8">
+        <div className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 transition-all duration-800 ${
+          isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
+        }`} style={{animationDelay: '0.6s'}}>
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             {/* Left Content */}
-            <div className="text-center lg:text-left">
+            <div className={`text-center lg:text-left transition-all duration-600 ${
+              isVisible ? 'animate-fade-in-right' : 'opacity-0 -translate-x-8'
+            }`} style={{animationDelay: '0.8s'}}>
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
                 Trigger your request instantly
               </h3>
@@ -91,8 +109,10 @@ const HowItWorks = () => {
             </div>
 
             {/* Right Content - Notification Image */}
-            <div className="relative">
-              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium">
+            <div className={`relative transition-all duration-600 ${
+              isVisible ? 'animate-slide-in-left' : 'opacity-0 translate-x-8'
+            }`} style={{animationDelay: '1s'}}>
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
                 <img 
                   src={notificationMockup} 
                   alt="Business professional receiving Tendrix notification on mobile device" 
@@ -109,7 +129,9 @@ const HowItWorks = () => {
 
         {/* CTA Button */}
         <div className="text-center mt-12">
-          <button className="btn-secondary">
+          <button className={`btn-secondary hover:scale-105 transition-all duration-300 ${
+            isVisible ? 'animate-bounce-in' : 'opacity-0 translate-y-8'
+          }`} style={{animationDelay: '1.2s'}}>
             Start your first rapid response
           </button>
         </div>

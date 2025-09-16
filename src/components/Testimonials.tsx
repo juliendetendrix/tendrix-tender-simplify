@@ -1,8 +1,10 @@
 import testimonial1 from '@/assets/testimonial-1.jpg';
 import testimonial2 from '@/assets/testimonial-2.jpg';
 import testimonial3 from '@/assets/testimonial-3.jpg';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const Testimonials = () => {
+  const { ref: sectionRef, isVisible } = useScrollAnimation();
   const testimonials = [
     {
       quote: "Tendrix has completely transformed how we approach public tenders. What used to take weeks now takes hours.",
@@ -25,9 +27,9 @@ const Testimonials = () => {
   ];
 
   return (
-    <section className="section-padding bg-white">
+    <section ref={sectionRef} className="section-padding bg-white">
       <div className="container-max">
-        <div className="text-center mb-16">
+        <div className={`text-center mb-16 transition-all duration-800 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
             What our clients say
           </h2>
@@ -40,7 +42,10 @@ const Testimonials = () => {
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-medium transition-shadow duration-300 border border-border"
+              className={`bg-card rounded-2xl p-8 shadow-soft hover:shadow-medium transition-all duration-300 border border-border ${
+                isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
+              }`}
+              style={{ animationDelay: `${0.1 + index * 0.3}s` }}
             >
               <blockquote className="text-muted-foreground mb-6 leading-relaxed">
                 "{testimonial.quote}"

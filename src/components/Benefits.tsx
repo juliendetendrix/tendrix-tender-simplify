@@ -1,6 +1,8 @@
 import { Clock, Users, Target, Eye } from 'lucide-react';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const Benefits = () => {
+  const { ref: sectionRef, isVisible } = useScrollAnimation();
   const benefits = [
     {
       icon: Clock,
@@ -25,9 +27,9 @@ const Benefits = () => {
   ];
 
   return (
-    <section className="section-padding bg-white">
+    <section ref={sectionRef} className="section-padding bg-white">
       <div className="container-max">
-        <div className="text-center mb-16">
+        <div className={`text-center mb-16 transition-all duration-800 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
             Why choose Tendrix?
           </h2>
@@ -40,7 +42,10 @@ const Benefits = () => {
           {benefits.map((benefit, index) => (
             <div
               key={index}
-              className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-medium transition-shadow duration-300 border border-border"
+              className={`bg-card rounded-2xl p-8 shadow-soft hover:shadow-medium transition-all duration-300 border border-border ${
+                isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
+              }`}
+              style={{ animationDelay: `${0.1 + index * 0.15}s` }}
             >
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center flex-shrink-0">

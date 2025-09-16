@@ -15,27 +15,27 @@ const Hero = () => {
         {/* Subtle background shape */}
         <div className="absolute inset-0 bg-muted/30 rounded-[3rem] -mx-8 -my-8 blur-[1px]"></div>
         <div className="text-center max-w-4xl mx-auto relative z-10">
-          <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
+          <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6 leading-tight animate-fade-in" style={{animationDelay: '0.2s'}}>
             Tenders, finally{' '}
             <span className="gradient-text">simplified</span>{' '}
             and answered in one click.
           </h1>
           
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in" style={{animationDelay: '0.4s'}}>
             Tendrix helps SMEs discover the right tenders and request a response instantly.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <button className="btn-primary text-lg px-8 py-4">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in" style={{animationDelay: '0.6s'}}>
+            <button className="btn-primary text-lg px-8 py-4 hover:scale-105 transition-transform duration-300">
               Discover tenders for your business
             </button>
-            <button className="btn-outline text-lg px-8 py-4">
+            <button className="btn-outline text-lg px-8 py-4 hover:scale-105 transition-transform duration-300">
               Join the private beta
             </button>
           </div>
 
           {/* Dashboard Preview */}
-          <div className="relative max-w-5xl mx-auto mt-16">
+          <div className="relative max-w-5xl mx-auto mt-16 animate-slide-in-right" style={{animationDelay: '0.8s'}}>
             {/* Main container with sophisticated border */}
             <div className="relative bg-card/50 backdrop-blur-sm border border-border/50 rounded-3xl p-8 shadow-strong">
               {/* Inner frame for the dashboard image */}
