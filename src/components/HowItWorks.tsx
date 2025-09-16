@@ -1,6 +1,6 @@
 import dashboardMockup from '@/assets/dashboard-mockup.jpg';
 import franceNetworkMap from '@/assets/france-network-new.png';
-import notificationMockup from '@/assets/notification-mockup.jpg';
+import notificationIllustration from '@/assets/notification-illustration.png';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const HowItWorks = () => {
@@ -108,8 +108,8 @@ const HowItWorks = () => {
             <div className="relative order-2">
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
                 <img 
-                  src={notificationMockup} 
-                  alt="Business professional receiving Tendrix notification on mobile device" 
+                  src={notificationIllustration} 
+                  alt="Professional receiving Tendrix notification about new tender opportunity for energy renovation of public buildings" 
                   className="w-full h-full object-cover rounded-xl"
                 />
               </div>
