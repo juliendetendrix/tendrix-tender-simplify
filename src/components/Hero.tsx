@@ -1,4 +1,4 @@
-import dashboardMockup from '@/assets/dashboard-mockup.jpg';
+import premierMockup from '@/assets/premier-mockup.png';
 
 const Hero = () => {
   return (
@@ -41,7 +41,7 @@ const Hero = () => {
               {/* Inner frame for the dashboard image */}
               <div className="relative bg-white rounded-2xl p-4 shadow-medium">
                 <img
-                  src={dashboardMockup}
+                  src={premierMockup}
                   alt="Aperçu du tableau de bord Tendrix montrant l'interface de gestion des appels d'offres"
                   className="w-full h-auto rounded-xl shadow-soft"
                 />
