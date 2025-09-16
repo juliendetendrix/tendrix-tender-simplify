@@ -1,5 +1,5 @@
 import mobileMockup from '@/assets/mobile-mockup.png';
-import platformInterface from '@/assets/platform-map-interface.jpg';
+import tendrixDashboard from '@/assets/tendrix-dashboard-illustration.png';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const CentralizedPlatform = () => {
@@ -21,7 +21,7 @@ const CentralizedPlatform = () => {
           {/* Platform Interface with Map */}
           <div className={`${isVisible ? 'animate-slide-in-left' : 'opacity-0 -translate-x-16'}`} style={{ animationDelay: '0.5s' }}>
             <img 
-              src={platformInterface} 
+              src={tendrixDashboard} 
               alt="Interface complète de la plateforme Tendrix avec sidebar de navigation à gauche et carte interactive des appels d'offres à droite" 
               className="w-full rounded-xl shadow-medium hover:scale-105 transition-transform duration-300"
             />
