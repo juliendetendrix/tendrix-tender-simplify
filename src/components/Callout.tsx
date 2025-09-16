@@ -16,19 +16,19 @@ const Callout = () => {
           <h2 className={`text-3xl lg:text-5xl font-bold text-primary-foreground mb-6 transition-all duration-800 ${
             isVisible ? 'animate-fade-in-left' : 'opacity-0 -translate-x-8'
           }`}>
-            Focus on your expertise, we take care of the rest.
+            Concentrez-vous sur votre expertise, nous nous occupons du reste.
           </h2>
           
           <p className={`text-xl text-primary-foreground/80 mb-8 max-w-2xl mx-auto transition-all duration-800 ${
             isVisible ? 'animate-fade-in-left' : 'opacity-0 -translate-x-8'
           }`} style={{animationDelay: '0.2s'}}>
-            Join thousands of businesses already using Tendrix to win more contracts and grow faster.
+            Rejoignez des milliers d'entreprises qui utilisent déjà Tendrix pour remporter plus de marchés et accélérer leur croissance.
           </p>
           
           <button className={`btn-secondary text-lg px-8 py-4 ${
             isVisible ? 'animate-bounce-in' : 'opacity-0 translate-y-8'
           }`} style={{animationDelay: '0.4s'}}>
-            Join the waitlist
+            Rejoindre la liste d'attente
           </button>
         </div>
       </div>
