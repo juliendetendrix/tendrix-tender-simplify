@@ -11,8 +11,8 @@ const HowItWorks = () => {
   return (
     <section id="how-it-works" className="section-padding bg-primary relative z-40 overflow-visible">
       {/* Floating Title - positioned to straddle sections */}
-      <div className="absolute -top-16 left-0 right-0 z-30 flex justify-center">
-        <div className="bg-white/95 backdrop-blur-md border border-border rounded-3xl px-8 py-4 shadow-medium mx-4 animate-fade-in z-50 -top-10">
+      <div className="absolute -top-8 left-0 right-0 z-30 flex justify-center">
+        <div className="bg-white/95 backdrop-blur-md border border-border rounded-3xl px-8 py-4 shadow-medium mx-4 animate-fade-in z-50">
           <h2 className="text-xl lg:text-3xl font-bold text-primary text-center">
             Unlock an untapped market
           </h2>
