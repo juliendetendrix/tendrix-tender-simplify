@@ -90,9 +90,9 @@ const HowItWorks = () => {
         </div>
 
         {/* Third Block: Instant request triggering */}
-        <div ref={block3Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-6 shadow-strong mb-6 ${
+        <div ref={block3Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-6 shadow-strong mb-6 transition-all duration-800 ${
           v3 ? 'animate-slide-in-left' : 'opacity-0 -translate-x-16'
-        }`} style={{animationDelay: '0.6s'}}>
+        }`}>
           <div className="grid lg:grid-cols-2 gap-6 items-center">
             {/* Left Content */}
             <div className="text-center lg:text-left order-1">
