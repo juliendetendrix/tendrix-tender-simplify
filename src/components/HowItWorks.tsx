@@ -42,11 +42,11 @@ const HowItWorks = () => {
 
             {/* Right Content - Software Image */}
             <div className="relative order-2">
-              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
                 <img 
                   src={dashboardMockup} 
                   alt="Tendrix Dashboard Software Interface" 
-                  className="w-full h-auto rounded-xl"
+                  className="w-full h-full object-cover rounded-xl"
                 />
               </div>
               
@@ -74,11 +74,11 @@ const HowItWorks = () => {
 
             {/* Left Content - France Network Image */}
             <div className="relative order-2 lg:order-1">
-              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
                 <img 
                   src={franceNetwork} 
                   alt="France business network map showing certified managers" 
-                  className="w-full h-auto rounded-xl"
+                  className="w-full h-full object-cover rounded-xl"
                 />
               </div>
               
@@ -106,11 +106,11 @@ const HowItWorks = () => {
 
             {/* Right Content - Notification Image */}
             <div className="relative order-2">
-              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
                 <img 
                   src={notificationMockup} 
                   alt="Business professional receiving Tendrix notification on mobile device" 
-                  className="w-full h-auto rounded-xl"
+                  className="w-full h-full object-cover rounded-xl"
                 />
               </div>
               
