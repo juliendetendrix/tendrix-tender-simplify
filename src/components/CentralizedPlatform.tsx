@@ -1,5 +1,5 @@
 import mobileMockup from '@/assets/mobile-mockup.png';
-import ParisMap from './ParisMap';
+import franceNetwork from '@/assets/france-network.jpg';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const CentralizedPlatform = () => {
@@ -20,7 +20,11 @@ const CentralizedPlatform = () => {
           
           {/* Left - Map */}
           <div className={`${isVisible ? 'animate-slide-in-left' : 'opacity-0 -translate-x-16'}`} style={{ animationDelay: '0.5s' }}>
-            <ParisMap />
+            <img 
+              src={franceNetwork} 
+              alt="Carte de Paris montrant les opportunités d'appels d'offres à proximité de votre entreprise" 
+              className="w-full rounded-xl shadow-medium hover:scale-105 transition-transform duration-300"
+            />
           </div>
 
           {/* Right - Mobile Mockup */}
