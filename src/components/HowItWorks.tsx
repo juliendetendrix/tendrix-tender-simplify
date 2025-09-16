@@ -22,7 +22,7 @@ const HowItWorks = () => {
         </div>
       </div>
 
-      <div className="container-max relative z-10 pt-20">{/* Increased padding-top */}
+      <div className="container-max relative z-10 pt-12">{/* Reduced padding-top */}
 
         {/* First Block: Respond to tenders under 4 hours */}
         <div ref={block1Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 ${
