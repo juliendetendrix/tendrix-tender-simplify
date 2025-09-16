@@ -1,5 +1,5 @@
 import mobileMockup from '@/assets/mobile-mockup.png';
-import parisMap from '@/assets/paris-tenders-map.jpg';
+import parisMap from '@/assets/paris-professional-map.png';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const CentralizedPlatform = () => {
