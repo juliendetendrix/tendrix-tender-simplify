@@ -25,10 +25,10 @@ const HowItWorks = () => {
       <div className="container-max relative z-10 pt-12">{/* Reduced padding-top */}
 
         {/* First Block: Respond to tenders under 4 hours */}
-        <div ref={block1Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 ${
+        <div ref={block1Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-6 shadow-strong mb-6 ${
           v1 ? 'animate-slide-in-left' : 'opacity-0 -translate-x-16'
         }`}>
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
+          <div className="grid lg:grid-cols-2 gap-6 items-center">
             {/* Left Content */}
             <div className="text-center lg:text-left">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
@@ -58,10 +58,10 @@ const HowItWorks = () => {
         </div>
 
         {/* Second Block: Network of certified business managers */}
-        <div ref={block2Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 ${
+        <div ref={block2Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-6 shadow-strong mb-6 ${
           v2 ? 'animate-slide-in-right' : 'opacity-0 translate-x-16'
         }`} style={{animationDelay: '0.3s'}}>
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
+          <div className="grid lg:grid-cols-2 gap-6 items-center">
             {/* Left Content - France Network Image */}
             <div className="relative">
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
@@ -90,10 +90,10 @@ const HowItWorks = () => {
         </div>
 
         {/* Third Block: Instant request triggering */}
-        <div ref={block3Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 ${
+        <div ref={block3Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-6 shadow-strong mb-6 ${
           v3 ? 'animate-slide-in-left' : 'opacity-0 -translate-x-16'
         }`} style={{animationDelay: '0.6s'}}>
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
+          <div className="grid lg:grid-cols-2 gap-6 items-center">
             {/* Left Content */}
             <div className="text-center lg:text-left">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
