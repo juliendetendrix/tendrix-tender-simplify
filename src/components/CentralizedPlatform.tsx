@@ -11,7 +11,7 @@ const CentralizedPlatform = () => {
         {/* Centered Title */}
         <div className={`text-center mb-16 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6 max-w-4xl mx-auto">
-            Toutes les opportunités d'appels d'offres centralisées dans une seule application
+            Tous les appels d'offres, centralisés sur une même plateforme
           </h2>
         </div>
 
