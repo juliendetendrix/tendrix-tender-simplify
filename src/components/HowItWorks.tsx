@@ -9,11 +9,11 @@ const HowItWorks = () => {
   const { ref: block3Ref, isVisible: v3 } = useScrollAnimation();
   const { ref: ctaRef, isVisible: vCta } = useScrollAnimation();
   return (
-    <section id="how-it-works" className="section-padding bg-primary relative overflow-hidden">
+    <section id="how-it-works" className="section-padding bg-primary relative z-40 overflow-visible">
       {/* Floating Title - positioned to straddle sections */}
       <div className="absolute -top-16 left-0 right-0 z-30 flex justify-center">
-        <div className="bg-white/95 backdrop-blur-md border-2 border-primary/20 rounded-3xl px-12 py-6 shadow-strong mx-4 hover:shadow-xl transition-all duration-300 hover:scale-105 animate-fade-in" style={{animationDelay: '0.5s'}}>
-          <h2 className="text-2xl lg:text-4xl font-bold text-primary text-center whitespace-nowrap">
+        <div className="bg-white/95 backdrop-blur-md border border-border rounded-3xl px-8 py-4 shadow-medium mx-4 animate-fade-in z-50 -top-10">
+          <h2 className="text-xl lg:text-3xl font-bold text-primary text-center">
             Unlock an untapped market
           </h2>
           <div className="w-16 h-1 bg-gradient-to-r from-primary to-secondary rounded-full mx-auto mt-2"></div>
