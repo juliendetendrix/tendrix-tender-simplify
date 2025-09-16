@@ -58,9 +58,9 @@ const HowItWorks = () => {
         </div>
 
         {/* Second Block: Network of certified business managers */}
-        <div ref={block2Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-6 shadow-strong mb-6 ${
+        <div ref={block2Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-6 shadow-strong mb-6 transition-all duration-800 ${
           v2 ? 'animate-slide-in-right' : 'opacity-0 translate-x-16'
-        }`} style={{animationDelay: '0.3s'}}>
+        }`}>
           <div className="grid lg:grid-cols-2 gap-6 items-center">
             {/* Text Content - Mobile First */}
             <div className="text-center lg:text-left order-1 lg:order-2">
