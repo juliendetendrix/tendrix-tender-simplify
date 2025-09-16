@@ -79,12 +79,9 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="border-t border-background/20 pt-8">
-          <div className="flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0">
+          <div className="flex justify-center items-center">
             <p className="text-background/60 text-sm">
-              Sources: BOAMP (DILA) – Licence Ouverte 2.0
-            </p>
-            <p className="text-background/60 text-sm">
-              © 2024 Tendrix. All rights reserved.
+              © 2025 Tendrix. All rights reserved.
             </p>
           </div>
         </div>
