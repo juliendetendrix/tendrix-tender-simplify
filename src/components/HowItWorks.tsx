@@ -110,7 +110,8 @@ const HowItWorks = () => {
                 <img 
                   src={notificationIllustration} 
                   alt="Professional receiving Tendrix notification about new tender opportunity for energy renovation of public buildings" 
-                  className="w-full h-full object-cover object-bottom rounded-xl"
+                  className="w-full h-full object-cover rounded-xl"
+                  style={{ objectPosition: '50% 80%' }}
                 />
               </div>
               
