@@ -16,7 +16,7 @@ const Callout = () => {
           <h2 className={`text-3xl lg:text-5xl font-bold text-primary-foreground mb-6 transition-all duration-800 ${
             isVisible ? 'animate-fade-in-left' : 'opacity-0 -translate-x-8'
           }`}>
-            Get access to tenders matching your business today.
+            Focus on your expertise, we take care of the rest.
           </h2>
           
           <p className={`text-xl text-primary-foreground/80 mb-8 max-w-2xl mx-auto transition-all duration-800 ${
