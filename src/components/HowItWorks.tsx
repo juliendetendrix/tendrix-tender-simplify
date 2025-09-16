@@ -1,5 +1,5 @@
 import dashboardMockup from '@/assets/dashboard-mockup.jpg';
-import franceNetworkMap from '@/assets/france-network-map.png';
+import franceNetworkMap from '@/assets/france-network-new.png';
 import notificationMockup from '@/assets/notification-mockup.jpg';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
