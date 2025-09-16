@@ -26,10 +26,10 @@ const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in" style={{animationDelay: '0.6s'}}>
-            <button className="btn-primary text-lg px-8 py-4 hover:scale-105 transition-transform duration-300">
+            <button className="btn-primary text-lg px-8 py-4">
               Discover tenders for your business
             </button>
-            <button className="btn-outline text-lg px-8 py-4 hover:scale-105 transition-transform duration-300">
+            <button className="btn-outline text-lg px-8 py-4">
               Join the private beta
             </button>
           </div>

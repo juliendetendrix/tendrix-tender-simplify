@@ -45,7 +45,7 @@ const TenderPreview = () => {
           {tenders.map((tender, index) => (
             <div
               key={index}
-              className={`bg-white rounded-2xl p-6 shadow-soft hover:shadow-medium transition-all duration-300 border border-border group hover:scale-105 ${
+              className={`bg-white rounded-2xl p-6 shadow-soft hover:shadow-medium transition-all duration-300 border border-border group ${
                 isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
               }`}
               style={{ animationDelay: `${0.2 + index * 0.2}s` }}
@@ -75,7 +75,7 @@ const TenderPreview = () => {
                 {tender.summary}
               </p>
               
-              <button className="btn-secondary w-full group-hover:bg-secondary-hover hover:scale-105 transition-all duration-300">
+              <button className="btn-secondary w-full group-hover:bg-secondary-hover">
                 Request a response
               </button>
             </div>

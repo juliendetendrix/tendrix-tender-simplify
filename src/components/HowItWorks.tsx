@@ -4,9 +4,12 @@ import notificationMockup from '@/assets/notification-mockup.jpg';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const HowItWorks = () => {
-  const { ref: sectionRef, isVisible } = useScrollAnimation();
+  const { ref: block1Ref, isVisible: v1 } = useScrollAnimation();
+  const { ref: block2Ref, isVisible: v2 } = useScrollAnimation();
+  const { ref: block3Ref, isVisible: v3 } = useScrollAnimation();
+  const { ref: ctaRef, isVisible: vCta } = useScrollAnimation();
   return (
-    <section ref={sectionRef} id="how-it-works" className="section-padding bg-primary relative overflow-hidden">
+    <section id="how-it-works" className="section-padding bg-primary relative overflow-hidden">
       {/* Floating Title - positioned to straddle sections */}
       <div className="absolute -top-16 left-0 right-0 z-30 flex justify-center">
         <div className="bg-card border-2 border-primary rounded-3xl px-12 py-6 shadow-strong mx-4">
@@ -19,13 +22,13 @@ const HowItWorks = () => {
       <div className="container-max relative z-10 pt-20">{/* Increased padding-top */}
 
         {/* First Block: Respond to tenders under 4 hours */}
-        <div className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 transition-all duration-800 ${
-          isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
+        <div ref={block1Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 transition-all duration-800 ${
+          v1 ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
         }`}>
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             {/* Left Content */}
             <div className={`text-center lg:text-left transition-all duration-600 ${
-              isVisible ? 'animate-fade-in-right' : 'opacity-0 -translate-x-8'
+              v1 ? 'animate-fade-in-right' : 'opacity-0 -translate-x-8'
             }`} style={{animationDelay: '0.2s'}}>
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
                 Respond to a tender in under 4 hours
@@ -38,7 +41,7 @@ const HowItWorks = () => {
 
             {/* Right Content - Software Image */}
             <div className={`relative transition-all duration-600 ${
-              isVisible ? 'animate-slide-in-left' : 'opacity-0 translate-x-8'
+              v1 ? 'animate-slide-in-left' : 'opacity-0 translate-x-8'
             }`} style={{animationDelay: '0.4s'}}>
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
                 <img 
@@ -56,13 +59,13 @@ const HowItWorks = () => {
         </div>
 
         {/* Second Block: Network of certified business managers */}
-        <div className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 transition-all duration-800 ${
-          isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
+        <div ref={block2Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 transition-all duration-800 ${
+          v2 ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
         }`} style={{animationDelay: '0.3s'}}>
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             {/* Left Content - France Network Image */}
             <div className={`relative transition-all duration-600 ${
-              isVisible ? 'animate-slide-in-right' : 'opacity-0 -translate-x-8'
+              v2 ? 'animate-slide-in-right' : 'opacity-0 -translate-x-8'
             }`} style={{animationDelay: '0.5s'}}>
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
                 <img 
@@ -79,7 +82,7 @@ const HowItWorks = () => {
 
             {/* Right Content */}
             <div className={`text-center lg:text-left transition-all duration-600 ${
-              isVisible ? 'animate-fade-in-left' : 'opacity-0 translate-x-8'
+              v2 ? 'animate-fade-in-left' : 'opacity-0 translate-x-8'
             }`} style={{animationDelay: '0.7s'}}>
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
                 A certified business development network
@@ -92,13 +95,13 @@ const HowItWorks = () => {
         </div>
 
         {/* Third Block: Instant request triggering */}
-        <div className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 transition-all duration-800 ${
-          isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
+        <div ref={block3Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 transition-all duration-800 ${
+          v3 ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
         }`} style={{animationDelay: '0.6s'}}>
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             {/* Left Content */}
             <div className={`text-center lg:text-left transition-all duration-600 ${
-              isVisible ? 'animate-fade-in-right' : 'opacity-0 -translate-x-8'
+              v3 ? 'animate-fade-in-right' : 'opacity-0 -translate-x-8'
             }`} style={{animationDelay: '0.8s'}}>
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
                 Trigger your request instantly
@@ -110,7 +113,7 @@ const HowItWorks = () => {
 
             {/* Right Content - Notification Image */}
             <div className={`relative transition-all duration-600 ${
-              isVisible ? 'animate-slide-in-left' : 'opacity-0 translate-x-8'
+              v3 ? 'animate-slide-in-left' : 'opacity-0 translate-x-8'
             }`} style={{animationDelay: '1s'}}>
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
                 <img 
@@ -128,9 +131,9 @@ const HowItWorks = () => {
         </div>
 
         {/* CTA Button */}
-        <div className="text-center mt-12">
-          <button className={`btn-secondary hover:scale-105 transition-all duration-300 ${
-            isVisible ? 'animate-bounce-in' : 'opacity-0 translate-y-8'
+        <div ref={ctaRef} className="text-center mt-12">
+          <button className={`btn-secondary ${
+            vCta ? 'animate-bounce-in' : 'opacity-0 translate-y-8'
           }`} style={{animationDelay: '1.2s'}}>
             Start your first rapid response
           </button>

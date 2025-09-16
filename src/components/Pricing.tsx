@@ -110,7 +110,7 @@ const Pricing = () => {
               </ul>
 
               <button
-                className={`w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 hover:scale-105 ${
+                className={`w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
                   plan.popular
                     ? 'btn-primary'
                     : 'btn-outline'

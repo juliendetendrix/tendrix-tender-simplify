@@ -25,7 +25,7 @@ const Callout = () => {
             Join thousands of businesses already using Tendrix to win more contracts and grow faster.
           </p>
           
-          <button className={`btn-secondary text-lg px-8 py-4 hover:scale-105 transition-all duration-300 ${
+          <button className={`btn-secondary text-lg px-8 py-4 ${
             isVisible ? 'animate-bounce-in' : 'opacity-0 translate-y-8'
           }`} style={{animationDelay: '0.4s'}}>
             Join the waitlist
