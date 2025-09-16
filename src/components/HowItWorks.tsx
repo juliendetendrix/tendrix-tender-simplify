@@ -22,14 +22,12 @@ const HowItWorks = () => {
       <div className="container-max relative z-10 pt-20">{/* Increased padding-top */}
 
         {/* First Block: Respond to tenders under 4 hours */}
-        <div ref={block1Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 transition-all duration-800 ${
-          v1 ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
+        <div ref={block1Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 ${
+          v1 ? 'animate-slide-in-left' : 'opacity-0 -translate-x-16'
         }`}>
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             {/* Left Content */}
-            <div className={`text-center lg:text-left transition-all duration-600 ${
-              v1 ? 'animate-fade-in-right' : 'opacity-0 -translate-x-8'
-            }`} style={{animationDelay: '0.2s'}}>
+            <div className="text-center lg:text-left">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
                 Respond to a tender in under 4 hours
               </h3>
@@ -40,9 +38,7 @@ const HowItWorks = () => {
             </div>
 
             {/* Right Content - Software Image */}
-            <div className={`relative transition-all duration-600 ${
-              v1 ? 'animate-slide-in-left' : 'opacity-0 translate-x-8'
-            }`} style={{animationDelay: '0.4s'}}>
+            <div className="relative">
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
                 <img 
                   src={dashboardMockup} 
@@ -59,14 +55,12 @@ const HowItWorks = () => {
         </div>
 
         {/* Second Block: Network of certified business managers */}
-        <div ref={block2Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 transition-all duration-800 ${
-          v2 ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
+        <div ref={block2Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 ${
+          v2 ? 'animate-slide-in-right' : 'opacity-0 translate-x-16'
         }`} style={{animationDelay: '0.3s'}}>
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             {/* Left Content - France Network Image */}
-            <div className={`relative transition-all duration-600 ${
-              v2 ? 'animate-slide-in-right' : 'opacity-0 -translate-x-8'
-            }`} style={{animationDelay: '0.5s'}}>
+            <div className="relative">
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
                 <img 
                   src={franceNetwork} 
@@ -81,9 +75,7 @@ const HowItWorks = () => {
             </div>
 
             {/* Right Content */}
-            <div className={`text-center lg:text-left transition-all duration-600 ${
-              v2 ? 'animate-fade-in-left' : 'opacity-0 translate-x-8'
-            }`} style={{animationDelay: '0.7s'}}>
+            <div className="text-center lg:text-left">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
                 A certified business development network
               </h3>
@@ -95,14 +87,12 @@ const HowItWorks = () => {
         </div>
 
         {/* Third Block: Instant request triggering */}
-        <div ref={block3Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 transition-all duration-800 ${
-          v3 ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
+        <div ref={block3Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-8 shadow-strong mb-8 ${
+          v3 ? 'animate-slide-in-left' : 'opacity-0 -translate-x-16'
         }`} style={{animationDelay: '0.6s'}}>
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             {/* Left Content */}
-            <div className={`text-center lg:text-left transition-all duration-600 ${
-              v3 ? 'animate-fade-in-right' : 'opacity-0 -translate-x-8'
-            }`} style={{animationDelay: '0.8s'}}>
+            <div className="text-center lg:text-left">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
                 Trigger your request instantly
               </h3>
@@ -112,9 +102,7 @@ const HowItWorks = () => {
             </div>
 
             {/* Right Content - Notification Image */}
-            <div className={`relative transition-all duration-600 ${
-              v3 ? 'animate-slide-in-left' : 'opacity-0 translate-x-8'
-            }`} style={{animationDelay: '1s'}}>
+            <div className="relative">
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300">
                 <img 
                   src={notificationMockup} 
