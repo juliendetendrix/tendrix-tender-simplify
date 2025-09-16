@@ -32,7 +32,7 @@ const TenderPreview = () => {
   return (
     <section ref={sectionRef} className="section-padding bg-gradient-hero">
       <div className="container-max">
-        <div className={`text-center mb-16 transition-all duration-800 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
+        <div className={`text-center mb-16 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
             Recent tender opportunities
           </h2>
@@ -45,7 +45,7 @@ const TenderPreview = () => {
           {tenders.map((tender, index) => (
             <div
               key={index}
-              className={`bg-white rounded-2xl p-6 shadow-soft hover:shadow-medium transition-all duration-300 border border-border group ${
+              className={`bg-white rounded-2xl p-6 shadow-soft hover:shadow-medium transition-shadow duration-300 border border-border group ${
                 isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
               }`}
               style={{ animationDelay: `${0.2 + index * 0.2}s` }}

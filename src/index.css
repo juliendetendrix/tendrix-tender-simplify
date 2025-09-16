@@ -116,15 +116,15 @@
   
   /* Custom Component Classes */
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-6 py-3 font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-6 py-3 font-semibold transition-colors duration-300 shadow-lg hover:shadow-xl;
   }
   
   .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-xl px-6 py-3 font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105;
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-xl px-6 py-3 font-semibold transition-colors duration-300 shadow-lg hover:shadow-xl;
   }
   
   .btn-outline {
-    @apply border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-xl px-6 py-3 font-semibold transition-all duration-300;
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-xl px-6 py-3 font-semibold transition-colors duration-300;
   }
   
   .container-max {
