@@ -124,9 +124,9 @@ const HowItWorks = () => {
 
         {/* CTA Button */}
         <div ref={ctaRef} className="text-center mt-12">
-          <button className={`btn-secondary ${
+          <button className={`btn-secondary transition-all duration-800 ${
             vCta ? 'animate-bounce-in' : 'opacity-0 translate-y-8'
-          }`} style={{animationDelay: '1.2s'}}>
+          }`}>
             Commencer votre première réponse rapide
           </button>
         </div>
