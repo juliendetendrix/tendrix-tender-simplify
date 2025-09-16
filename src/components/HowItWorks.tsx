@@ -1,5 +1,5 @@
 import dashboardMockup from '@/assets/dashboard-mockup.jpg';
-import franceNetwork from '@/assets/france-network.jpg';
+import franceNetworkMap from '@/assets/france-network-map.png';
 import notificationMockup from '@/assets/notification-mockup.jpg';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
@@ -76,9 +76,9 @@ const HowItWorks = () => {
             <div className="relative order-2 lg:order-1">
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
                 <img 
-                  src={franceNetwork} 
-                  alt="France business network map showing certified managers" 
-                  className="w-full h-full object-cover rounded-xl"
+                  src={franceNetworkMap} 
+                  alt="Carte de France avec réseau connecté montrant la couverture nationale des managers certifiés" 
+                  className="w-full h-full object-contain rounded-xl"
                 />
               </div>
               

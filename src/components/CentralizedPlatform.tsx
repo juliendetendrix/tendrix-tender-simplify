@@ -1,4 +1,4 @@
-import franceNetworkMap from '@/assets/france-network-map.png';
+import mobileMockup from '@/assets/mobile-mockup-new.png';
 import tendrixDashboard from '@/assets/tendrix-dashboard-illustration.png';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
@@ -30,9 +30,9 @@ const CentralizedPlatform = () => {
           {/* Right - Mobile Mockup */}
           <div className={`flex justify-center ${isVisible ? 'animate-slide-in-right' : 'opacity-0 translate-x-16'}`} style={{ animationDelay: '0.7s' }}>
             <img 
-              src={franceNetworkMap} 
-              alt="Carte de France avec réseau connecté montrant la couverture nationale des appels d'offres Tendrix" 
-              className="w-full max-w-lg drop-shadow-2xl hover:scale-105 transition-transform duration-300"
+              src={mobileMockup} 
+              alt="Tendrix mobile application interface showing centralized tender management" 
+              className="w-full max-w-sm drop-shadow-2xl hover:scale-105 transition-transform duration-300"
             />
           </div>
 
