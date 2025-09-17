@@ -6,18 +6,15 @@ const ProcessFlow = () => {
   const steps = [
     {
       icon: "🔍",
-      title: "Recevez vos AO",
-      description: "Notifications automatiques des appels d'offres qui correspondent à votre profil"
+      title: "Recevez vos Appels d'offres personnalisés"
     },
     {
       icon: "📩", 
-      title: "Demandez une réponse",
-      description: "Notre équipe prépare votre réponse complète en moins de 4 heures"
+      title: "Demandez une réponse"
     },
     {
       icon: "🏆",
-      title: "Gagnez le marché",
-      description: "Décrochez plus de contrats grâce à nos réponses optimisées"
+      title: "Gagnez le marché"
     }
   ];
 
@@ -28,16 +25,6 @@ const ProcessFlow = () => {
           isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
         }`}>
           
-          {/* Title */}
-          <div className="text-center mb-12">
-            <h2 className="text-2xl lg:text-4xl font-bold text-foreground mb-4">
-              Comment ça marche ?
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Un processus simple et efficace pour maximiser vos chances de remporter des marchés publics
-            </p>
-          </div>
-
           {/* Process Steps */}
           <div className="grid md:grid-cols-3 gap-8 lg:gap-12 items-center max-w-5xl mx-auto">
             {steps.map((step, index) => (
@@ -53,14 +40,9 @@ const ProcessFlow = () => {
                   </div>
                   
                   {/* Title */}
-                  <h3 className="text-xl lg:text-2xl font-bold text-foreground mb-3">
+                  <h3 className="text-lg lg:text-xl font-bold text-foreground">
                     {step.title}
                   </h3>
-                  
-                  {/* Description */}
-                  <p className="text-muted-foreground leading-relaxed">
-                    {step.description}
-                  </p>
                 </div>
 
                 {/* Arrow (hidden on last step and mobile) */}
