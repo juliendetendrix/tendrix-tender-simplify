@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import HowItWorks from '@/components/HowItWorks';
+import ProcessFlow from '@/components/ProcessFlow';
 import TenderPreview from '@/components/TenderPreview';
 import CentralizedPlatform from '@/components/CentralizedPlatform';
 import Callout from '@/components/Callout';
@@ -16,6 +17,7 @@ const Index = () => {
       <main>
         <Hero />
         <HowItWorks />
+        <ProcessFlow />
         <TenderPreview />
         <CentralizedPlatform />
         <Callout />
