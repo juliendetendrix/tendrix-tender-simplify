@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import WaitlistForm from '@/components/WaitlistForm';
 
 const Callout = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation();
+  const [isFormOpen, setIsFormOpen] = useState(false);
   
   return (
     <section ref={sectionRef} className="section-padding bg-primary relative overflow-hidden">
@@ -25,13 +28,23 @@ const Callout = () => {
             Rejoignez des milliers d'entreprises qui utilisent déjà Tendrix pour remporter plus de marchés et accélérer leur croissance.
           </p>
           
-          <button className={`btn-secondary text-lg px-8 py-4 ${
-            isVisible ? 'animate-bounce-in' : 'opacity-0 translate-y-8'
-          }`} style={{animationDelay: '0.4s'}}>
+          <button 
+            className={`btn-secondary text-lg px-8 py-4 ${
+              isVisible ? 'animate-bounce-in' : 'opacity-0 translate-y-8'
+            }`} 
+            style={{animationDelay: '0.4s'}}
+            onClick={() => setIsFormOpen(true)}
+          >
             Rejoindre la liste d'attente
           </button>
         </div>
       </div>
+      
+      
+      <WaitlistForm 
+        isOpen={isFormOpen} 
+        onClose={() => setIsFormOpen(false)} 
+      />
     </section>
   );
 };
