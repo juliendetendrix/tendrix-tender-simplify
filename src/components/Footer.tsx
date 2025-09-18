@@ -67,7 +67,9 @@ const Footer = () => {
                   <Twitter className="h-5 w-5" />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.linkedin.com/company/tendrix/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-background/80 hover:text-background transition-colors"
                 >
                   <Linkedin className="h-5 w-5" />
