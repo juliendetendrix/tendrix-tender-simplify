@@ -17,7 +17,7 @@ const HowTendrixWorks = () => {
             Demander une réponse
           </div>
           {/* Effet de clic avec icône main */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="absolute bottom-0 left-0 transform translate-x-1 translate-y-1">
             <div className="relative">
               {/* Rayons de clic */}
               <div className="absolute -top-1 -left-1 animate-ping">
