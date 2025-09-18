@@ -9,6 +9,7 @@ const BetaOffer = () => {
     "Support prioritaire pendant toute la phase bêta",
     "Modèles de réponse personnalisés (Tendrix Winning Deck)",
     "Onboarding personnalisé",
+    "Réponse en moins de 4h pour des AO fournitures",
     "1 chargé d'affaires référent dédié à votre entreprise"
   ];
 
