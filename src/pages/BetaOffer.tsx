@@ -33,44 +33,46 @@ const BetaOffer = () => {
 
         {/* Carte Offre Bêta */}
         <div className="flex justify-center mb-16">
-          <Card className="w-full max-w-lg shadow-xl border bg-card">
-            <CardHeader className="text-center pb-6">
-              <CardTitle className="text-4xl font-bold text-foreground mb-3">
-                Version Bêta Tendrix
-              </CardTitle>
-              <p className="text-muted-foreground text-lg leading-relaxed">
-                Pour les premières PME qui souhaitent tester l'outil avant la version Alpha.
-              </p>
-            </CardHeader>
-            
-            <CardContent className="space-y-8">
-              {/* Prix */}
+          <Card className="w-full max-w-md bg-background border-2 rounded-3xl shadow-lg p-8">
+            <CardContent className="space-y-8 p-0">
+              {/* Titre */}
               <div className="text-center">
-                <div className="text-5xl font-bold text-foreground mb-2">
-                  5 €
+                <h2 className="text-3xl font-bold text-foreground mb-4">
+                  Version Bêta Tendrix
+                </h2>
+                <p className="text-muted-foreground text-base leading-relaxed">
+                  Pour les premières PME qui souhaitent tester l'outil avant la version Alpha.
+                </p>
+              </div>
+              
+              {/* Prix */}
+              <div className="text-center py-4">
+                <div className="text-6xl font-bold text-foreground mb-2">
+                  5€
                 </div>
-                <div className="text-muted-foreground text-lg">
+                <div className="text-muted-foreground text-base">
                   paiement unique
                 </div>
               </div>
               
               {/* Liste des fonctionnalités */}
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {features.map((feature, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-5 h-5 bg-primary rounded-full flex items-center justify-center mt-0.5">
-                      <Check className="w-3 h-3 text-primary-foreground" />
+                  <div key={index} className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center mt-0.5">
+                      <Check className="w-5 h-5 text-primary" />
                     </div>
-                    <p className="text-foreground leading-relaxed">{feature}</p>
+                    <p className="text-muted-foreground leading-relaxed text-base">{feature}</p>
                   </div>
                 ))}
               </div>
               
               {/* Bouton CTA */}
-              <div className="pt-6">
+              <div className="pt-8">
                 <Button 
+                  variant="outline"
                   size="lg"
-                  className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground"
+                  className="w-full h-14 text-lg font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-2xl"
                   asChild
                 >
                   <a 
@@ -79,7 +81,7 @@ const BetaOffer = () => {
                     rel="noopener noreferrer"
                     className="flex items-center justify-center"
                   >
-                    Je rejoins la Bêta pour 5 €
+                    Choisir ce plan
                   </a>
                 </Button>
               </div>
