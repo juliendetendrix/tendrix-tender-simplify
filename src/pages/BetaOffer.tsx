@@ -87,7 +87,7 @@ const BetaOffer = () => {
                     rel="noopener noreferrer"
                     className="flex items-center justify-center"
                   >
-                    Choisir ce plan
+                    Intégrer la version Bêta
                   </a>
                 </Button>
               </div>
