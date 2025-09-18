@@ -1,4 +1,4 @@
-import { Twitter, Linkedin, Mail } from 'lucide-react';
+import { Linkedin, Mail } from 'lucide-react';
 import logo from '@/assets/tendrix-logo.png';
 
 const Footer = () => {
@@ -60,12 +60,6 @@ const Footer = () => {
               </a>
               
               <div className="flex space-x-4 pt-2">
-                <a
-                  href="#"
-                  className="text-background/80 hover:text-background transition-colors"
-                >
-                  <Twitter className="h-5 w-5" />
-                </a>
                 <a
                   href="https://www.linkedin.com/company/tendrix/"
                   target="_blank"
