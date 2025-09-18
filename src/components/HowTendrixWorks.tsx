@@ -56,13 +56,13 @@ const HowTendrixWorks = () => {
                     
                     {/* Icon */}
                     <div className="mb-6 flex justify-center">
-                      <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
-                        {index === 1 ? (
-                          <IconComponent />
-                        ) : (
+                      {index === 1 ? (
+                        <IconComponent />
+                      ) : (
+                        <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
                           <IconComponent className="h-8 w-8 text-primary" />
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                     
                     {/* Step Number */}
