@@ -1,6 +1,9 @@
 import premierMockup from '@/assets/premier-mockup.png';
+import { useState } from 'react';
+import WaitlistForm from './WaitlistForm';
 
 const Hero = () => {
+  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   return (
     <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 bg-background overflow-hidden">
       {/* Organic Background Shapes */}
@@ -26,10 +29,16 @@ const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in" style={{animationDelay: '0.6s'}}>
-            <button className="btn-primary text-lg px-8 py-4">
+            <button 
+              className="btn-primary text-lg px-8 py-4"
+              onClick={() => setIsWaitlistOpen(true)}
+            >
               Découvrez les marchés qui correspondent à votre savoir-faire
             </button>
-            <button className="btn-outline text-lg px-8 py-4">
+            <button 
+              className="btn-outline text-lg px-8 py-4"
+              onClick={() => setIsWaitlistOpen(true)}
+            >
               Rejoindre la bêta privée
             </button>
           </div>
@@ -58,6 +67,11 @@ const Hero = () => {
           </div>
         </div>
       </div>
+      
+      <WaitlistForm 
+        isOpen={isWaitlistOpen} 
+        onClose={() => setIsWaitlistOpen(false)} 
+      />
     </section>
   );
 };

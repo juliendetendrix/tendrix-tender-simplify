@@ -1,8 +1,11 @@
 import { Check } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { useState } from 'react';
+import WaitlistForm from './WaitlistForm';
 
 const Pricing = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation();
+  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   const plans = [
     {
       name: 'Starter',
@@ -115,6 +118,7 @@ const Pricing = () => {
                     ? 'btn-primary'
                     : 'btn-outline'
                 }`}
+                onClick={() => setIsWaitlistOpen(true)}
               >
                 Choisir ce plan
               </button>
@@ -122,6 +126,11 @@ const Pricing = () => {
           ))}
         </div>
       </div>
+      
+      <WaitlistForm 
+        isOpen={isWaitlistOpen} 
+        onClose={() => setIsWaitlistOpen(false)} 
+      />
     </section>
   );
 };
