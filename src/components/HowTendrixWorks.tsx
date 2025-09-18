@@ -11,7 +11,11 @@ const HowTendrixWorks = () => {
       description: "Tendrix centralise et vous envois tous les appels d'offres pertinents pour votre entreprise."
     },
     {
-      icon: MessageSquare,
+      icon: () => (
+        <div className="bg-primary/10 px-2 py-1 rounded text-primary text-[10px] font-medium">
+          Demander une réponse
+        </div>
+      ),
       title: "Demandez une réponse",
       description: "En un clic, déléguez la réponse à nos experts métiers."
     },
@@ -53,7 +57,11 @@ const HowTendrixWorks = () => {
                     {/* Icon */}
                     <div className="mb-6 flex justify-center">
                       <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
-                        <IconComponent className="h-8 w-8 text-primary" />
+                        {index === 1 ? (
+                          <IconComponent />
+                        ) : (
+                          <IconComponent className="h-8 w-8 text-primary" />
+                        )}
                       </div>
                     </div>
                     
