@@ -12,7 +12,7 @@ const HowTendrixWorks = () => {
     },
     {
       icon: () => (
-        <div className="bg-primary/10 px-2 py-1 rounded text-primary text-[10px] font-medium">
+        <div className="bg-primary/10 px-4 py-2 rounded-xl text-primary text-[11px] font-semibold font-mono tracking-wide">
           Demander une réponse
         </div>
       ),
