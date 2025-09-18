@@ -1,4 +1,4 @@
-import { Linkedin, Mail } from 'lucide-react';
+import { Linkedin, Mail, Phone } from 'lucide-react';
 import logo from '@/assets/tendrix-logo.png';
 
 const Footer = () => {
@@ -57,6 +57,14 @@ const Footer = () => {
               >
                 <Mail className="h-4 w-4 mr-2" />
                 contact@tendrix.com
+              </a>
+              
+              <a
+                href="tel:+33771819729"
+                className="flex items-center text-background/80 hover:text-background transition-colors"
+              >
+                <Phone className="h-4 w-4 mr-2" />
+                07 71 81 97 29
               </a>
               
               <div className="flex space-x-4 pt-2">
