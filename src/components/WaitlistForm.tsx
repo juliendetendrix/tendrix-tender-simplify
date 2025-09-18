@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface WaitlistFormProps {
   isOpen: boolean;
@@ -82,18 +83,39 @@ const WaitlistForm = ({ isOpen, onClose }: WaitlistFormProps) => {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Merci !",
-      description: "Vous avez été ajouté à notre liste d'attente. Nous vous contacterons bientôt.",
-    });
-    
-    setIsSubmitting(false);
-    onClose();
-    setCurrentStep(0);
-    setFormData({});
+    try {
+      const { error } = await supabase
+        .from('Questionnaire')
+        .insert({
+          company: formData.company,
+          sector: formData.sector,
+          size: formData.size,
+          email: formData.email,
+          phone: formData.phone || null
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Merci !",
+        description: "Vous avez été ajouté à notre liste d'attente. Nous vous contacterons bientôt.",
+      });
+      
+      onClose();
+      setCurrentStep(0);
+      setFormData({});
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur s'est produite. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
