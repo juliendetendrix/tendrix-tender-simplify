@@ -55,7 +55,7 @@ const Pricing = () => {
       <div className="container-max">
         <div className={`text-center mb-16 transition-all duration-800 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
-            Tarifs simples et transparents
+            Tarification simple et transparente
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Choisissez le plan qui correspond aux besoins de votre entreprise

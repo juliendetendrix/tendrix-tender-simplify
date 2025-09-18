@@ -36,7 +36,7 @@ const Footer = () => {
               </li>
               <li>
                 <a href="#pricing" className="text-background/80 hover:text-background transition-colors">
-                  Tarifs
+                  Tarification
                 </a>
               </li>
               <li>
