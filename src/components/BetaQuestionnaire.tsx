@@ -187,18 +187,10 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
 
       // Clear saved draft
       localStorage.removeItem('beta_questionnaire_draft');
-      setIsCompleted(true);
       
-      toast({
-        title: "Merci !",
-        description: "Votre demande d'accès bêta a été envoyée avec succès."
-      });
-
-      // Redirect to beta offer page after a short delay
-      setTimeout(() => {
-        onClose();
-        navigate('/beta-offer');
-      }, 2000);
+      // Redirect directly to beta offer page
+      onClose();
+      navigate('/beta-offer');
     } catch (error) {
       console.error('Error submitting form:', error);
       toast({
