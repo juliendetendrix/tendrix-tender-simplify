@@ -1,4 +1,4 @@
-import { Search, MousePointer, TrendingUp } from 'lucide-react';
+import { Search, RectangleEllipsis, TrendingUp } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const HowTendrixWorks = () => {
@@ -11,7 +11,7 @@ const HowTendrixWorks = () => {
       description: "Tendrix centralise et vous envois tous les appels d'offres pertinents pour votre entreprise."
     },
     {
-      icon: MousePointer, 
+      icon: RectangleEllipsis, 
       title: "Demandez une réponse",
       description: "En un clic, déléguez la réponse à nos experts métiers."
     },
