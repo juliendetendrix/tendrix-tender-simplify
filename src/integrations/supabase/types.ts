@@ -14,7 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      beta_questionnaire_responses: {
+        Row: {
+          ao_experience: string
+          company_name: string
+          consent: boolean
+          created_at: string
+          email: string | null
+          employees_range: string
+          id: string
+          phone: string | null
+          sector: string
+          sector_other: string | null
+          source_page: string
+        }
+        Insert: {
+          ao_experience: string
+          company_name: string
+          consent?: boolean
+          created_at?: string
+          email?: string | null
+          employees_range: string
+          id?: string
+          phone?: string | null
+          sector: string
+          sector_other?: string | null
+          source_page?: string
+        }
+        Update: {
+          ao_experience?: string
+          company_name?: string
+          consent?: boolean
+          created_at?: string
+          email?: string | null
+          employees_range?: string
+          id?: string
+          phone?: string | null
+          sector?: string
+          sector_other?: string | null
+          source_page?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

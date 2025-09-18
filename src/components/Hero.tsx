@@ -1,7 +1,13 @@
 import premierMockup from '@/assets/premier-mockup.png';
+import BetaQuestionnaire from '@/components/BetaQuestionnaire';
+import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
 
 const Hero = () => {
+  const { isQuestionnaireOpen, openQuestionnaire, closeQuestionnaire } = useBetaQuestionnaire();
+
   return (
+    <>
+      <BetaQuestionnaire isOpen={isQuestionnaireOpen} onClose={closeQuestionnaire} />
     <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 bg-background overflow-hidden">
       {/* Organic Background Shapes */}
       <div className="absolute inset-0 opacity-10">
@@ -28,6 +34,7 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in" style={{animationDelay: '0.6s'}}>
             <button 
               className="btn-primary text-lg px-8 py-4"
+              onClick={openQuestionnaire}
             >
               Découvrez les marchés qui correspondent à votre savoir-faire
             </button>
@@ -63,6 +70,7 @@ const Hero = () => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 
