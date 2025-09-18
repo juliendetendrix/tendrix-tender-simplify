@@ -430,19 +430,6 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
 
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col">
-      {/* Close button - Always visible in top right corner */}
-      <div className="absolute top-4 right-4 z-10">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={onClose}
-          className="h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm border border-border/50 shadow-lg hover:bg-muted transition-all duration-200"
-          aria-label="Fermer le questionnaire"
-        >
-          <X className="h-5 w-5" />
-        </Button>
-      </div>
-
       {/* Header */}
       <div className="flex justify-between items-center p-4 md:p-6 border-b border-border">
         <div className="flex items-center space-x-4">
@@ -451,9 +438,6 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
               <ChevronLeft className="h-6 w-6" />
             </Button>
           )}
-          <span className="text-sm text-muted-foreground">
-            Question {currentStep + 1} sur {totalSteps}
-          </span>
         </div>
         <div className="flex items-center space-x-2">
           <Button variant="ghost" onClick={saveDraft} className="text-sm">
@@ -465,6 +449,22 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
       {/* Progress bar */}
       <div className="px-4 md:px-6 py-2">
         <Progress value={progress} className="h-2" />
+      </div>
+
+      {/* Question indicator and close button */}
+      <div className="flex justify-between items-center px-4 md:px-6 py-3 border-b border-border/50">
+        <span className="text-sm text-muted-foreground">
+          Question {currentStep + 1} sur {totalSteps}
+        </span>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={onClose}
+          className="h-8 w-8 rounded-full hover:bg-muted transition-all duration-200"
+          aria-label="Fermer le questionnaire"
+        >
+          <X className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* Content */}
