@@ -9,7 +9,6 @@ import CentralizedPlatform from '@/components/CentralizedPlatform';
 import Callout from '@/components/Callout';
 import Testimonials from '@/components/Testimonials';
 import Pricing from '@/components/Pricing';
-import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
 
 const Index = () => {
@@ -26,7 +25,6 @@ const Index = () => {
         <Callout />
         <Testimonials />
         <Pricing />
-        <FAQ />
       </main>
       <Footer />
     </div>
