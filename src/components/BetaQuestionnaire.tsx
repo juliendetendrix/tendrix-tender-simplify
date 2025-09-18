@@ -430,6 +430,19 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
 
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col">
+      {/* Close button - Always visible in top right corner */}
+      <div className="absolute top-4 right-4 z-10">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={onClose}
+          className="h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm border border-border/50 shadow-lg hover:bg-muted transition-all duration-200"
+          aria-label="Fermer le questionnaire"
+        >
+          <X className="h-5 w-5" />
+        </Button>
+      </div>
+
       {/* Header */}
       <div className="flex justify-between items-center p-4 md:p-6 border-b border-border">
         <div className="flex items-center space-x-4">
@@ -445,9 +458,6 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
         <div className="flex items-center space-x-2">
           <Button variant="ghost" onClick={saveDraft} className="text-sm">
             Reprendre plus tard
-          </Button>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="h-6 w-6" />
           </Button>
         </div>
       </div>
