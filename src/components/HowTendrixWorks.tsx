@@ -7,18 +7,18 @@ const HowTendrixWorks = () => {
   const steps = [
     {
       icon: Search,
-      title: "Discover opportunities",
-      description: "Tendrix centralizes all tenders relevant to your business."
+      title: "Découvrez les opportunités",
+      description: "Tendrix centralise tous les appels d'offres pertinents pour votre entreprise."
     },
     {
       icon: MousePointer, 
-      title: "Request a response",
-      description: "In one click, delegate the answer to our business experts."
+      title: "Demandez une réponse",
+      description: "En un clic, déléguez la réponse à nos experts métiers."
     },
     {
       icon: TrendingUp,
-      title: "Win more contracts",
-      description: "Get professional responses that increase your chances of success."
+      title: "Remportez plus de marchés",
+      description: "Obtenez des réponses professionnelles qui augmentent vos chances de succès."
     }
   ];
 
@@ -32,10 +32,10 @@ const HowTendrixWorks = () => {
           {/* Header */}
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
-              How Tendrix works in 3 simple steps
+              Comment fonctionne Tendrix en 3 étapes simples
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              From discovery to results, we simplify the entire process.
+              De la découverte aux résultats, nous simplifions tout le processus.
             </p>
           </div>
           
@@ -59,7 +59,7 @@ const HowTendrixWorks = () => {
                     
                     {/* Step Number */}
                     <div className="text-sm font-semibold text-primary mb-2">
-                      Step {index + 1}
+                      Étape {index + 1}
                     </div>
                     
                     {/* Title */}
@@ -75,9 +75,9 @@ const HowTendrixWorks = () => {
 
                   {/* Arrow (hidden on last step and mobile) */}
                   {index < steps.length - 1 && (
-                    <div className="hidden md:block absolute top-1/2 -right-6 lg:-right-8 transform -translate-y-1/2 z-10">
+                    <div className="hidden md:block absolute top-1/2 -right-6 lg:-right-8 transform -translate-y-1/2 z-10 text-center">
                       <svg 
-                        className="w-8 h-8 text-primary/60" 
+                        className="w-8 h-8 text-primary/60 mx-auto" 
                         fill="none" 
                         stroke="currentColor" 
                         viewBox="0 0 24 24"
@@ -89,6 +89,9 @@ const HowTendrixWorks = () => {
                           d="M17 8l4 4m0 0l-4 4m4-4H3" 
                         />
                       </svg>
+                      {index === 1 && (
+                        <div className="text-xs font-semibold text-primary mt-1">-4h</div>
+                      )}
                     </div>
                   )}
 
