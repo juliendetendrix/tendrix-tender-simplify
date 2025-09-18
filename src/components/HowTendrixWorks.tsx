@@ -12,8 +12,21 @@ const HowTendrixWorks = () => {
     },
     {
       icon: () => (
-        <div className="bg-primary/10 px-4 py-2 rounded-xl text-primary text-[11px] font-semibold font-mono tracking-wide animate-pulse hover:scale-95 transition-transform duration-200 shadow-sm active:shadow-none cursor-pointer">
-          Demander une réponse
+        <div className="relative">
+          <div className="bg-primary/10 px-4 py-2 rounded-xl text-primary text-[11px] font-semibold font-mono tracking-wide">
+            Demander une réponse
+          </div>
+          {/* Effet de clic avec doigt */}
+          <div className="absolute -top-2 -right-2">
+            <div className="relative">
+              {/* Rayons de clic */}
+              <div className="absolute inset-0 animate-ping">
+                <div className="w-2 h-2 bg-primary/30 rounded-full"></div>
+              </div>
+              {/* Doigt qui clique */}
+              <div className="text-primary text-xs">👆</div>
+            </div>
+          </div>
         </div>
       ),
       title: "Demandez une réponse",
