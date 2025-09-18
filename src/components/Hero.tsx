@@ -28,17 +28,12 @@ const Hero = () => {
             Trouvez vos appels d'offres et déclenchez une réponse en quelques secondes.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in" style={{animationDelay: '0.6s'}}>
+          <div className="flex justify-center mb-12 animate-fade-in" style={{animationDelay: '0.6s'}}>
             <button 
               className="btn-primary text-lg px-8 py-4"
               onClick={openQuestionnaire}
             >
               Découvrez les marchés qui correspondent à votre savoir-faire
-            </button>
-            <button 
-              className="btn-outline text-lg px-8 py-4"
-            >
-              Rejoindre la bêta privée
             </button>
           </div>
 
