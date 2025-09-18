@@ -1,13 +1,10 @@
 import premierMockup from '@/assets/premier-mockup.png';
-import BetaQuestionnaire from '@/components/BetaQuestionnaire';
 import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
 
 const Hero = () => {
-  const { isQuestionnaireOpen, openQuestionnaire, closeQuestionnaire } = useBetaQuestionnaire();
+  const { openQuestionnaire } = useBetaQuestionnaire();
 
   return (
-    <>
-      <BetaQuestionnaire isOpen={isQuestionnaireOpen} onClose={closeQuestionnaire} />
     <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 bg-background overflow-hidden">
       {/* Organic Background Shapes */}
       <div className="absolute inset-0 opacity-10">
@@ -70,7 +67,6 @@ const Hero = () => {
         </div>
       </div>
     </section>
-    </>
   );
 };
 
