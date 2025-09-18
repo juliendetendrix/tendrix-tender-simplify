@@ -89,8 +89,13 @@ const HowTendrixWorks = () => {
                           d="M17 8l4 4m0 0l-4 4m4-4H3" 
                         />
                       </svg>
+                      {index === 0 && (
+                        <div className="bg-orange-500 text-white px-2 py-1 rounded-lg text-xs font-medium mt-2 whitespace-nowrap">
+                          Cliquez sur la notification
+                        </div>
+                      )}
                        {index === 1 && (
-                         <div className="inline-flex items-center justify-center w-8 h-8 bg-secondary rounded-full text-xs font-bold text-white mt-1">
+                         <div className="inline-flex items-center justify-center w-8 h-8 bg-orange-500 rounded-full text-xs font-bold text-white mt-1">
                            -4h
                          </div>
                        )}
