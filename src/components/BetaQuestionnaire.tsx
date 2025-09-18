@@ -439,11 +439,9 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
             </Button>
           )}
         </div>
-        <div className="flex items-center space-x-2">
-          <Button variant="ghost" onClick={saveDraft} className="text-sm">
-            Reprendre plus tard
-          </Button>
-        </div>
+        <Button variant="ghost" onClick={saveDraft} className="text-sm">
+          Reprendre plus tard
+        </Button>
       </div>
 
       {/* Progress bar */}
@@ -451,20 +449,11 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
         <Progress value={progress} className="h-2" />
       </div>
 
-      {/* Question indicator and close button */}
+      {/* Question indicator */}
       <div className="flex justify-between items-center px-4 md:px-6 py-3">
         <span className="text-sm text-muted-foreground">
           Question {currentStep + 1} sur {totalSteps}
         </span>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={onClose}
-          className="h-8 w-8 rounded-full hover:bg-muted transition-all duration-200"
-          aria-label="Fermer le questionnaire"
-        >
-          <X className="h-4 w-4" />
-        </Button>
       </div>
 
       {/* Content */}
