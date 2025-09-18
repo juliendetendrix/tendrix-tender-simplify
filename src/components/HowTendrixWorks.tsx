@@ -90,7 +90,7 @@ const HowTendrixWorks = () => {
                         />
                       </svg>
                       {index === 0 && (
-                        <div className="bg-orange-500 text-white px-2 py-1 rounded-lg text-xs font-medium mt-2 whitespace-nowrap">
+                        <div className="bg-[#ff6b35] text-white px-1.5 py-0.5 rounded text-[10px] font-medium mt-1 whitespace-nowrap">
                           Cliquez sur la notification
                         </div>
                       )}
