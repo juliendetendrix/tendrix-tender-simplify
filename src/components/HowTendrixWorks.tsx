@@ -1,4 +1,4 @@
-import { Search, MessageSquare, TrendingUp, Hand } from 'lucide-react';
+import { Bell, MessageSquare, TrendingUp, Hand } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const HowTendrixWorks = () => {
@@ -6,7 +6,7 @@ const HowTendrixWorks = () => {
 
   const steps = [
     {
-      icon: Search,
+      icon: Bell,
       title: "Recevez des opportunités",
       description: "Tendrix centralise et vous envois tous les appels d'offres pertinents pour votre entreprise."
     },
