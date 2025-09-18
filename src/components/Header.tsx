@@ -61,7 +61,7 @@ const Header = () => {
           {/* CTA Button */}
           <div className="hidden md:block">
             <button onClick={openQuestionnaire} className="btn-primary">
-              Rejoindre la liste d'attente
+              Rejoindre la bêta privée
             </button>
           </div>
 
@@ -94,7 +94,7 @@ const Header = () => {
               ))}
               <div className="pt-4">
                 <button onClick={openQuestionnaire} className="btn-primary w-full">
-                  Rejoindre la liste d'attente
+                  Rejoindre la bêta privée
                 </button>
               </div>
             </nav>

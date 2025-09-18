@@ -34,7 +34,7 @@ const Callout = () => {
             }`} 
             style={{animationDelay: '0.4s'}}
           >
-            Rejoindre la liste d'attente
+            Rejoindre la bêta privée
           </button>
         </div>
       </div>
