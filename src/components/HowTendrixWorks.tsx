@@ -18,17 +18,7 @@ const HowTendrixWorks = () => {
           </div>
           {/* Effet de clic avec icône main */}
           <div className="absolute bottom-0 left-0 transform translate-x-1 translate-y-1">
-            <div className="relative">
-              {/* Rayons de clic */}
-              <div className="absolute -top-1 -left-1 animate-ping">
-                <div className="w-4 h-4 bg-primary/20 rounded-full"></div>
-              </div>
-              <div className="absolute -top-0.5 -left-0.5 animate-ping" style={{ animationDelay: '0.2s' }}>
-                <div className="w-3 h-3 bg-primary/30 rounded-full"></div>
-              </div>
-              {/* Icône main qui clique */}
-              <Hand className="w-3 h-3 text-primary/70" />
-            </div>
+            <Hand className="w-3 h-3 text-primary/70" />
           </div>
         </div>
       ),
