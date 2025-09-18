@@ -14,66 +14,7 @@ export type Database = {
   }
   public: {
     Tables: {
-      Questionnaire: {
-        Row: {
-          company: string | null
-          created_at: string
-          email: string | null
-          id: number
-          phone: string | null
-          sector: string | null
-          size: string | null
-        }
-        Insert: {
-          company?: string | null
-          created_at?: string
-          email?: string | null
-          id?: number
-          phone?: string | null
-          sector?: string | null
-          size?: string | null
-        }
-        Update: {
-          company?: string | null
-          created_at?: string
-          email?: string | null
-          id?: number
-          phone?: string | null
-          sector?: string | null
-          size?: string | null
-        }
-        Relationships: []
-      }
-      sales_funnel_responses: {
-        Row: {
-          company_name: string
-          contact: string
-          created_at: string
-          employee_count: string
-          id: string
-          sector: string
-          tender_experience: string
-        }
-        Insert: {
-          company_name: string
-          contact: string
-          created_at?: string
-          employee_count: string
-          id?: string
-          sector: string
-          tender_experience: string
-        }
-        Update: {
-          company_name?: string
-          contact?: string
-          created_at?: string
-          employee_count?: string
-          id?: string
-          sector?: string
-          tender_experience?: string
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
