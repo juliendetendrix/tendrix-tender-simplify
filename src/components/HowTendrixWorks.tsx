@@ -105,7 +105,7 @@ const HowTendrixWorks = () => {
                       
                       {index === 0 && (
                         <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
-                          <div className="bg-muted/80 text-muted-foreground px-2 py-1 rounded-md text-[10px] font-medium shadow-sm border text-center">
+                          <div className="bg-muted/80 text-muted-foreground px-2 py-1 rounded-md text-[10px] font-medium shadow-sm border text-center rotate-2">
                             Cliquez sur la<br />notification
                           </div>
                         </div>
