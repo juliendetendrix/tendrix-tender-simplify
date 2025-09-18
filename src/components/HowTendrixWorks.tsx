@@ -23,7 +23,7 @@ const HowTendrixWorks = () => {
         </div>
       ),
       title: "Demandez une réponse",
-      description: "En un clic, déléguez la réponse à nos experts métiers."
+      description: "Prenez connaissance du résumé de l'appel d'offre, Prix, Localisation, Budget, Livrable... Et demandez ou non d'entamer la réponse à l'Appel d'offre"
     },
     {
       icon: TrendingUp,
@@ -44,9 +44,6 @@ const HowTendrixWorks = () => {
             <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
               Comment fonctionne Tendrix en 3 étapes simples
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              De la découverte aux résultats, nous simplifions tout le processus.
-            </p>
           </div>
           
           {/* Process Steps */}
