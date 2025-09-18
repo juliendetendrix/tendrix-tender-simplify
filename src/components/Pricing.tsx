@@ -1,8 +1,10 @@
 import { Check } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
 
 const Pricing = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation();
+  const { openQuestionnaire } = useBetaQuestionnaire();
   
   const betaFeatures = [
     "Jusqu'à 3 réponses par mois pendant toute la phase bêta",
@@ -63,7 +65,7 @@ const Pricing = () => {
 
             <button
               className="btn-primary w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300"
-              onClick={() => window.location.href = '/beta-offer'}
+              onClick={openQuestionnaire}
             >
               Intégrer la version Bêta
             </button>
