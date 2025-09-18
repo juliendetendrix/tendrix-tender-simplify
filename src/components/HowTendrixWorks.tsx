@@ -1,4 +1,4 @@
-import { Search, MessageSquare, TrendingUp } from 'lucide-react';
+import { Search, MessageSquare, TrendingUp, Hand } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const HowTendrixWorks = () => {
@@ -16,15 +16,18 @@ const HowTendrixWorks = () => {
           <div className="bg-primary/10 px-4 py-2 rounded-xl text-primary text-[11px] font-semibold font-mono tracking-wide">
             Demander une réponse
           </div>
-          {/* Effet de clic avec doigt */}
-          <div className="absolute -top-2 -right-2">
+          {/* Effet de clic avec icône main */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div className="relative">
               {/* Rayons de clic */}
-              <div className="absolute inset-0 animate-ping">
-                <div className="w-2 h-2 bg-primary/30 rounded-full"></div>
+              <div className="absolute -top-1 -left-1 animate-ping">
+                <div className="w-4 h-4 bg-primary/20 rounded-full"></div>
               </div>
-              {/* Doigt qui clique */}
-              <div className="text-primary text-xs">👆</div>
+              <div className="absolute -top-0.5 -left-0.5 animate-ping" style={{ animationDelay: '0.2s' }}>
+                <div className="w-3 h-3 bg-primary/30 rounded-full"></div>
+              </div>
+              {/* Icône main qui clique */}
+              <Hand className="w-3 h-3 text-primary/70" />
             </div>
           </div>
         </div>
