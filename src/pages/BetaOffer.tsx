@@ -8,7 +8,7 @@ const BetaOffer = () => {
     "Jusqu'à 3 réponses par mois pendant toute la phase beta",
     "Support prioritaire pendant toute la phase bêta",
     "Modèles de réponse personnalisés (Tendrix Winning Deck)",
-    "Analyses de succès pour vos réponses",
+    "onboarding personnalisé",
     "1 chargé d'affaire réferent dédié à votre entereprise"
   ];
 
