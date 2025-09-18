@@ -111,13 +111,13 @@ const HowTendrixWorks = () => {
                         </div>
                       )}
                        
-                      {index === 1 && (
-                        <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
-                          <div className="bg-muted/80 text-muted-foreground px-2 py-1 rounded-full text-[11px] font-medium border shadow-sm">
-                            -4h
-                          </div>
-                        </div>
-                      )}
+                       {index === 1 && (
+                         <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
+                           <div className="bg-muted/80 text-muted-foreground px-2 py-1 rounded-md text-[10px] font-medium border shadow-sm text-center">
+                             -4h de durée de réponse<br />pour certains AO
+                           </div>
+                         </div>
+                       )}
                     </div>
                   )}
 
