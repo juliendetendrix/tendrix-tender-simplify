@@ -12,7 +12,7 @@ const HowTendrixWorks = () => {
     },
     {
       icon: () => (
-        <div className="bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-xs font-medium shadow-sm">
+        <div className="bg-primary text-primary-foreground px-2 py-1 rounded text-[10px] font-medium">
           Demander une réponse
         </div>
       ), 
@@ -56,13 +56,15 @@ const HowTendrixWorks = () => {
                     
                     {/* Icon */}
                     <div className="mb-6 flex justify-center">
-                      {typeof IconComponent === 'function' && index === 1 ? (
-                        <IconComponent />
-                      ) : (
-                        <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
+                      <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
+                        {index === 1 ? (
+                          <div className="bg-primary text-primary-foreground px-2 py-1 rounded text-[10px] font-medium">
+                            Demander une réponse
+                          </div>
+                        ) : (
                           <IconComponent className="h-8 w-8 text-primary" />
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
                     
                     {/* Step Number */}
