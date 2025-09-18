@@ -25,7 +25,7 @@ const Hero = () => {
           </h1>
           
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in" style={{animationDelay: '0.4s'}}>
-            Trouvez vos appels d'offres et obtenez une réponse en moins de 4 h.
+            Trouvez vos appels d'offres et déclenchez une réponse en quelques secondes.
           </p>
 
           <div className="flex justify-center mb-12 animate-fade-in" style={{animationDelay: '0.6s'}}>
@@ -33,7 +33,7 @@ const Hero = () => {
               className="btn-primary text-lg px-8 py-4"
               onClick={openQuestionnaire}
             >
-              Découvrir les marchés qui correspondent à votre savoir-faire
+              Découvrez les marchés qui correspondent à votre savoir-faire
             </button>
           </div>
 

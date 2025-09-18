@@ -9,7 +9,7 @@ const BetaOffer = () => {
     "Support prioritaire pendant toute la phase bêta",
     "Modèles de réponse personnalisés (Tendrix Winning Deck)",
     "Onboarding personnalisé",
-    "Réponse en moins de 4 h pour des appels d'offres fournitures",
+    "Réponse en moins de 4h pour des AO fournitures",
     "1 chargé d'affaires référent dédié à votre entreprise"
   ];
 
@@ -30,7 +30,7 @@ const BetaOffer = () => {
           <div className="max-w-3xl mx-auto">
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
               Nous sommes au tout début de l'aventure Tendrix et en pleine phase de développement de notre solution.
-              Pour construire cet outil avec vous, nous lançons une version bêta exceptionnelle, réservée à un nombre limité de PME.
+              Pour construire cet outil avec vous, nous lançons une version Bêta exceptionnelle, réservée à un nombre limité de PME.
               Cet accès est proposé à un prix symbolique unique de 5 €, bien en dessous de la valeur réelle de ce service, 
               afin de remercier nos premières entreprises partenaires et d'avancer ensemble.
             </p>
@@ -44,10 +44,10 @@ const BetaOffer = () => {
               {/* Titre */}
               <div className="text-center">
                 <h2 className="text-3xl font-bold text-foreground mb-4">
-                  Version bêta Tendrix
+                  Version Bêta Tendrix
                 </h2>
                 <p className="text-muted-foreground text-base leading-relaxed">
-                  Pour les premières PME qui souhaitent tester l'outil avant la version alpha.
+                  Pour les premières PME qui souhaitent tester l'outil avant la version Alpha.
                 </p>
               </div>
               
@@ -87,7 +87,7 @@ const BetaOffer = () => {
                     rel="noopener noreferrer"
                     className="flex items-center justify-center"
                   >
-                    Intégrer la version bêta
+                    Intégrer la version Bêta
                   </a>
                 </Button>
               </div>
@@ -100,8 +100,8 @@ const BetaOffer = () => {
           <div className="max-w-2xl mx-auto">
             <p className="text-lg text-muted-foreground leading-relaxed">
               Une offre exceptionnelle, disponible uniquement pendant la phase de développement. 
-              Les premières entreprises qui rejoignent la bêta bénéficient d'une attention particulière 
-              et sont nos partenaires privilégiés pour la suite.
+              Les premières entreprises qui rejoignent la Bêta bénéficieront d'une attention particulière 
+              et seront nos partenaires privilégiés pour la suite.
             </p>
           </div>
         </div>

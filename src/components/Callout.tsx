@@ -18,7 +18,7 @@ const Callout = () => {
           <h2 className={`text-3xl lg:text-5xl font-bold text-primary-foreground mb-6 transition-all duration-800 ${
             isVisible ? 'animate-fade-in-left' : 'opacity-0 -translate-x-8'
           }`}>
-            Concentrez-vous sur votre savoir-faire, nous nous occupons du reste
+            Concentrez-vous sur votre savoir-faire, on s'occupe du reste
           </h2>
           
           <p className={`text-xl text-primary-foreground/80 mb-8 max-w-2xl mx-auto transition-all duration-800 ${

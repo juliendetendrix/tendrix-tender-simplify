@@ -7,12 +7,12 @@ const Benefits = () => {
     {
       icon: Clock,
       title: 'Simplicité',
-      description: 'Finies les plateformes d\'appels d\'offres complexes. Tout ce dont vous avez besoin dans une interface intuitive.',
+      description: 'Fini les plateformes d\'appels d\'offres complexes. Tout ce dont vous avez besoin dans une interface intuitive.',
     },
     {
       icon: Target,
       title: 'Rapidité',
-      description: 'Obtenez des réponses professionnelles en moins de 4 h, pas en semaines. Gagnez du temps et remportez plus de marchés.',
+      description: 'Obtenez des réponses professionnelles en quelques heures, pas en semaines. Gagnez du temps et remportez plus.',
     },
     {
       icon: Users,
