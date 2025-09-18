@@ -7,7 +7,7 @@ const HowTendrixWorks = () => {
   const steps = [
     {
       icon: Search,
-      title: "Découvrez les opportunités",
+      title: "Recevez les opportunités",
       description: "Tendrix centralise tous les appels d'offres pertinents pour votre entreprise."
     },
     {
@@ -89,9 +89,11 @@ const HowTendrixWorks = () => {
                           d="M17 8l4 4m0 0l-4 4m4-4H3" 
                         />
                       </svg>
-                      {index === 1 && (
-                        <div className="text-xs font-semibold text-primary mt-1">-4h</div>
-                      )}
+                       {index === 1 && (
+                         <div className="inline-flex items-center justify-center w-8 h-8 bg-secondary rounded-full text-xs font-bold text-white mt-1">
+                           -4h
+                         </div>
+                       )}
                     </div>
                   )}
 
