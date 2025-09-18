@@ -19,9 +19,14 @@ const BetaOffer = () => {
         
         {/* Bloc Intro */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Merci pour vos réponses !
           </h1>
+          <div className="mb-8">
+            <p className="text-lg font-semibold text-primary">
+              Projet innovant incubé à Station F
+            </p>
+          </div>
           <div className="max-w-3xl mx-auto">
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
               Nous sommes au tout début de l'aventure Tendrix et en pleine phase de développement de notre solution.
