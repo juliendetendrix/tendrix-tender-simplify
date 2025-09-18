@@ -452,7 +452,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
       </div>
 
       {/* Question indicator and close button */}
-      <div className="flex justify-between items-center px-4 md:px-6 py-3 border-b border-border/50">
+      <div className="flex justify-between items-center px-4 md:px-6 py-3">
         <span className="text-sm text-muted-foreground">
           Question {currentStep + 1} sur {totalSteps}
         </span>
