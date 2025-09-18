@@ -439,9 +439,8 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
             </Button>
           )}
         </div>
-        <Button variant="ghost" onClick={saveDraft} className="text-sm">
-          Reprendre plus tard
-        </Button>
+        <div className="flex items-center space-x-2">
+        </div>
       </div>
 
       {/* Progress bar */}
@@ -454,6 +453,9 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
         <span className="text-sm text-muted-foreground">
           Question {currentStep + 1} sur {totalSteps}
         </span>
+        <Button variant="ghost" onClick={saveDraft} className="text-sm">
+          Reprendre plus tard
+        </Button>
       </div>
 
       {/* Content */}
