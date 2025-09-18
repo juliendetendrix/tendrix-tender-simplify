@@ -84,6 +84,15 @@ const HowTendrixWorks = () => {
                     </p>
                   </div>
 
+                  {/* Texte spécial pour l'étape 2 */}
+                  {index === 1 && (
+                    <div className="absolute -top-2 -right-2">
+                      <div className="bg-muted/80 text-muted-foreground px-2 py-1 rounded-md text-[10px] font-medium border shadow-sm text-center">
+                        -4h de durée de réponse<br />pour certains AO
+                      </div>
+                    </div>
+                  )}
+
                   {/* Arrow (hidden on last step and mobile) */}
                   {index < steps.length - 1 && (
                     <div className="hidden md:block absolute top-1/2 -right-6 lg:-right-8 transform -translate-y-1/2 z-10">
@@ -111,13 +120,6 @@ const HowTendrixWorks = () => {
                         </div>
                       )}
                        
-                       {index === 1 && (
-                         <div className="absolute -top-16 -right-4">
-                           <div className="bg-muted/80 text-muted-foreground px-2 py-1 rounded-md text-[10px] font-medium border shadow-sm text-center">
-                             -4h de durée de réponse<br />pour certains AO
-                           </div>
-                         </div>
-                       )}
                     </div>
                   )}
 
