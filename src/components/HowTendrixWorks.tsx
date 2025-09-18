@@ -75,30 +75,38 @@ const HowTendrixWorks = () => {
 
                   {/* Arrow (hidden on last step and mobile) */}
                   {index < steps.length - 1 && (
-                    <div className="hidden md:block absolute top-1/2 -right-6 lg:-right-8 transform -translate-y-1/2 z-10 text-center">
-                      <svg 
-                        className="w-8 h-8 text-primary/60 mx-auto" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path 
-                          strokeLinecap="round" 
-                          strokeLinejoin="round" 
-                          strokeWidth={2} 
-                          d="M17 8l4 4m0 0l-4 4m4-4H3" 
-                        />
-                      </svg>
+                    <div className="hidden md:block absolute top-1/2 -right-6 lg:-right-8 transform -translate-y-1/2 z-10">
+                      <div className="text-center">
+                        <svg 
+                          className="w-8 h-8 text-primary/60 mx-auto" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            strokeWidth={2} 
+                            d="M17 8l4 4m0 0l-4 4m4-4H3" 
+                          />
+                        </svg>
+                      </div>
+                      
                       {index === 0 && (
-                        <div className="bg-[#ff6b35] text-white px-1.5 py-0.5 rounded text-[10px] font-medium mt-1 whitespace-nowrap">
-                          Cliquez sur la notification
+                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+                          <div className="bg-[#ff6b35] text-white px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap">
+                            Cliquez sur la<br />notification
+                          </div>
                         </div>
                       )}
-                       {index === 1 && (
-                         <div className="inline-flex items-center justify-center w-8 h-8 bg-orange-500 rounded-full text-xs font-bold text-white mt-1">
-                           -4h
-                         </div>
-                       )}
+                       
+                      {index === 1 && (
+                        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
+                          <div className="inline-flex items-center justify-center w-8 h-8 bg-[#ff6b35] rounded-full text-xs font-bold text-white">
+                            -4h
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
