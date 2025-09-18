@@ -78,7 +78,7 @@ const BetaOffer = () => {
                 <Button 
                   variant="outline"
                   size="lg"
-                  className="w-full h-14 text-lg font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-2xl"
+                  className="w-full h-14 text-lg font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-2xl transition-transform duration-200 hover:scale-105"
                   asChild
                 >
                   <a 
