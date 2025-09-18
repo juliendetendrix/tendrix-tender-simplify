@@ -11,7 +11,7 @@ const Pricing = () => {
     "Support prioritaire pendant toute la phase bêta",
     "Modèles de réponse personnalisés (Tendrix Winning Deck)",
     "Onboarding personnalisé",
-    "Réponse en moins de 4h pour des AO fournitures",
+    "Réponse en moins de 4 h pour des appels d'offres fournitures",
     "1 chargé d'affaires référent dédié à votre entreprise"
   ];
 
@@ -20,10 +20,10 @@ const Pricing = () => {
       <div className="container-max">
         <div className={`text-center mb-16 transition-all duration-800 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
-            Offre Bêta Exceptionnelle
+            Offre bêta exceptionnelle
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Rejoignez les premières PME qui testent Tendrix avant la version Alpha
+            Rejoignez les premières PME qui testent Tendrix avant la version alpha
           </p>
         </div>
 
@@ -39,10 +39,10 @@ const Pricing = () => {
             
             <div className="text-center mb-8">
               <h3 className="text-2xl font-bold text-foreground mb-2">
-                Version Bêta Tendrix
+                Version bêta Tendrix
               </h3>
               <p className="text-muted-foreground mb-4">
-                Pour les premières PME qui souhaitent tester l'outil avant la version Alpha
+                Pour les premières PME qui souhaitent tester l'outil avant la version alpha
               </p>
               <div className="flex items-baseline justify-center">
                 <span className="text-4xl font-bold text-foreground">
@@ -67,7 +67,7 @@ const Pricing = () => {
               className="btn-primary w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300"
               onClick={openQuestionnaire}
             >
-              Intégrer la version Bêta
+              Intégrer la version bêta
             </button>
           </div>
         </div>

@@ -13,11 +13,11 @@ const FAQ = () => {
     },
     {
       question: 'À quelle vitesse puis-je obtenir une réponse d\'appel d\'offres ?',
-      answer: 'La plupart des réponses d\'appels d\'offres sont livrées dans les 24-48 heures. Pour les échéances urgentes, nous offrons un service express avec des réponses livrées dans les 6-12 heures moyennant des frais supplémentaires.',
+      answer: 'La plupart des réponses d\'appels d\'offres sont livrées dans les 24 h à 48 h. Pour les échéances urgentes, nous proposons un service express avec des réponses livrées en moins de 4 h moyennant des frais supplémentaires.',
     },
     {
-      question: 'Qu\'est-ce qui rend vos réponses d\'appels d\'offres différentes ?',
-      answer: 'Nos réponses sont élaborées par des spécialistes expérimentés des appels d\'offres qui comprennent à la fois le processus de marchés publics et votre secteur spécifique. Chaque réponse est adaptée à votre entreprise et optimisée pour les exigences spécifiques de l\'appel d\'offres.',
+      question: 'Qu\'est-ce qui différencie vos réponses d\'appels d\'offres ?',
+      answer: 'Nos réponses sont élaborées par des chargés d\'affaires expérimentés qui comprennent à la fois le processus de marchés publics et votre secteur spécifique. Chaque réponse est adaptée à votre entreprise et optimisée pour les exigences spécifiques de l\'appel d\'offres.',
     },
     {
       question: 'Puis-je personnaliser les réponses d\'appels d\'offres ?',
@@ -25,7 +25,7 @@ const FAQ = () => {
     },
     {
       question: 'Que faire si j\'ai besoin d\'aide avec le processus de soumission d\'appel d\'offres ?',
-      answer: 'Notre équipe fournit un support complet tout au long du processus, de la découverte initiale de l\'appel d\'offres à la soumission finale. Les clients Pro et Enterprise bénéficient de gestionnaires de comptes dédiés pour une assistance personnalisée.',
+      answer: 'Notre équipe vous accompagne intégralement tout au long du processus, de la découverte initiale de l\'appel d\'offres à la soumission finale. Vous bénéficiez d\'un chargé d\'affaires référent dédié à votre entreprise pour un accompagnement personnalisé.',
     },
   ];
 

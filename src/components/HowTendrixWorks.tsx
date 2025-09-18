@@ -8,7 +8,7 @@ const HowTendrixWorks = () => {
     {
       icon: Bell,
       title: "Recevez des opportunités",
-      description: "Tendrix centralise et vous envois tous les appels d'offres pertinents pour votre entreprise."
+      description: "Tendrix centralise et vous envoie tous les appels d'offres pertinents pour votre entreprise."
     },
     {
       icon: () => (
@@ -23,7 +23,7 @@ const HowTendrixWorks = () => {
         </div>
       ),
       title: "Demandez une réponse",
-      description: "Prenez connaissance du résumé de l'appel d'offre, Prix, Localisation, Budget, Livrable... Et demandez ou non d'entamer la réponse à l'Appel d'offre"
+      description: "Prenez connaissance du résumé de l'appel d'offres : prix, localisation, budget, livrables... Et demandez ou non d'entamer la réponse à l'appel d'offres."
     },
     {
       icon: TrendingUp,
@@ -42,7 +42,7 @@ const HowTendrixWorks = () => {
           {/* Header */}
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
-              Comment fonctionne Tendrix en 3 étapes simples
+              Comment Tendrix fonctionne en 3 étapes simples
             </h2>
           </div>
           
@@ -88,7 +88,7 @@ const HowTendrixWorks = () => {
                   {index === 1 && (
                     <div className="absolute top-0 -right-20 z-20">
                       <div className="bg-muted/80 text-muted-foreground px-2 py-1 rounded-md text-[10px] font-medium border shadow-sm text-center rotate-6">
-                        -4h pour répondre à certains AO
+                        - 4 h pour répondre à certains appels d'offres
                       </div>
                     </div>
                   )}
