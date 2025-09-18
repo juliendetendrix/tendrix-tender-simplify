@@ -44,6 +44,36 @@ export type Database = {
         }
         Relationships: []
       }
+      sales_funnel_responses: {
+        Row: {
+          company_name: string
+          contact: string
+          created_at: string
+          employee_count: string
+          id: string
+          sector: string
+          tender_experience: string
+        }
+        Insert: {
+          company_name: string
+          contact: string
+          created_at?: string
+          employee_count: string
+          id?: string
+          sector: string
+          tender_experience: string
+        }
+        Update: {
+          company_name?: string
+          contact?: string
+          created_at?: string
+          employee_count?: string
+          id?: string
+          sector?: string
+          tender_experience?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

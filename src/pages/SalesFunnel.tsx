@@ -51,13 +51,13 @@ const SalesFunnel = () => {
   const handleSubmit = async () => {
     try {
       const { error } = await supabase
-        .from('sales_funnel_responses')
+        .from('Questionnaire')
         .insert([{
-          company_name: formData.companyName,
-          employee_count: formData.employeeCount,
+          company: formData.companyName,
+          size: formData.employeeCount,
           sector: formData.sector === 'Autre' ? formData.sectorOther : formData.sector,
-          tender_experience: formData.tenderExperience,
-          contact: formData.contact
+          email: formData.contact.includes('@') ? formData.contact : null,
+          phone: !formData.contact.includes('@') ? formData.contact : null
         }]);
 
       if (error) throw error;
