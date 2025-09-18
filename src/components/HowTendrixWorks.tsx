@@ -12,7 +12,7 @@ const HowTendrixWorks = () => {
     },
     {
       icon: () => (
-        <div className="bg-primary/10 px-4 py-2 rounded-xl text-primary text-[11px] font-semibold font-mono tracking-wide">
+        <div className="bg-primary/10 px-4 py-2 rounded-xl text-primary text-[11px] font-semibold font-mono tracking-wide animate-pulse hover:scale-95 transition-transform duration-200 shadow-sm active:shadow-none cursor-pointer">
           Demander une réponse
         </div>
       ),
