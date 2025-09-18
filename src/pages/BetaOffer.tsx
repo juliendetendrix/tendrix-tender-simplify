@@ -5,7 +5,7 @@ import { Check } from 'lucide-react';
 
 const BetaOffer = () => {
   const features = [
-    "Jusqu'à 5 réponses d'appels d'offres par mois",
+    "Jusqu'à 3 réponses par mois pendant toute la phase beta",
     "Support prioritaire pendant toute la phase bêta",
     "Modèles de réponse personnalisés (Tendrix Winning Deck)",
     "Analyses de succès pour vos réponses",
