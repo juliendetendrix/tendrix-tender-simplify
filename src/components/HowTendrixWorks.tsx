@@ -93,7 +93,7 @@ const HowTendrixWorks = () => {
                       </div>
                       
                       {index === 0 && (
-                        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
+                        <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
                           <div className="bg-muted/80 text-muted-foreground px-2 py-1 rounded-md text-[10px] font-medium shadow-sm border text-center">
                             Cliquez sur la<br />notification
                           </div>
@@ -101,7 +101,7 @@ const HowTendrixWorks = () => {
                       )}
                        
                       {index === 1 && (
-                        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
+                        <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
                           <div className="bg-muted/80 text-muted-foreground px-2 py-1 rounded-full text-[11px] font-medium border shadow-sm">
                             -4h
                           </div>
