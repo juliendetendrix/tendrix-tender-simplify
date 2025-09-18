@@ -4,6 +4,7 @@ import HowItWorks from '@/components/HowItWorks';
 import GlobalBetaQuestionnaire from '@/components/GlobalBetaQuestionnaire';
 
 import TenderPreview from '@/components/TenderPreview';
+import HowTendrixWorks from '@/components/HowTendrixWorks';
 import CentralizedPlatform from '@/components/CentralizedPlatform';
 import Callout from '@/components/Callout';
 import Testimonials from '@/components/Testimonials';
@@ -20,6 +21,7 @@ const Index = () => {
         <Hero />
         <HowItWorks />
         <TenderPreview />
+        <HowTendrixWorks />
         <CentralizedPlatform />
         <Callout />
         <Testimonials />
