@@ -19,7 +19,7 @@ const Header = () => {
 
   const navLinks = [
     { label: 'Comment ça marche', href: '#how-it-works' },
-    { label: 'Tarification', href: '#pricing' },
+    { label: 'Tarifs', href: '#pricing' },
     { label: 'Contact', href: '#contact' },
   ];
 
