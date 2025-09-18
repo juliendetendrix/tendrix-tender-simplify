@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
 import logo from '@/assets/tendrix-logo.png';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { openQuestionnaire } = useBetaQuestionnaire();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,7 +60,7 @@ const Header = () => {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <button className="btn-primary">
+            <button onClick={openQuestionnaire} className="btn-primary">
               Rejoindre la liste d'attente
             </button>
           </div>
@@ -91,7 +93,7 @@ const Header = () => {
                 </a>
               ))}
               <div className="pt-4">
-                <button className="btn-primary w-full">
+                <button onClick={openQuestionnaire} className="btn-primary w-full">
                   Rejoindre la liste d'attente
                 </button>
               </div>

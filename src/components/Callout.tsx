@@ -1,7 +1,9 @@
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
 
 const Callout = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation();
+  const { openQuestionnaire } = useBetaQuestionnaire();
   
   return (
     <section ref={sectionRef} className="section-padding bg-primary relative overflow-hidden">
@@ -26,6 +28,7 @@ const Callout = () => {
           </p>
           
           <button 
+            onClick={openQuestionnaire}
             className={`btn-secondary text-lg px-8 py-4 ${
               isVisible ? 'animate-bounce-in' : 'opacity-0 translate-y-8'
             }`} 

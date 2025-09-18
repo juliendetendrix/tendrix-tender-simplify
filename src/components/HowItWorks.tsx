@@ -2,6 +2,7 @@ import dashboardMockup from '@/assets/dashboard-mockup.jpg';
 import franceNetworkMap from '@/assets/france-network-new.png';
 import notificationIllustration from '@/assets/notification-illustration.png';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
 
 const HowItWorks = () => {
   const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
@@ -9,6 +10,7 @@ const HowItWorks = () => {
   const { ref: block2Ref, isVisible: v2 } = useScrollAnimation();
   const { ref: block3Ref, isVisible: v3 } = useScrollAnimation();
   const { ref: ctaRef, isVisible: vCta } = useScrollAnimation();
+  const { openQuestionnaire } = useBetaQuestionnaire();
   return (
     <section id="how-it-works" className="section-padding bg-primary relative z-40 overflow-visible">
       {/* Floating Title - positioned to straddle sections */}
@@ -124,9 +126,12 @@ const HowItWorks = () => {
 
         {/* CTA Button */}
         <div ref={ctaRef} className="text-center mt-12">
-          <button className={`btn-secondary transition-all duration-800 ${
-            vCta ? 'animate-bounce-in' : 'opacity-0 translate-y-8'
-          }`}>
+          <button 
+            onClick={openQuestionnaire}
+            className={`btn-secondary transition-all duration-800 ${
+              vCta ? 'animate-bounce-in' : 'opacity-0 translate-y-8'
+            }`}
+          >
             Commencer votre première réponse rapide
           </button>
         </div>

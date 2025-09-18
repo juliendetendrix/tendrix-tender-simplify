@@ -1,9 +1,10 @@
 import { Calendar, Building, Euro } from 'lucide-react';
-
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
 
 const TenderPreview = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation();
+  const { openQuestionnaire } = useBetaQuestionnaire();
   
   const tenders = [
     {
@@ -75,7 +76,10 @@ const TenderPreview = () => {
                 {tender.summary}
               </p>
               
-              <button className="btn-secondary w-full group-hover:bg-secondary-hover">
+              <button 
+                onClick={openQuestionnaire}
+                className="btn-secondary w-full group-hover:bg-secondary-hover"
+              >
                 Demander une réponse
               </button>
             </div>
