@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { ChevronLeft, ChevronRight, X, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface FormData {
   company_name: string;
@@ -38,6 +39,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
   const [isCompleted, setIsCompleted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const totalSteps = 5;
   const progress = ((currentStep + 1) / totalSteps) * 100;
@@ -191,6 +193,12 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
         title: "Merci !",
         description: "Votre demande d'accès bêta a été envoyée avec succès."
       });
+
+      // Redirect to beta offer page after a short delay
+      setTimeout(() => {
+        onClose();
+        navigate('/beta-offer');
+      }, 2000);
     } catch (error) {
       console.error('Error submitting form:', error);
       toast({
