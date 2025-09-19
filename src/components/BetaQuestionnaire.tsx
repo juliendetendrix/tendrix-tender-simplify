@@ -71,13 +71,23 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
     });
   };
 
-  // Auto-focus input when step changes
+  // Auto-focus input when step changes and prevent body scroll
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 300);
+    if (isOpen) {
+      // Prevent body scroll when questionnaire is open
+      document.body.style.overflow = 'hidden';
+      
+      if (inputRef.current) {
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 300);
+      }
     }
+    
+    return () => {
+      // Restore body scroll when questionnaire is closed
+      document.body.style.overflow = 'unset';
+    };
   }, [currentStep, isOpen]);
 
   // Keyboard navigation
@@ -429,17 +439,19 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-background z-40 flex flex-col">
+    <div className="fixed inset-0 bg-background z-40 flex flex-col overflow-hidden">
+      {/* Overlay to prevent interaction with background */}
+      <div className="absolute inset-0 bg-background"></div>
       {/* Header spacer with border */}
-      <div className="h-16 border-b border-border"></div>
+      <div className="h-16 border-b border-border relative z-10"></div>
       
       {/* Progress bar */}
-      <div className="px-4 md:px-6 py-4">
+      <div className="px-4 md:px-6 py-4 relative z-10">
         <Progress value={progress} className="h-2" />
       </div>
 
       {/* Question indicator */}
-      <div className="flex justify-between items-center px-4 md:px-6 py-3">
+      <div className="flex justify-between items-center px-4 md:px-6 py-3 relative z-10">
         <span className="text-sm text-muted-foreground">
           Question {currentStep + 1} sur {totalSteps}
         </span>
@@ -449,14 +461,14 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex items-center justify-center p-4 md:p-8">
+      <div className="flex-1 flex items-center justify-center p-4 md:p-8 relative z-10 overflow-y-auto">
         <div className="w-full max-w-4xl">
           {renderStep()}
         </div>
       </div>
 
       {/* Footer */}
-      <div className="p-4 md:p-6 border-t border-border">
+      <div className="p-4 md:p-6 border-t border-border relative z-10">
         <div className="flex justify-center">
           <Button 
             onClick={handleNext}
