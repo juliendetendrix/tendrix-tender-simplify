@@ -127,10 +127,9 @@ const HowItWorks = () => {
         {/* CTA Button */}
         <div ref={ctaRef} className="text-center mt-12">
           <button 
-            className={`btn-secondary text-lg px-8 py-4 ${
-              vCta ? 'animate-fade-in-up' : 'opacity-0'
+            className={`btn-secondary text-lg px-8 py-4 transform transition duration-500 ${
+              vCta ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
             }`}
-            style={{ animationDelay: '0.2s', willChange: 'transform, opacity' }}
             onClick={openQuestionnaire}
           >
             Commencer votre première réponse rapide
