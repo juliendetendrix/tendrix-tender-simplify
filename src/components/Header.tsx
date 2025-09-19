@@ -21,9 +21,9 @@ const Header = () => {
   }, []);
 
   const navLinks = [
-    { label: 'Comment ça marche', href: '#how-it-works' },
-    { label: 'Tarifs', href: '#pricing' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Comment ça marche', href: isHomePage ? '#how-it-works' : '/#how-it-works' },
+    { label: 'Tarifs', href: isHomePage ? '#pricing' : '/#pricing' },
+    { label: 'Contact', href: isHomePage ? '#contact' : '/#contact' },
   ];
 
   return (
