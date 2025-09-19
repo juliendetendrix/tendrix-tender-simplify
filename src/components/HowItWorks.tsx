@@ -128,9 +128,9 @@ const HowItWorks = () => {
         <div ref={ctaRef} className="text-center mt-12">
           <button 
             className={`btn-secondary text-lg px-8 py-4 ${
-              vCta ? 'animate-bounce-in' : 'opacity-0 translate-y-8'
+              vCta ? 'animate-fade-in-up' : 'opacity-0'
             }`}
-            style={{animationDelay: '0.4s'}}
+            style={{ animationDelay: '0.2s', willChange: 'transform, opacity' }}
             onClick={openQuestionnaire}
           >
             Commencer votre première réponse rapide
