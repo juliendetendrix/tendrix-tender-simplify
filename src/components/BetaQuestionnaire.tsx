@@ -429,9 +429,12 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-background z-40 flex flex-col pt-16">
+    <div className="fixed inset-0 bg-background z-40 flex flex-col">
+      {/* Header spacer with border */}
+      <div className="h-16 border-b border-border"></div>
+      
       {/* Progress bar */}
-      <div className="px-4 md:px-6 py-4 border-b border-border">
+      <div className="px-4 md:px-6 py-4">
         <Progress value={progress} className="h-2" />
       </div>
 
@@ -440,7 +443,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
         <span className="text-sm text-muted-foreground">
           Question {currentStep + 1} sur {totalSteps}
         </span>
-        <Button variant="ghost" onClick={saveDraft} className="text-sm">
+        <Button variant="ghost" onClick={() => { saveDraft(); onClose(); }} className="text-sm">
           Reprendre plus tard
         </Button>
       </div>
