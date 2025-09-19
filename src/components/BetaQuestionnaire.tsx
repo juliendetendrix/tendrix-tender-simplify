@@ -489,7 +489,22 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
 
       {/* Footer */}
       <div className="p-4 md:p-6 border-t border-border relative z-10">
-        <div className="flex justify-center">
+        <div className="flex justify-between items-center">
+          {/* Bouton Précédent */}
+          {currentStep > 0 ? (
+            <Button 
+              variant="outline"
+              onClick={handlePrevious}
+              className="text-lg px-6 py-3"
+            >
+              <ChevronLeft className="mr-2 h-5 w-5" />
+              Précédent
+            </Button>
+          ) : (
+            <div></div>
+          )}
+
+          {/* Bouton Continuer */}
           <Button 
             onClick={handleNext}
             disabled={isSubmitting}
