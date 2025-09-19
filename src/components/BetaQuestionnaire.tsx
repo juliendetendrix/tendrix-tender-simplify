@@ -430,44 +430,36 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
 
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col">
-      {/* Header with centered logo */}
-      <div className="flex flex-col items-center p-4 md:p-6 border-b border-border">
-        <div className="flex items-center justify-center mb-4">
-          <img 
-            src="/src/assets/tendrix-logo.png" 
-            alt="Tendrix" 
-            className="h-8 w-auto"
-          />
+      {/* Header */}
+      <div className="flex justify-between items-center p-4 md:p-6 border-b border-border">
+        <div className="flex items-center space-x-4">
+          {currentStep > 0 && (
+            <Button variant="ghost" size="icon" onClick={handlePrevious}>
+              <ChevronLeft className="h-6 w-6" />
+            </Button>
+          )}
         </div>
-        
-        {/* Progress bar */}
-        <div className="w-full max-w-md">
-          <Progress value={progress} className="h-2" />
-        </div>
-        
-        {/* Question indicator */}
-        <div className="flex justify-between items-center w-full max-w-md mt-3">
-          <span className="text-sm text-muted-foreground">
-            Question {currentStep + 1} sur {totalSteps}
-          </span>
-          <Button variant="ghost" onClick={saveDraft} className="text-sm">
-            Reprendre plus tard
-          </Button>
+        <div className="flex items-center space-x-2">
         </div>
       </div>
 
+      {/* Progress bar */}
+      <div className="px-4 md:px-6 py-2">
+        <Progress value={progress} className="h-2" />
+      </div>
+
+      {/* Question indicator */}
+      <div className="flex justify-between items-center px-4 md:px-6 py-3">
+        <span className="text-sm text-muted-foreground">
+          Question {currentStep + 1} sur {totalSteps}
+        </span>
+        <Button variant="ghost" onClick={saveDraft} className="text-sm">
+          Reprendre plus tard
+        </Button>
+      </div>
+
       {/* Content */}
-      <div className="flex-1 flex items-center justify-center p-4 md:p-8 relative">
-        {currentStep > 0 && (
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={handlePrevious}
-            className="absolute left-4 top-8"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </Button>
-        )}
+      <div className="flex-1 flex items-center justify-center p-4 md:p-8">
         <div className="w-full max-w-4xl">
           {renderStep()}
         </div>
