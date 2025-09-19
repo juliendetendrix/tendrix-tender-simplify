@@ -429,22 +429,9 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-background z-50 flex flex-col">
-      {/* Header */}
-      <div className="flex justify-between items-center p-4 md:p-6 border-b border-border">
-        <div className="flex items-center space-x-4">
-          {currentStep > 0 && (
-            <Button variant="ghost" size="icon" onClick={handlePrevious}>
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
-          )}
-        </div>
-        <div className="flex items-center space-x-2">
-        </div>
-      </div>
-
+    <div className="fixed inset-0 bg-background z-40 flex flex-col pt-16">
       {/* Progress bar */}
-      <div className="px-4 md:px-6 py-2">
+      <div className="px-4 md:px-6 py-4 border-b border-border">
         <Progress value={progress} className="h-2" />
       </div>
 
