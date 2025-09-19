@@ -440,7 +440,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
 
   if (isCompleted) {
     return (
-      <div className="fixed inset-0 bg-background z-[200] flex items-center justify-center p-4">
+      <div className="fixed inset-0 bg-background z-40 flex items-center justify-center p-4">
         <div className="text-center space-y-6 max-w-2xl">
           <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto">
             <Check className="w-10 h-10 text-primary-foreground" />
@@ -459,7 +459,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-background z-[200] flex flex-col overflow-hidden overscroll-none">
+    <div className="fixed inset-0 bg-background z-40 flex flex-col overflow-hidden overscroll-none">
       {/* Overlay to prevent interaction with background */}
       <div className="absolute inset-0 bg-background"></div>
       {/* Header spacer with border */}
