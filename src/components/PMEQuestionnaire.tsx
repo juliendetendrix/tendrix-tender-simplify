@@ -555,8 +555,7 @@ export const PMEQuestionnaire: React.FC = () => {
                 Nous lançons la version bêta privée de Tendrix :
               </p>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                <li>1 mois offert</li>
-                <li>Jusqu'à 3 appels d'offres pris en charge</li>
+                <li>1 réponse offerte</li>
                 <li>Canal Slack dédié</li>
                 <li>Accompagnement par un chargé d'affaires certifié</li>
               </ul>
