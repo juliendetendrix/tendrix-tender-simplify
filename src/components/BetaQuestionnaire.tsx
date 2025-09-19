@@ -71,24 +71,47 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
     });
   };
 
-  // Auto-focus input when step changes and prevent body scroll
+  // Robust scroll lock + autofocus
+  const scrollYRef = useRef<number>(0);
+
+  // Auto-focus on step change
   useEffect(() => {
-    if (isOpen) {
-      // Prevent body scroll when questionnaire is open
-      document.body.style.overflow = 'hidden';
-      
-      if (inputRef.current) {
-        setTimeout(() => {
-          inputRef.current?.focus();
-        }, 300);
-      }
+    if (isOpen && inputRef.current) {
+      const id = setTimeout(() => inputRef.current?.focus(), 300);
+      return () => clearTimeout(id);
     }
-    
-    return () => {
-      // Restore body scroll when questionnaire is closed
-      document.body.style.overflow = 'unset';
-    };
   }, [currentStep, isOpen]);
+
+  // Lock background scroll (works on iOS & desktop)
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const body = document.body;
+    const html = document.documentElement;
+    scrollYRef.current = window.scrollY || 0;
+
+    // Prevent scroll chaining and page movement
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollYRef.current}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.width = '100%';
+    body.style.overflow = 'hidden';
+    html.style.overflow = 'hidden';
+    html.style.height = '100%';
+
+    return () => {
+      body.style.position = '';
+      body.style.top = '';
+      body.style.left = '';
+      body.style.right = '';
+      body.style.width = '';
+      body.style.overflow = '';
+      html.style.overflow = '';
+      html.style.height = '';
+      window.scrollTo(0, scrollYRef.current);
+    };
+  }, [isOpen]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -439,7 +462,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-background z-40 flex flex-col overflow-hidden">
+    <div className="fixed inset-0 bg-background z-40 flex flex-col overflow-hidden overscroll-none">
       {/* Overlay to prevent interaction with background */}
       <div className="absolute inset-0 bg-background"></div>
       {/* Header spacer with border */}
@@ -461,7 +484,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex items-center justify-center p-4 md:p-8 relative z-10 overflow-y-auto">
+      <div className="flex-1 flex items-center justify-center p-4 md:p-8 relative z-10 overflow-y-auto overscroll-contain">
         <div className="w-full max-w-4xl">
           {renderStep()}
         </div>
