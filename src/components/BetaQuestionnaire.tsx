@@ -253,9 +253,9 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
               <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                 Combien d'employés compte votre entreprise ?
               </h2>
-              <p className="text-muted-foreground text-lg">
-                Cela nous aide à adapter nos recommandations
-              </p>
+               <p className="text-muted-foreground text-lg">
+                 Mieux vous connaître pour mieux vous recommander
+               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
               {employeeOptions.map((option) => (
