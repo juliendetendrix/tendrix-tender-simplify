@@ -475,8 +475,13 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
         <span className="text-sm text-muted-foreground">
           Question {currentStep + 1} sur {totalSteps}
         </span>
-        <Button variant="ghost" onClick={() => { saveDraft(); onClose(); }} className="text-sm">
-          Reprendre plus tard
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={() => { saveDraft(); onClose(); }} 
+          className="h-8 w-8 p-0"
+        >
+          <X className="h-4 w-4" />
         </Button>
       </div>
 
