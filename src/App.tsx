@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { BetaQuestionnaireProvider } from "@/hooks/useBetaQuestionnaire";
+import GlobalBetaQuestionnaire from "@/components/GlobalBetaQuestionnaire";
 import Index from "./pages/Index";
 import BetaOffer from "./pages/BetaOffer";
 import NotFound from "./pages/NotFound";
@@ -15,6 +16,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BetaQuestionnaireProvider>
+        <GlobalBetaQuestionnaire />
         <BrowserRouter>
           <Toaster />
           <Sonner />
