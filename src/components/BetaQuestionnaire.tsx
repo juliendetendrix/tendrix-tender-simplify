@@ -253,9 +253,6 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
               <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                 Quel est le nom de votre entreprise ?
               </h2>
-              <p className="text-muted-foreground text-lg">
-                Nous personnaliserons votre expérience en fonction de votre entreprise
-              </p>
             </div>
             <div className="max-w-md mx-auto">
               <Input
