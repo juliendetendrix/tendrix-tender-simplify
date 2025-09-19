@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
 import logo from '@/assets/tendrix-logo.png';
 
@@ -7,6 +8,8 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { openQuestionnaire } = useBetaQuestionnaire();
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,16 +36,29 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <button 
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
-            >
-              <img 
-                src={logo} 
-                alt="Tendrix" 
-                className="h-8 w-auto"
-              />
-            </button>
+            {isHomePage ? (
+              <button 
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
+              >
+                <img 
+                  src={logo} 
+                  alt="Tendrix" 
+                  className="h-8 w-auto"
+                />
+              </button>
+            ) : (
+              <Link 
+                to="/"
+                className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
+              >
+                <img 
+                  src={logo} 
+                  alt="Tendrix" 
+                  className="h-8 w-auto"
+                />
+              </Link>
+            )}
           </div>
 
           {/* Desktop Navigation */}
