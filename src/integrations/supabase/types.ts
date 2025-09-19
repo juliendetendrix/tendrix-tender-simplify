@@ -56,6 +56,78 @@ export type Database = {
         }
         Relationships: []
       }
+      pme_questionnaire_responses: {
+        Row: {
+          ao_experience: string
+          ao_frequency: string | null
+          beta_interest: boolean
+          city_department: string | null
+          company_name: string
+          company_size: string
+          consent: boolean
+          contact_email: string | null
+          contact_name: string | null
+          contact_sector: string | null
+          created_at: string
+          externalized_ao: boolean
+          id: string
+          important_criteria: string[]
+          main_barriers: string[]
+          monthly_budget: string
+          other_barrier: string | null
+          other_criteria: string | null
+          platform_interest: string
+          sector: string
+          source_page: string
+        }
+        Insert: {
+          ao_experience: string
+          ao_frequency?: string | null
+          beta_interest: boolean
+          city_department?: string | null
+          company_name: string
+          company_size: string
+          consent?: boolean
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_sector?: string | null
+          created_at?: string
+          externalized_ao: boolean
+          id?: string
+          important_criteria?: string[]
+          main_barriers?: string[]
+          monthly_budget: string
+          other_barrier?: string | null
+          other_criteria?: string | null
+          platform_interest: string
+          sector: string
+          source_page?: string
+        }
+        Update: {
+          ao_experience?: string
+          ao_frequency?: string | null
+          beta_interest?: boolean
+          city_department?: string | null
+          company_name?: string
+          company_size?: string
+          consent?: boolean
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_sector?: string | null
+          created_at?: string
+          externalized_ao?: boolean
+          id?: string
+          important_criteria?: string[]
+          main_barriers?: string[]
+          monthly_budget?: string
+          other_barrier?: string | null
+          other_criteria?: string | null
+          platform_interest?: string
+          sector?: string
+          source_page?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

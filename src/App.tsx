@@ -8,6 +8,7 @@ import { BetaQuestionnaireProvider } from "@/hooks/useBetaQuestionnaire";
 import GlobalBetaQuestionnaire from "@/components/GlobalBetaQuestionnaire";
 import Index from "./pages/Index";
 import BetaOffer from "./pages/BetaOffer";
+import QuestionnairePME from "./pages/QuestionnairePME";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/beta-offer" element={<BetaOffer />} />
+            <Route path="/questionnaire-pme" element={<QuestionnairePME />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
