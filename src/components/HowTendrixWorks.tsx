@@ -8,7 +8,7 @@ const HowTendrixWorks = () => {
     {
       icon: Bell,
       title: "Recevez des opportunités",
-      description: "Tendrix centralise et vous envois tous les appels d'offres pertinents pour votre entreprise."
+      description: "Tendrix centralise et vous envoie tous les appels d'offres pertinents pour votre entreprise."
     },
     {
       icon: () => (
