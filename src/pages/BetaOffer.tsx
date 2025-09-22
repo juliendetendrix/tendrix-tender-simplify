@@ -18,7 +18,7 @@ const BetaOffer = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 py-12 px-4">
+    <div className="min-h-screen bg-gradient-hero py-12 px-4">
       <div className="max-w-4xl mx-auto">
         
         {/* Bloc Intro */}
