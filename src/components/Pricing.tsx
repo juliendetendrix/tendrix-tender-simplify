@@ -7,7 +7,7 @@ const Pricing = () => {
   const { openQuestionnaire } = useBetaQuestionnaire();
   
   const betaFeatures = [
-    "Jusqu'à 3 réponses par mois pendant toute la phase bêta",
+    "1 réponse offerte pendant la phase bêta",
     "Support prioritaire pendant toute la phase bêta",
     "Modèles de réponse personnalisés (Tendrix Winning Deck)",
     "Onboarding personnalisé",
