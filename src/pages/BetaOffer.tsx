@@ -27,7 +27,7 @@ const BetaOffer = () => {
             Merci pour vos réponses !
           </h1>
           <div className="mb-8">
-            <p className="text-lg font-semibold text-primary">
+            <p className="text-lg font-semibold gradient-text">
               Projet innovant incubé à Station F
             </p>
           </div>
