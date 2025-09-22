@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
@@ -12,6 +12,10 @@ const BetaOffer = () => {
     "Réponse en moins de 4h pour des AO fournitures",
     "1 chargé d'affaires référent dédié à votre entreprise"
   ];
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 py-12 px-4">
