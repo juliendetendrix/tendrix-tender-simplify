@@ -86,7 +86,7 @@ const BetaOffer = () => {
                   asChild
                 >
                   <a 
-                    href="https://buy.stripe.com/3cI00c4wF3jk1w17yw6Vq01"
+                    href="https://buy.stripe.com/00w9AM5AJaLM6Ql4mk6Vq02"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center"
