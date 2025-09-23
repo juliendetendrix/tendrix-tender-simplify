@@ -516,7 +516,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
             className="text-lg px-8 py-4 min-w-[200px]"
           >
             {currentStep === totalSteps - 1 ? (
-              isSubmitting ? 'Envoi...' : 'Découvrir les appels d\'offres pour mon entreprise'
+              isSubmitting ? 'Envoi...' : 'Voir ma solution'
             ) : (
               <>
                 Continuer <ChevronRight className="ml-2 h-5 w-5" />
