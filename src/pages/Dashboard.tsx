@@ -57,19 +57,19 @@ const Dashboard = () => {
     { 
       title: "AO - Fourniture d'équipements informatiques", 
       amount: "760 k€",
-      responseTime: "12 jours",
+      responseTime: "3h45",
       manager: "Sarah Dupont"
     },
     { 
       title: "AO - Maintenance des installations électriques", 
       amount: "950 k€",
-      responseTime: "8 jours",
+      responseTime: "1h30",
       manager: "Jean Martin"
     },
     { 
       title: "AO - Travaux de rénovation énergétique", 
       amount: "1,2 M€",
-      responseTime: "15 jours",
+      responseTime: "6h20",
       manager: "Emma Leblanc"
     }
   ]
@@ -245,14 +245,14 @@ const Dashboard = () => {
                       <div key={index} className="p-4 bg-muted/50 rounded-lg border hover:bg-accent/10 transition-colors">
                         <div className="flex justify-between items-start mb-2">
                           <div className="text-sm font-medium text-foreground flex-1 pr-2">{win.title}</div>
-                          <div className="text-sm font-semibold text-accent">{win.amount}</div>
+                          <div className="text-sm font-bold text-primary bg-primary/10 px-2 py-1 rounded">{win.amount}</div>
                         </div>
                         <div className="flex justify-between items-center text-xs">
                           <div className="text-muted-foreground">
-                            <span className="font-medium">Réponse en:</span> {win.responseTime}
+                            <span className="font-medium">Réponse effectuée en:</span> {win.responseTime}
                           </div>
                           <div className="text-muted-foreground">
-                            <span className="font-medium">Manager:</span> <span className="text-secondary">{win.manager}</span>
+                            <span className="font-medium">Chargé d'affaire:</span> <span className="text-secondary">{win.manager}</span>
                           </div>
                         </div>
                       </div>
