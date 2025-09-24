@@ -3,20 +3,38 @@ import { AppSidebar } from "@/components/AppSidebar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { MapPin } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { MapPin, MessageCircle, Phone, Mail, Star } from "lucide-react"
+import { useState } from "react"
 
 const Dashboard = () => {
+  const [chatMessage, setChatMessage] = useState("")
+  const [showChat, setShowChat] = useState(false)
+
   const lastMinuteTenders = [
     "AO - Fournitures de bureau",
     "AO - Travaux de voirie",
     "AO - Services de nettoyage"
   ]
 
-  const businessManagers = [
-    { name: "Sarah Dupont", successRate: 90, avatar: "/placeholder.svg" },
-    { name: "Jean Martin", successRate: 85, avatar: "/placeholder.svg" },
-    { name: "Emma Leblanc", successRate: 80, avatar: "/placeholder.svg" }
-  ]
+  const referentManager = {
+    name: "Sarah Dupont",
+    role: "Chargée d'affaires BTP",
+    successRate: 92,
+    phone: "01 42 35 67 89",
+    email: "sarah.dupont@tendrix.fr"
+  }
+
+  const handleSendMessage = () => {
+    if (chatMessage.trim()) {
+      // Simulate sending message
+      console.log("Message envoyé à", referentManager.name, ":", chatMessage)
+      setChatMessage("")
+      setShowChat(false)
+      // Here you would typically send the message to your backend
+    }
+  }
 
   const recentWins = [
     { title: "AO - Fourniture d'équipements", amount: "760 k€" },
@@ -59,24 +77,84 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
 
-              {/* Mes chargés d'affaires */}
+              {/* Mon chargé d'affaires référent */}
               <Card className="border-l-4 border-l-secondary shadow-medium hover:shadow-strong transition-shadow">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg font-semibold text-secondary">Mes chargés d'affaires</CardTitle>
+                  <CardTitle className="text-lg font-semibold text-secondary">Mon chargé d'affaires référent</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {businessManagers.map((manager, index) => (
-                      <div key={index} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border hover:bg-secondary/10 transition-colors">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary to-accent flex items-center justify-center">
-                          <span className="text-sm font-medium text-white">{manager.name.split(' ').map(n => n[0]).join('')}</span>
-                        </div>
-                        <div className="flex-1">
-                          <div className="font-medium text-sm">{manager.name}</div>
-                          <div className="text-xs text-muted-foreground">Taux de réussite <span className="text-secondary font-medium">{manager.successRate} %</span></div>
+                    {/* Profil du chargé d'affaires */}
+                    <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg border">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-accent flex items-center justify-center">
+                        <span className="text-lg font-medium text-white">SD</span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-base">{referentManager.name}</div>
+                        <div className="text-sm text-muted-foreground">{referentManager.role}</div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                          <span className="text-xs text-secondary font-medium">{referentManager.successRate}% de réussite</span>
                         </div>
                       </div>
-                    ))}
+                    </div>
+
+                    {/* Actions rapides */}
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" className="flex-1 text-xs">
+                        <Phone className="w-3 h-3 mr-1" />
+                        Appeler
+                      </Button>
+                      <Button variant="outline" size="sm" className="flex-1 text-xs">
+                        <Mail className="w-3 h-3 mr-1" />
+                        Email
+                      </Button>
+                    </div>
+
+                    {/* Zone de chat */}
+                    <div className="border rounded-lg p-3 bg-background/50">
+                      <div className="flex items-center gap-2 mb-2">
+                        <MessageCircle className="w-4 h-4 text-secondary" />
+                        <span className="text-sm font-medium">Poser une question</span>
+                      </div>
+                      
+                      {!showChat ? (
+                        <Button 
+                          variant="secondary" 
+                          size="sm" 
+                          onClick={() => setShowChat(true)}
+                          className="w-full text-xs"
+                        >
+                          Écrire un message à {referentManager.name.split(' ')[0]}
+                        </Button>
+                      ) : (
+                        <div className="space-y-2">
+                          <Textarea
+                            placeholder="Tapez votre question ici..."
+                            value={chatMessage}
+                            onChange={(e) => setChatMessage(e.target.value)}
+                            className="text-sm min-h-[60px] resize-none"
+                          />
+                          <div className="flex gap-2">
+                            <Button 
+                              size="sm" 
+                              onClick={handleSendMessage}
+                              className="text-xs"
+                            >
+                              Envoyer
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => setShowChat(false)}
+                              className="text-xs"
+                            >
+                              Annuler
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
