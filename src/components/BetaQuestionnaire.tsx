@@ -221,9 +221,9 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
       // Clear saved draft
       localStorage.removeItem('beta_questionnaire_draft');
       
-      // Redirect directly to beta offer page
+      // Redirect to dashboard instead of beta offer page
       onClose();
-      navigate('/beta-offer');
+      navigate('/dashboard');
     } catch (error) {
       console.error('Error submitting form:', error);
       toast({

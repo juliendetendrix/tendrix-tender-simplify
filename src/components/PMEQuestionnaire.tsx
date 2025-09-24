@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface FormData {
   // Section 1: Profil entreprise
@@ -70,6 +71,7 @@ export const PMEQuestionnaire: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const totalSteps = 4;
 
@@ -218,6 +220,13 @@ export const PMEQuestionnaire: React.FC = () => {
       }
 
       localStorage.removeItem('pme-questionnaire-draft');
+      
+      // Redirect to dashboard for beta users
+      if (formData.beta_interest === 'Oui, je veux profiter du mois gratuit') {
+        navigate('/dashboard');
+        return;
+      }
+      
       setIsCompleted(true);
       
       toast({

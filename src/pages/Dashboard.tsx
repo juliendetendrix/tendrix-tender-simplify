@@ -10,6 +10,8 @@ import { useState } from "react"
 import { useBoampTenders } from "@/hooks/useBoampTenders"
 import { useCompanyData } from "@/hooks/useCompanyData"
 import TenderDetailModal from "@/components/TenderDetailModal"
+import { WelcomeModal } from '@/components/WelcomeModal'
+import { useEffect } from "react"
 
 interface BoampTender {
   id: string
@@ -28,8 +30,18 @@ const Dashboard = () => {
   const [selectedTender, setSelectedTender] = useState<BoampTender | null>(null)
   const [showTenderModal, setShowTenderModal] = useState(false)
   const [selectedStep, setSelectedStep] = useState("Demande émise")
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false)
   const { tenders, loading, error, lastUpdate, usingFallback, refetch } = useBoampTenders()
   const { companyName } = useCompanyData()
+
+  // Show welcome modal after 3 seconds when user arrives from questionnaire
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowWelcomeModal(true);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleTenderClick = (tender: BoampTender) => {
     setSelectedTender(tender)
@@ -352,6 +364,12 @@ const Dashboard = () => {
         tender={selectedTender}
         isOpen={showTenderModal}
         onClose={() => setShowTenderModal(false)}
+      />
+      
+      {/* Modal de bienvenue */}
+      <WelcomeModal 
+        isOpen={showWelcomeModal} 
+        onClose={() => setShowWelcomeModal(false)} 
       />
     </SidebarProvider>
   )
