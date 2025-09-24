@@ -27,7 +27,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="border-r">
-      <SidebarHeader className="p-4">
+      <SidebarHeader className="p-4 border-b">
         <div className="flex items-center gap-2">
           <img src={tendrixLogo} alt="Tendrix" className="h-8 w-auto" />
         </div>
