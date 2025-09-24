@@ -54,8 +54,24 @@ const Dashboard = () => {
   }
 
   const recentWins = [
-    { title: "AO - Fourniture d'équipements", amount: "760 k€" },
-    { title: "AO - Maintenance des installations", amount: "950 k€" }
+    { 
+      title: "AO - Fourniture d'équipements informatiques", 
+      amount: "760 k€",
+      responseTime: "12 jours",
+      manager: "Sarah Dupont"
+    },
+    { 
+      title: "AO - Maintenance des installations électriques", 
+      amount: "950 k€",
+      responseTime: "8 jours",
+      manager: "Jean Martin"
+    },
+    { 
+      title: "AO - Travaux de rénovation énergétique", 
+      amount: "1,2 M€",
+      responseTime: "15 jours",
+      manager: "Emma Leblanc"
+    }
   ]
 
   const ongoingTenders = [
@@ -226,9 +242,19 @@ const Dashboard = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {recentWins.map((win, index) => (
-                      <div key={index} className="flex justify-between items-start p-3 bg-muted/50 rounded-lg border hover:bg-accent/10 transition-colors">
-                        <div className="text-sm text-muted-foreground flex-1 pr-2">{win.title}</div>
-                        <div className="text-sm font-medium text-accent">{win.amount}</div>
+                      <div key={index} className="p-4 bg-muted/50 rounded-lg border hover:bg-accent/10 transition-colors">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="text-sm font-medium text-foreground flex-1 pr-2">{win.title}</div>
+                          <div className="text-sm font-semibold text-accent">{win.amount}</div>
+                        </div>
+                        <div className="flex justify-between items-center text-xs">
+                          <div className="text-muted-foreground">
+                            <span className="font-medium">Réponse en:</span> {win.responseTime}
+                          </div>
+                          <div className="text-muted-foreground">
+                            <span className="font-medium">Manager:</span> <span className="text-secondary">{win.manager}</span>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
