@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { MapPin, MessageCircle, Phone, Mail, Star, RefreshCw, ExternalLink, AlertCircle } from "lucide-react"
 import { useState } from "react"
 import { useBoampTenders } from "@/hooks/useBoampTenders"
+import { useCompanyData } from "@/hooks/useCompanyData"
 import TenderDetailModal from "@/components/TenderDetailModal"
 
 interface BoampTender {
@@ -27,6 +28,7 @@ const Dashboard = () => {
   const [selectedTender, setSelectedTender] = useState<BoampTender | null>(null)
   const [showTenderModal, setShowTenderModal] = useState(false)
   const { tenders, loading, error, lastUpdate, usingFallback, refetch } = useBoampTenders()
+  const { companyName } = useCompanyData()
 
   const handleTenderClick = (tender: BoampTender) => {
     setSelectedTender(tender)
@@ -68,9 +70,10 @@ const Dashboard = () => {
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 border-b px-6 bg-card">
-            <SidebarTrigger />
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-semibold gradient-text">Dashboard Tendrix</h1>
+              <h1 className="text-xl font-semibold gradient-text">
+                Bonjour {companyName || 'Entreprise'}
+              </h1>
             </div>
           </header>
           
