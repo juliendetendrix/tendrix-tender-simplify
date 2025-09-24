@@ -5,18 +5,14 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { MapPin, MessageCircle, Phone, Mail, Star } from "lucide-react"
+import { MapPin, MessageCircle, Phone, Mail, Star, RefreshCw, ExternalLink, AlertCircle } from "lucide-react"
 import { useState } from "react"
+import { useBoampTenders } from "@/hooks/useBoampTenders"
 
 const Dashboard = () => {
   const [chatMessage, setChatMessage] = useState("")
   const [showChat, setShowChat] = useState(false)
-
-  const lastMinuteTenders = [
-    "AO - Fournitures de bureau",
-    "AO - Travaux de voirie",
-    "AO - Services de nettoyage"
-  ]
+  const { tenders, loading, error, lastUpdate, usingFallback, refetch } = useBoampTenders()
 
   const referentManager = {
     name: "Sarah Dupont",
@@ -63,17 +59,64 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
               {/* Appels d'offres last minute */}
               <Card className="border-l-4 border-l-primary shadow-medium hover:shadow-strong transition-shadow">
-                <CardHeader className="pb-3">
+                <CardHeader className="pb-3 flex flex-row items-center justify-between">
                   <CardTitle className="text-lg font-semibold gradient-text">Appels d'offres last minute</CardTitle>
+                  <div className="flex items-center gap-2">
+                    {usingFallback && (
+                      <AlertCircle className="w-4 h-4 text-yellow-500" />
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={refetch}
+                      disabled={loading}
+                      className="p-1 h-auto"
+                    >
+                      <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {lastMinuteTenders.map((tender, index) => (
-                      <div key={index} className="p-3 bg-muted/50 rounded-lg border border-primary/20 hover:border-primary/40 transition-colors">
-                        <div className="text-sm font-medium text-foreground">{tender}</div>
-                      </div>
-                    ))}
-                  </div>
+                  {loading ? (
+                    <div className="space-y-3">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="p-3 bg-muted/50 rounded-lg border animate-pulse">
+                          <div className="h-4 bg-muted rounded w-3/4"></div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {tenders.slice(0, 3).map((tender, index) => (
+                        <div key={tender.id || index} className="p-3 bg-muted/50 rounded-lg border border-primary/20 hover:border-primary/40 transition-colors group">
+                          <div className="flex justify-between items-start gap-2">
+                            <div className="flex-1">
+                              <div className="text-sm font-medium text-foreground mb-1">{tender.title}</div>
+                              <div className="text-xs text-muted-foreground">{tender.organisme}</div>
+                              {tender.montant && (
+                                <div className="text-xs text-primary font-medium mt-1">{tender.montant}</div>
+                              )}
+                            </div>
+                            {tender.url && tender.url !== "#" && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-auto"
+                                onClick={() => window.open(tender.url, '_blank')}
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      {lastUpdate && (
+                        <div className="text-xs text-muted-foreground mt-2">
+                          Dernière mise à jour: {new Date(lastUpdate).toLocaleString('fr-FR')}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
