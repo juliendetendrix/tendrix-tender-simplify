@@ -69,15 +69,15 @@ const Dashboard = () => {
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-6 bg-card">
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-semibold gradient-text">
+          <header className="flex h-20 shrink-0 items-center gap-2 border-b-0 px-8 bg-gradient-to-r from-card via-card/95 to-muted/30 backdrop-blur-md">
+            <div className="flex items-center gap-2 bg-gradient-to-r from-background/80 to-background/60 backdrop-blur-sm px-6 py-3 rounded-3xl border border-border/50 shadow-lg">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
                 Bonjour {companyName || 'Entreprise'}
               </h1>
             </div>
           </header>
           
-          <main className="flex-1 p-6 bg-gradient-to-br from-background to-muted/30">
+          <main className="flex-1 p-8 bg-gradient-to-br from-background via-background/95 to-muted/20">{/* Add a subtle animated border below header */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
               {/* Appels d'offres last minute */}
               <Card className="border-l-4 border-l-primary shadow-medium hover:shadow-strong transition-shadow">
