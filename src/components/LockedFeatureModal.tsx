@@ -1,24 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useCompanyData } from '@/hooks/useCompanyData';
+import { Lock } from 'lucide-react';
 
-interface WelcomeModalProps {
+interface LockedFeatureModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
-  const { companyName } = useCompanyData();
-
+export const LockedFeatureModal: React.FC<LockedFeatureModalProps> = ({ isOpen, onClose }) => {
   const handleScheduleCall = () => {
     window.open('https://calendly.com/julien-malherbe-tendrix/30min', '_blank');
-    onClose();
-  };
-
-  const handleExploreBeta = () => {
-    // Mark that user is in beta exploration mode
-    localStorage.setItem('tendrix_beta_mode', 'true');
     onClose();
   };
 
@@ -26,18 +18,18 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center text-primary">
-            Bonjour{companyName ? `, ${companyName}` : ''} !
+          <DialogTitle className="text-2xl font-bold text-center text-primary flex items-center justify-center gap-2">
+            <Lock className="w-6 h-6" />
+            Fonctionnalité verrouillée
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-6 p-6">
           <p className="text-lg text-center text-muted-foreground">
-            Vous avez accès à la version bêta de Tendrix. Nous vous invitons à y faire un tour, 
-            mais vos fonctionnalités sont limitées.
+            Cette fonctionnalité n'est pas disponible dans la version bêta.
           </p>
           <p className="text-center text-muted-foreground">
             Pour débloquer toutes les fonctionnalités et commencer à répondre à des appels d'offres, 
-            cliquez sur le bouton suivant :
+            prenez rendez-vous avec notre équipe.
           </p>
           <div className="flex flex-col space-y-3">
             <Button 
@@ -49,10 +41,10 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
             </Button>
             <Button 
               variant="outline" 
-              onClick={handleExploreBeta}
+              onClick={onClose}
               className="w-full"
             >
-              Explorer la bêta d'abord
+              Continuer l'exploration
             </Button>
           </div>
         </div>

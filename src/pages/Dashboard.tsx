@@ -11,6 +11,7 @@ import { useBoampTenders } from "@/hooks/useBoampTenders"
 import { useCompanyData } from "@/hooks/useCompanyData"
 import TenderDetailModal from "@/components/TenderDetailModal"
 import { WelcomeModal } from '@/components/WelcomeModal'
+import { LockedFeatureModal } from '@/components/LockedFeatureModal'
 import { useEffect } from "react"
 
 interface BoampTender {
@@ -31,6 +32,7 @@ const Dashboard = () => {
   const [showTenderModal, setShowTenderModal] = useState(false)
   const [selectedStep, setSelectedStep] = useState("Demande émise")
   const [showWelcomeModal, setShowWelcomeModal] = useState(false)
+  const [showLockedModal, setShowLockedModal] = useState(false)
   const { tenders, loading, error, lastUpdate, usingFallback, refetch } = useBoampTenders()
   const { companyName } = useCompanyData()
 
@@ -43,7 +45,15 @@ const Dashboard = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const isBetaMode = () => {
+    return localStorage.getItem('tendrix_beta_mode') === 'true';
+  };
+
   const handleTenderClick = (tender: BoampTender) => {
+    if (isBetaMode()) {
+      setShowLockedModal(true);
+      return;
+    }
     setSelectedTender(tender)
     setShowTenderModal(true)
   }
@@ -56,7 +66,18 @@ const Dashboard = () => {
     email: "sarah.dupont@tendrix.fr"
   }
 
+  const handleLockedAction = () => {
+    if (isBetaMode()) {
+      setShowLockedModal(true);
+      return;
+    }
+  };
+
   const handleSendMessage = () => {
+    if (isBetaMode()) {
+      setShowLockedModal(true);
+      return;
+    }
     if (chatMessage.trim()) {
       // Simulate sending message
       console.log("Message envoyé à", referentManager.name, ":", chatMessage)
@@ -65,6 +86,14 @@ const Dashboard = () => {
       // Here you would typically send the message to your backend
     }
   }
+
+  const handleStepClick = (step: string) => {
+    if (isBetaMode()) {
+      setShowLockedModal(true);
+      return;
+    }
+    setSelectedStep(step);
+  };
 
   const recentWins = [
     { 
@@ -207,11 +236,11 @@ const Dashboard = () => {
 
                     {/* Actions rapides */}
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="flex-1 text-xs">
+                      <Button variant="outline" size="sm" className="flex-1 text-xs" onClick={handleLockedAction}>
                         <Phone className="w-3 h-3 mr-1" />
                         Appeler
                       </Button>
-                      <Button variant="outline" size="sm" className="flex-1 text-xs">
+                      <Button variant="outline" size="sm" className="flex-1 text-xs" onClick={handleLockedAction}>
                         <Mail className="w-3 h-3 mr-1" />
                         Email
                       </Button>
@@ -228,7 +257,7 @@ const Dashboard = () => {
                         <Button 
                           variant="secondary" 
                           size="sm" 
-                          onClick={() => setShowChat(true)}
+                          onClick={handleLockedAction}
                           className="w-full text-xs"
                         >
                           Écrire un message à {referentManager.name.split(' ')[0]}
@@ -302,7 +331,7 @@ const Dashboard = () => {
                     {steps.map((step) => (
                       <button
                         key={step}
-                        onClick={() => setSelectedStep(step)}
+                        onClick={() => handleStepClick(step)}
                         className={`px-3 py-2 rounded-lg transition-all duration-300 cursor-pointer font-medium ${getStepColor(step)}`}
                       >
                         {step}
@@ -370,6 +399,12 @@ const Dashboard = () => {
       <WelcomeModal 
         isOpen={showWelcomeModal} 
         onClose={() => setShowWelcomeModal(false)} 
+      />
+      
+      {/* Modal fonctionnalité verrouillée */}
+      <LockedFeatureModal 
+        isOpen={showLockedModal} 
+        onClose={() => setShowLockedModal(false)} 
       />
     </SidebarProvider>
   )
