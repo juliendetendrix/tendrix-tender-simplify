@@ -37,7 +37,7 @@ const Dashboard = () => {
 
   const referentManager = {
     name: "Sarah Dupont",
-    role: "Chargée d'affaires BTP",
+    role: "Chargée d'affaires",
     successRate: 92,
     phone: "01 42 35 67 89",
     email: "sarah.dupont@tendrix.fr"
@@ -266,7 +266,7 @@ const Dashboard = () => {
               {/* Mes appels d'offres en cours */}
               <Card className="lg:col-span-2">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg font-semibold gradient-text">Mes appels d'offres en cours (BTP)</CardTitle>
+                  <CardTitle className="text-lg font-semibold gradient-text">Mes appels d'offres en cours</CardTitle>
                   <div className="flex gap-4 text-sm mt-4">
                     <Badge variant="default" className="bg-primary text-primary-foreground">Demande émise</Badge>
                     <span className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors">En cours</span>
