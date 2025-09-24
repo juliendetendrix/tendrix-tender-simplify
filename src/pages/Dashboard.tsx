@@ -27,6 +27,7 @@ const Dashboard = () => {
   const [showChat, setShowChat] = useState(false)
   const [selectedTender, setSelectedTender] = useState<BoampTender | null>(null)
   const [showTenderModal, setShowTenderModal] = useState(false)
+  const [selectedStep, setSelectedStep] = useState("Demande émise")
   const { tenders, loading, error, lastUpdate, usingFallback, refetch } = useBoampTenders()
   const { companyName } = useCompanyData()
 
@@ -77,8 +78,26 @@ const Dashboard = () => {
   const ongoingTenders = [
     { title: "AO - Construction école primaire", amount: "2,3 M€", progress: 75, status: "En cours" },
     { title: "AO - Rehabilitation centre sportif", amount: "1,8 M€", progress: 85, status: "En cours" },
-    { title: "AO - Construction immeuble de bureaux", amount: "3,5 M€", progress: 60, status: "Demande émise" }
+    { title: "AO - Construction immeuble de bureaux", amount: "3,5 M€", progress: 60, status: "Demande émise" },
+    { title: "AO - Rénovation piscine municipale", amount: "950 k€", progress: 95, status: "Négociation" },
+    { title: "AO - Aménagement parc urbain", amount: "1,4 M€", progress: 100, status: "Remporté" },
+    { title: "AO - Extension mairie", amount: "2,8 M€", progress: 30, status: "Demande émise" },
+    { title: "AO - Travaux voirie centre-ville", amount: "680 k€", progress: 70, status: "En cours" },
+    { title: "AO - Construction crèche", amount: "1,1 M€", progress: 90, status: "Négociation" }
   ]
+
+  const steps = ["Demande émise", "En cours", "Négociation", "Remporté"]
+  
+  const filteredTenders = ongoingTenders.filter(tender => tender.status === selectedStep)
+
+  const getStepColor = (step: string) => {
+    const currentIndex = steps.indexOf(selectedStep)
+    const stepIndex = steps.indexOf(step)
+    
+    if (stepIndex < currentIndex) return "text-muted-foreground bg-muted/50"
+    if (stepIndex === currentIndex) return "text-primary-foreground bg-primary"
+    return "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+  }
 
   return (
     <SidebarProvider>
@@ -237,7 +256,7 @@ const Dashboard = () => {
               {/* Derniers AO remportés */}
               <Card className="border-l-4 border-l-accent shadow-medium hover:shadow-strong transition-shadow">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg font-semibold text-accent">Derniers AO remportés par nos chargés d'affaires</CardTitle>
+                  <CardTitle className="text-lg font-semibold text-foreground">Derniers AO remportés par nos chargés d'affaires</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -267,27 +286,41 @@ const Dashboard = () => {
               <Card className="lg:col-span-2">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg font-semibold gradient-text">Mes appels d'offres en cours</CardTitle>
-                  <div className="flex gap-4 text-sm mt-4">
-                    <Badge variant="default" className="bg-primary text-primary-foreground">Demande émise</Badge>
-                    <span className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors">En cours</span>
-                    <span className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Négociation</span>
-                    <span className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Remporté</span>
+                  <div className="flex gap-2 text-sm mt-4">
+                    {steps.map((step) => (
+                      <button
+                        key={step}
+                        onClick={() => setSelectedStep(step)}
+                        className={`px-3 py-2 rounded-lg transition-all duration-300 cursor-pointer font-medium ${getStepColor(step)}`}
+                      >
+                        {step}
+                      </button>
+                    ))}
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
-                    {ongoingTenders.map((tender, index) => (
-                      <div key={index} className="space-y-3 p-4 bg-muted/30 rounded-lg border hover:shadow-medium transition-shadow">
-                        <div className="flex justify-between items-center">
-                          <div className="text-sm font-medium">{tender.title}</div>
-                          <div className="text-sm font-semibold text-primary">{tender.amount}</div>
+                    {filteredTenders.length > 0 ? (
+                      filteredTenders.map((tender, index) => (
+                        <div key={index} className="space-y-3 p-4 bg-muted/30 rounded-lg border hover:shadow-medium transition-shadow">
+                          <div className="flex justify-between items-center">
+                            <div className="text-sm font-medium">{tender.title}</div>
+                            <div className="text-sm font-semibold text-primary">{tender.amount}</div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Progress 
+                              value={tender.progress} 
+                              className="h-3 bg-muted flex-1"
+                            />
+                            <span className="text-xs text-muted-foreground font-medium">{tender.progress}%</span>
+                          </div>
                         </div>
-                        <Progress 
-                          value={tender.progress} 
-                          className="h-3 bg-muted"
-                        />
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        Aucun appel d'offres à l'étape "{selectedStep}"
                       </div>
-                    ))}
+                    )}
                   </div>
                 </CardContent>
               </Card>
