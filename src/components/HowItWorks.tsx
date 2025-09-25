@@ -1,4 +1,4 @@
-import dashboardMockup from '@/assets/dashboard-mockup.jpg';
+import dashboardFocusedMockup from '@/assets/dashboard-focused-mockup.jpg';
 import franceNetworkMap from '@/assets/france-network-new.png';
 import notificationIllustration from '@/assets/notification-illustration.png';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
@@ -46,8 +46,8 @@ const HowItWorks = () => {
             <div className="relative order-2">
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
                 <img 
-                  src={dashboardMockup} 
-                  alt="Interface logicielle du tableau de bord Tendrix" 
+                  src={dashboardFocusedMockup} 
+                  alt="Dashboard Tendrix avec section Appels d'offres last minute mise en avant" 
                   className="w-full h-full object-cover rounded-xl"
                 />
               </div>
