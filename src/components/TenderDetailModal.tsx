@@ -20,6 +20,7 @@ interface TenderDetailModalProps {
   tender: BoampTender | null
   isOpen: boolean
   onClose: () => void
+  onShowLockedModal?: () => void
 }
 
 // Fonction pour générer un résumé basé sur le titre et l'organisme
@@ -73,7 +74,7 @@ const calculateSuccessRate = (tender: BoampTender): number => {
   return Math.min(Math.max(baseRate, 25), 95) // Entre 25% et 95%
 }
 
-const TenderDetailModal = ({ tender, isOpen, onClose }: TenderDetailModalProps) => {
+const TenderDetailModal = ({ tender, isOpen, onClose, onShowLockedModal }: TenderDetailModalProps) => {
   if (!tender) return null
 
   const summary = generateSummary(tender)
@@ -84,7 +85,16 @@ const TenderDetailModal = ({ tender, isOpen, onClose }: TenderDetailModalProps) 
     year: 'numeric'
   })
 
+  const isBetaMode = () => {
+    return localStorage.getItem('tendrix_beta_mode') === 'true';
+  };
+
   const handleRequestResponse = () => {
+    if (isBetaMode()) {
+      onClose();
+      onShowLockedModal?.();
+      return;
+    }
     // Simuler une demande de réponse
     console.log('Demande de réponse pour:', tender.title)
     // Ici vous pourriez ouvrir un formulaire ou rediriger vers une page spécifique

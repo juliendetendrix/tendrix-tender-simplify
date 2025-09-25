@@ -50,10 +50,6 @@ const Dashboard = () => {
   };
 
   const handleTenderClick = (tender: BoampTender) => {
-    if (isBetaMode()) {
-      setShowLockedModal(true);
-      return;
-    }
     setSelectedTender(tender)
     setShowTenderModal(true)
   }
@@ -396,6 +392,7 @@ const Dashboard = () => {
         tender={selectedTender}
         isOpen={showTenderModal}
         onClose={() => setShowTenderModal(false)}
+        onShowLockedModal={() => setShowLockedModal(true)}
       />
       
       {/* Modal de bienvenue */}
