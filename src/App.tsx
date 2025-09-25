@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import NearbyTenders from "./pages/NearbyTenders";
 import WinningDeck from "./pages/WinningDeck";
+import TopManagers from "./pages/TopManagers";
 import BetaOffer from "./pages/BetaOffer";
 import QuestionnairePME from "./pages/QuestionnairePME";
 import NotFound from "./pages/NotFound";
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/nearby-tenders" element={<NearbyTenders />} />
             <Route path="/winning-deck" element={<WinningDeck />} />
+            <Route path="/top-managers" element={<TopManagers />} />
             <Route path="/beta-offer" element={<BetaOffer />} />
             <Route path="/questionnaire-pme" element={<QuestionnairePME />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

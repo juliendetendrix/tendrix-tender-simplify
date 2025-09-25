@@ -45,7 +45,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) =
               className="w-full py-6 text-lg"
               size="lg"
             >
-              Prendre un rendez-vous rapide
+              Prendre un rendez-vous d'informations
             </Button>
             <Button 
               variant="outline" 
