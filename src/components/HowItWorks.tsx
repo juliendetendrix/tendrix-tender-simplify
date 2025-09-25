@@ -1,5 +1,5 @@
 import tenderResponseIllustration from '@/assets/tender-response-illustration.png';
-import franceNetworkMap from '@/assets/france-network-new.png';
+import franceNetworkMap from '@/assets/france-network-new-v2.png';
 import notificationIllustration from '@/assets/notification-illustration.png';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
@@ -79,7 +79,7 @@ const HowItWorks = () => {
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
                 <img 
                   src={franceNetworkMap} 
-                  alt="Carte de France avec réseau connecté montrant la couverture nationale des managers certifiés" 
+                  alt="Carte de France avec réseau connecté et interface de contact montrant la couverture nationale des managers certifiés" 
                   className="w-full h-full object-contain rounded-xl"
                 />
               </div>
