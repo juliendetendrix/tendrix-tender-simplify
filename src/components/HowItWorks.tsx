@@ -1,5 +1,5 @@
 import tenderResponseIllustration from '@/assets/tender-response-illustration.png';
-import franceNetworkMap from '@/assets/france-network-new-v2.png';
+import franceNetworkMap from '@/assets/france-network-new-v3.png';
 import notificationIllustration from '@/assets/notification-illustration.png';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
