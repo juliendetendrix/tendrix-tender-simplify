@@ -367,8 +367,8 @@ const Dashboard = () => {
 
               {/* Map */}
               <Card className="border-l-4 border-l-accent shadow-medium hover:shadow-strong transition-shadow">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg font-semibold text-accent">Map</CardTitle>
+                <CardHeader className="pb-3 bg-accent/10">
+                  <CardTitle className="text-lg font-bold text-accent drop-shadow-sm">Map</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="relative h-64 bg-gradient-to-br from-muted to-muted/50 rounded-lg overflow-hidden border">
@@ -392,14 +392,17 @@ const Dashboard = () => {
                     </div>
                     
                     {/* Overlay content */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
-                      <div className="text-center space-y-4">
-                        <h3 className="text-lg font-semibold text-foreground">Map indisponible</h3>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/90 backdrop-blur-sm">
+                      <div className="text-center space-y-3 px-4">
+                        <h3 className="text-lg font-semibold text-foreground">Map verrouillé</h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          Pour accéder à la map, veuillez prendre le rendez-vous d'informations avec notre équipe
+                        </p>
                         <Button 
                           onClick={handleLockedAction}
                           variant="secondary"
                           size="sm"
-                          className="text-xs"
+                          className="text-xs mt-2"
                         >
                           Prendre rendez-vous avec l'équipe
                         </Button>
