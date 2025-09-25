@@ -7,7 +7,7 @@ interface CompanyData {
 export const useCompanyData = () => {
   const [companyName, setCompanyName] = useState<string>('')
 
-  useEffect(() => {
+  const loadCompanyName = () => {
     // Try to get company name from beta questionnaire
     const betaData = localStorage.getItem('beta_questionnaire_draft')
     if (betaData) {
@@ -38,6 +38,31 @@ export const useCompanyData = () => {
 
     // Default if no company name found
     setCompanyName('')
+  }
+
+  useEffect(() => {
+    loadCompanyName()
+    
+    // Listen for storage changes to update company name when questionnaire is completed
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'beta_questionnaire_draft' || e.key === 'pme-questionnaire-draft') {
+        loadCompanyName()
+      }
+    }
+    
+    window.addEventListener('storage', handleStorageChange)
+    
+    // Also listen for focus events in case localStorage was updated in the same tab
+    const handleFocus = () => {
+      loadCompanyName()
+    }
+    
+    window.addEventListener('focus', handleFocus)
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('focus', handleFocus)
+    }
   }, [])
 
   return { companyName }
