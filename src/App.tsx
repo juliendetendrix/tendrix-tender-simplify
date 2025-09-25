@@ -9,6 +9,8 @@ import GlobalBetaQuestionnaire from "@/components/GlobalBetaQuestionnaire";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
+import NearbyTenders from "./pages/NearbyTenders";
+import WinningDeck from "./pages/WinningDeck";
 import BetaOffer from "./pages/BetaOffer";
 import QuestionnairePME from "./pages/QuestionnairePME";
 import NotFound from "./pages/NotFound";
@@ -27,6 +29,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/nearby-tenders" element={<NearbyTenders />} />
+            <Route path="/winning-deck" element={<WinningDeck />} />
             <Route path="/beta-offer" element={<BetaOffer />} />
             <Route path="/questionnaire-pme" element={<QuestionnairePME />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
