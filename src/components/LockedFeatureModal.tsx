@@ -37,7 +37,7 @@ export const LockedFeatureModal: React.FC<LockedFeatureModalProps> = ({ isOpen, 
               className="w-full py-6 text-lg"
               size="lg"
             >
-              Prendre un rendez-vous rapide
+              Prendre un rendez-vous d'informations
             </Button>
             <Button 
               variant="outline" 

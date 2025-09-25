@@ -158,7 +158,10 @@ const Dashboard = () => {
               {/* Appels d'offres last minute */}
               <Card className="border-l-4 border-l-primary shadow-medium hover:shadow-strong transition-shadow">
                 <CardHeader className="pb-3 flex flex-row items-center justify-between">
-                  <CardTitle className="text-lg font-semibold gradient-text">Appels d'offres last minute</CardTitle>
+                  <CardTitle className="text-lg font-semibold gradient-text">
+                    Appels d'offres last minute 
+                    <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">Recommandé</span>
+                  </CardTitle>
                   <div className="flex items-center gap-2">
                     {usingFallback && (
                       <AlertCircle className="w-4 h-4 text-yellow-500" />
