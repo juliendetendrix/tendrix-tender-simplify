@@ -84,10 +84,7 @@ const Dashboard = () => {
   }
 
   const handleStepClick = (step: string) => {
-    if (isBetaMode()) {
-      setShowLockedModal(true);
-      return;
-    }
+    // Allow free navigation between tender steps for beta users
     setSelectedStep(step);
   };
 
