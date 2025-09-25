@@ -48,7 +48,7 @@ const HowItWorks = () => {
                 <img 
                   src={tenderResponseIllustration} 
                   alt="Interface de réponse aux appels d'offres avec progression en temps réel" 
-                  className="w-full h-full object-cover rounded-xl"
+                  className="w-full h-full object-cover rounded-xl transform scale-110"
                 />
               </div>
               
