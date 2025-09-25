@@ -371,8 +371,8 @@ const Dashboard = () => {
 
               {/* Map */}
               <Card className="border-l-4 border-l-accent shadow-medium hover:shadow-strong transition-shadow">
-                <CardHeader className="pb-3 bg-accent/10">
-                  <CardTitle className="text-lg font-bold text-accent drop-shadow-sm">Map</CardTitle>
+                <CardHeader className="pb-3 bg-primary/5 border-b border-primary/10">
+                  <CardTitle className="text-lg font-bold text-primary">Map</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="relative h-64 bg-gradient-to-br from-muted to-muted/50 rounded-lg overflow-hidden border">
