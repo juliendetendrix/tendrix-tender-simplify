@@ -34,7 +34,7 @@ const HowItWorks = () => {
             {/* Left Content */}
             <div className="text-center lg:text-left order-1">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
-                Répondre à un appel d'offres en moins de 4 heures
+                Répondre à un appel d'offres en moins de 2 heures
               </h3>
               <p className="text-base text-muted-foreground leading-relaxed">
                 Notre IA automatise vos procédures administratives et génère la structure de la réponse en quelques instants. Dans la foulée, nos chargés d'affaires certifiés relisent, enrichissent et ajoutent des arguments de vente pour maximiser l'impact. Résultat : une réponse livrée en moins de 2 heures, sans perte de qualité. Au contraire : grâce au Tendrix Winning Deck, un document exclusif et façonné sur-mesure pour votre entreprise, vos dossiers se démarquent et sortent du lot.
