@@ -1,4 +1,4 @@
-import premierMockup from '@/assets/premier-mockup.png';
+import dashboardHighlightedMockup from '@/assets/dashboard-highlighted-mockup.jpg';
 import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
 
 const Hero = () => {
@@ -44,8 +44,8 @@ const Hero = () => {
               {/* Inner frame for the dashboard image */}
               <div className="relative bg-white rounded-2xl p-4 shadow-medium">
                 <img
-                  src={premierMockup}
-                  alt="Aperçu du tableau de bord Tendrix montrant l'interface de gestion des appels d'offres"
+                  src={dashboardHighlightedMockup}
+                  alt="Tableau de bord Tendrix avec la section Appels d'offres last minute mise en surbrillance"
                   className="w-full h-auto rounded-xl shadow-soft"
                 />
               </div>
