@@ -1,4 +1,4 @@
-import dashboardExactScreenshot from '@/assets/dashboard-exact-screenshot.jpg';
+import dashboardNewScreenshot from '@/assets/dashboard-new-screenshot.png';
 import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
 
 const Hero = () => {
@@ -44,7 +44,7 @@ const Hero = () => {
               {/* Inner frame for the dashboard image */}
               <div className="relative bg-white rounded-2xl p-4 shadow-medium">
                 <img
-                  src={dashboardExactScreenshot}
+                  src={dashboardNewScreenshot}
                   alt="Capture d'écran du tableau de bord Tendrix avec tous les éléments visibles"
                   className="w-full h-auto rounded-xl shadow-soft"
                 />
