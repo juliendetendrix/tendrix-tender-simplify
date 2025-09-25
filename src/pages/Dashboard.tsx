@@ -372,11 +372,37 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="relative h-64 bg-gradient-to-br from-muted to-muted/50 rounded-lg overflow-hidden border">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="space-y-4">
-                        <MapPin className="h-8 w-8 text-primary mx-auto animate-pulse" />
-                        <MapPin className="h-6 w-6 text-secondary ml-8 animate-pulse" style={{animationDelay: '0.5s'}} />
-                        <MapPin className="h-6 w-6 text-accent mr-8 animate-pulse" style={{animationDelay: '1s'}} />
+                    {/* Background map-like pattern */}
+                    <div className="absolute inset-0 opacity-20">
+                      <div className="w-full h-full bg-gradient-to-br from-blue-100 to-green-100">
+                        {/* Grid pattern to simulate map */}
+                        <div className="absolute inset-0" style={{
+                          backgroundImage: `
+                            linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px),
+                            linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px)
+                          `,
+                          backgroundSize: '20px 20px'
+                        }}></div>
+                        {/* Simulated roads */}
+                        <div className="absolute top-1/3 left-0 w-full h-0.5 bg-gray-400 opacity-60"></div>
+                        <div className="absolute top-2/3 left-0 w-full h-0.5 bg-gray-400 opacity-60"></div>
+                        <div className="absolute left-1/4 top-0 w-0.5 h-full bg-gray-400 opacity-60"></div>
+                        <div className="absolute left-3/4 top-0 w-0.5 h-full bg-gray-400 opacity-60"></div>
+                      </div>
+                    </div>
+                    
+                    {/* Overlay content */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
+                      <div className="text-center space-y-4">
+                        <h3 className="text-lg font-semibold text-foreground">Map indisponible</h3>
+                        <Button 
+                          onClick={handleLockedAction}
+                          variant="secondary"
+                          size="sm"
+                          className="text-xs"
+                        >
+                          Prendre rendez-vous avec l'équipe
+                        </Button>
                       </div>
                     </div>
                   </div>
