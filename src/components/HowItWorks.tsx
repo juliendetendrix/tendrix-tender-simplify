@@ -27,7 +27,7 @@ const HowItWorks = () => {
       <div className="container-max relative z-10 pt-12">{/* Reduced padding-top */}
 
         {/* First Block: Respond to tenders under 4 hours */}
-        <div ref={block1Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-6 shadow-strong mb-6 ${
+        <div ref={block1Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-6 shadow-strong mb-6 transition-all duration-800 ${
           v1 ? 'animate-slide-in-left' : 'opacity-0 -translate-x-16'
         }`}>
           <div className="grid lg:grid-cols-2 gap-6 items-center">
