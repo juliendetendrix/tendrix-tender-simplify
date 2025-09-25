@@ -1,4 +1,4 @@
-import tenderResponseInterface from '@/assets/tender-response-interface.png';
+import tenderResponseIllustration from '@/assets/tender-response-illustration.png';
 import franceNetworkMap from '@/assets/france-network-new.png';
 import notificationIllustration from '@/assets/notification-illustration.png';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
@@ -46,7 +46,7 @@ const HowItWorks = () => {
             <div className="relative order-2">
               <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
                 <img 
-                  src={tenderResponseInterface} 
+                  src={tenderResponseIllustration} 
                   alt="Interface de réponse aux appels d'offres avec progression en temps réel" 
                   className="w-full h-full object-cover rounded-xl transform scale-150"
                 />
