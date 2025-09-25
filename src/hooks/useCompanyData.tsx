@@ -8,12 +8,17 @@ export const useCompanyData = () => {
   const [companyName, setCompanyName] = useState<string>('')
 
   const loadCompanyName = () => {
+    console.log('Loading company name...')
+    
     // Try to get company name from beta questionnaire
     const betaData = localStorage.getItem('beta_questionnaire_draft')
+    console.log('Beta data:', betaData)
     if (betaData) {
       try {
         const parsed = JSON.parse(betaData)
+        console.log('Parsed beta data:', parsed)
         if (parsed.formData?.company_name) {
+          console.log('Found company name in beta data:', parsed.formData.company_name)
           setCompanyName(parsed.formData.company_name)
           return
         }
@@ -24,10 +29,13 @@ export const useCompanyData = () => {
 
     // Try to get company name from PME questionnaire
     const pmeData = localStorage.getItem('pme-questionnaire-draft')
+    console.log('PME data:', pmeData)
     if (pmeData) {
       try {
         const parsed = JSON.parse(pmeData)
+        console.log('Parsed PME data:', parsed)
         if (parsed.company_name) {
+          console.log('Found company name in PME data:', parsed.company_name)
           setCompanyName(parsed.company_name)
           return
         }
@@ -37,6 +45,7 @@ export const useCompanyData = () => {
     }
 
     // Default if no company name found
+    console.log('No company name found, using default')
     setCompanyName('')
   }
 
