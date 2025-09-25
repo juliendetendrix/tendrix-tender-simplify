@@ -28,7 +28,7 @@ const Profile = () => {
               <Card className="border-l-4 border-l-primary shadow-medium">
                 <CardHeader className="text-center pb-6">
                   <CardTitle className="text-2xl font-bold gradient-text mb-4">
-                    Profil en cours de développement
+                    Profil verrouillé
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="text-center space-y-6">

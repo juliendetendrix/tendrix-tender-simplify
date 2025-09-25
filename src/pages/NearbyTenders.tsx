@@ -26,26 +26,33 @@ const NearbyTenders = () => {
     try {
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/light-v11',
+        style: 'mapbox://styles/mapbox/satellite-streets-v12', // Style satellite
         center: [2.3522, 48.8566], // Paris coordinates
-        zoom: 10,
+        zoom: 11,
         interactive: false // Disable interactions since it's a background
       })
 
-      // Add some markers to simulate tender locations
+      // Add some markers to simulate tender locations around Paris
       const locations = [
-        { lng: 2.3522, lat: 48.8566, title: 'Centre de Paris' },
-        { lng: 2.2945, lat: 48.8584, title: 'Arc de Triomphe' },
-        { lng: 2.3488, lat: 48.8534, title: 'Notre-Dame' },
-        { lng: 2.2770, lat: 48.8906, title: 'La Défense' },
-        { lng: 2.3200, lat: 48.8000, title: 'Montparnasse' }
+        { lng: 2.3522, lat: 48.8566, title: 'AO - Rénovation Hôtel de Ville' },
+        { lng: 2.2945, lat: 48.8584, title: 'AO - Aménagement urbain 16ème' },
+        { lng: 2.3488, lat: 48.8534, title: 'AO - Travaux Notre-Dame' },
+        { lng: 2.2770, lat: 48.8906, title: 'AO - Infrastructure La Défense' },
+        { lng: 2.3200, lat: 48.8000, title: 'AO - Équipements Montparnasse' },
+        { lng: 2.4023, lat: 48.8648, title: 'AO - Services informatiques 11ème' },
+        { lng: 2.3200, lat: 48.8900, title: 'AO - Fournitures 18ème' },
+        { lng: 2.2500, lat: 48.8300, title: 'AO - Mobilier urbain 15ème' }
       ]
 
       map.current.on('load', () => {
         locations.forEach((location, index) => {
-          // Add markers
-          new mapboxgl.Marker({ color: '#3b82f6' })
+          // Add markers with different colors to simulate different types of tenders
+          const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6']
+          const color = colors[index % colors.length]
+          
+          new mapboxgl.Marker({ color: color, scale: 0.8 })
             .setLngLat([location.lng, location.lat])
+            .setPopup(new mapboxgl.Popup().setHTML(`<strong>${location.title}</strong>`))
             .addTo(map.current!)
         })
       })
@@ -80,9 +87,9 @@ const NearbyTenders = () => {
           </header>
           
           <main className="flex-1 p-6 bg-background relative">
-            {/* Background Map */}
+            {/* Background Satellite Map */}
             <div className="absolute inset-0 z-0">
-              <div ref={mapContainer} className="w-full h-full opacity-20" />
+              <div ref={mapContainer} className="w-full h-full opacity-30" />
             </div>
             
             {/* Token Input Overlay */}
@@ -94,7 +101,7 @@ const NearbyTenders = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <p className="text-sm text-muted-foreground text-center">
-                      Pour afficher la carte, veuillez entrer votre token Mapbox public.
+                      Pour afficher la carte satellite, veuillez entrer votre token Mapbox public.
                       <br />
                       <a href="https://mapbox.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                         Obtenez votre token sur mapbox.com
@@ -107,7 +114,7 @@ const NearbyTenders = () => {
                       onKeyPress={(e) => e.key === 'Enter' && handleTokenSubmit()}
                     />
                     <Button onClick={handleTokenSubmit} className="w-full">
-                      Initialiser la carte
+                      Initialiser la carte satellite
                     </Button>
                   </CardContent>
                 </Card>
@@ -146,8 +153,9 @@ const NearbyTenders = () => {
                   
                   <div className="text-sm text-muted-foreground bg-background/80 p-4 rounded-lg">
                     <p>
-                      Cette fonctionnalité vous permettra de visualiser sur une carte interactive 
-                      tous les appels d'offres situés près de votre entreprise et adaptés à votre profil.
+                      Cette fonctionnalité vous permettra de visualiser sur une carte satellite interactive 
+                      tous les appels d'offres situés près de votre entreprise, avec géolocalisation précise 
+                      et filtrage par secteur d'activité.
                     </p>
                   </div>
                 </CardContent>
