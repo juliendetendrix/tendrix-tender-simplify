@@ -113,14 +113,21 @@ const Dashboard = () => {
   ]
 
   const ongoingTenders = [
-    { title: "AO - Construction école primaire", amount: "2,3 M€", progress: 75, status: "En cours" },
-    { title: "AO - Rehabilitation centre sportif", amount: "1,8 M€", progress: 85, status: "En cours" },
-    { title: "AO - Construction immeuble de bureaux", amount: "3,5 M€", progress: 60, status: "Demande émise" },
-    { title: "AO - Rénovation piscine municipale", amount: "950 k€", progress: 95, status: "Négociation" },
-    { title: "AO - Aménagement parc urbain", amount: "1,4 M€", progress: 100, status: "Remporté" },
-    { title: "AO - Extension mairie", amount: "2,8 M€", progress: 30, status: "Demande émise" },
-    { title: "AO - Travaux voirie centre-ville", amount: "680 k€", progress: 70, status: "En cours" },
-    { title: "AO - Construction crèche", amount: "1,1 M€", progress: 90, status: "Négociation" }
+    // Exemples pour "Demande émise"
+    { title: "AO - Construction école primaire", amount: "2,3 M€", progress: 25, status: "Demande émise" },
+    { title: "AO - Extension mairie", amount: "2,8 M€", progress: 15, status: "Demande émise" },
+    { title: "AO - Aménagement parc urbain", amount: "1,4 M€", progress: 35, status: "Demande émise" },
+    
+    // Exemple pour "En cours"
+    { title: "AO - Réhabilitation centre sportif", amount: "1,8 M€", progress: 65, status: "En cours" },
+    
+    // Exemples pour "Négociation"  
+    { title: "AO - Rénovation piscine municipale", amount: "950 k€", progress: 85, status: "Négociation" },
+    { title: "AO - Construction crèche", amount: "1,1 M€", progress: 90, status: "Négociation" },
+    
+    // Exemples pour "Remporté"
+    { title: "AO - Travaux voirie centre-ville", amount: "680 k€", progress: 100, status: "Remporté" },
+    { title: "AO - Fourniture mobilier urbain", amount: "340 k€", progress: 100, status: "Remporté" }
   ]
 
   const steps = ["Demande émise", "En cours", "Négociation", "Remporté"]
@@ -325,7 +332,7 @@ const Dashboard = () => {
               {/* Mes appels d'offres en cours */}
               <Card className="lg:col-span-2">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg font-semibold gradient-text">Mes appels d'offres en cours</CardTitle>
+                  <CardTitle className="text-lg font-semibold gradient-text">Mes appels d'offres en cours (exemple version bêta)</CardTitle>
                   <div className="flex gap-2 text-sm mt-4">
                     {steps.map((step) => (
                       <button
