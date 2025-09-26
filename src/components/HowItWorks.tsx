@@ -66,7 +66,7 @@ const HowItWorks = () => {
             {/* Text Content - Mobile First */}
             <div className="text-center lg:text-left order-1 lg:order-2">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
-                Un réseau de développement commercial certifié
+                La force d'une solution hybride : IA + humain
               </h3>
               <p className="text-base text-muted-foreground leading-relaxed">
                 Notre vaste réseau de managers commerciaux certifiés à travers la France garantit une expertise locale et un accompagnement personnalisé pour vos candidatures d'appels d'offres, vous offrant des insights régionaux et une assistance dédiée.
