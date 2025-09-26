@@ -98,7 +98,7 @@ const HowItWorks = () => {
             {/* Left Content */}
             <div className="text-center lg:text-left order-1">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
-                Déclenchez votre demande instantanément
+                Une notification, une réponse
               </h3>
               <p className="text-base text-muted-foreground leading-relaxed">
                 Soyez notifié immédiatement lorsque de nouvelles opportunités d'appels d'offres correspondent à votre profil d'entreprise. Notre système intelligent vous assure de ne jamais manquer une opportunité pertinente avec des alertes en temps réel livrées directement sur votre appareil.
