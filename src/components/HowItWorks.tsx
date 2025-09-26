@@ -69,7 +69,7 @@ const HowItWorks = () => {
                 La force d'une solution hybride : IA + humain
               </h3>
               <p className="text-base text-muted-foreground leading-relaxed">
-                Notre vaste réseau de managers commerciaux certifiés à travers la France garantit une expertise locale et un accompagnement personnalisé pour vos candidatures d'appels d'offres, vous offrant des insights régionaux et une assistance dédiée.
+                Une réponse d'appel d'offres ne peut pas être laissée à l'IA seule. Chez Tendrix, l'automatisation assure la vitesse et la rigueur, mais c'est l'expertise humaine qui apporte la stratégie, l'adaptation et la force de persuasion. Cette alliance unique maximise vos chances de succès et garantit des dossiers aussi rapides que convaincants.
               </p>
             </div>
 
