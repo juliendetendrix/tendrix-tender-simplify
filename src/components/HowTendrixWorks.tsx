@@ -88,7 +88,7 @@ const HowTendrixWorks = () => {
                   {index === 1 && (
                     <div className="absolute top-0 -right-20 z-20">
                       <div className="bg-muted/80 text-muted-foreground px-2 py-1 rounded-md text-[10px] font-medium border shadow-sm text-center rotate-6">
-                        -4h pour répondre à certains AO
+                        -2h pour répondre à certains AO
                       </div>
                     </div>
                   )}
