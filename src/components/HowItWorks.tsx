@@ -101,7 +101,7 @@ const HowItWorks = () => {
                 Une notification, une réponse
               </h3>
               <p className="text-base text-muted-foreground leading-relaxed">
-                Soyez notifié immédiatement lorsque de nouvelles opportunités d'appels d'offres correspondent à votre profil d'entreprise. Notre système intelligent vous assure de ne jamais manquer une opportunité pertinente avec des alertes en temps réel livrées directement sur votre appareil.
+                Continuez votre travail en toute sérénité : dès qu'un AO pertinent pour votre entreprise apparaît, il est résumé, vous êtes notifié. Vous validez, nous gérons le reste.
               </p>
             </div>
 
