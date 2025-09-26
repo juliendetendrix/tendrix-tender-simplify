@@ -46,10 +46,10 @@ const Pricing = () => {
               </p>
               <div className="flex items-baseline justify-center">
                 <span className="text-4xl font-bold text-foreground">
-                  5€
+                  0€
                 </span>
                 <span className="text-muted-foreground ml-1">
-                  paiement unique
+                  sur prise de rdv
                 </span>
               </div>
             </div>
