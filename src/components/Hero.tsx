@@ -40,9 +40,9 @@ const Hero = () => {
           {/* Dashboard Preview */}
           <div className="relative max-w-5xl mx-auto mt-16 animate-slide-in-right" style={{animationDelay: '0.8s'}}>
             {/* Main container with sophisticated border */}
-            <div className="relative bg-card/50 backdrop-blur-sm border border-border/50 rounded-3xl p-8 shadow-strong">
+            <div className="relative bg-card/50 backdrop-blur-sm border border-border/50 rounded-3xl p-2 sm:p-8 shadow-strong">
               {/* Inner frame for the dashboard image */}
-              <div className="relative bg-white rounded-2xl p-4 shadow-medium">
+              <div className="relative bg-white rounded-2xl p-1 sm:p-4 shadow-medium">
                 <img
                   src={dashboardNewScreenshot}
                   alt="Capture d'écran du tableau de bord Tendrix avec tous les éléments visibles"
