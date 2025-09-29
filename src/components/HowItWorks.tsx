@@ -66,7 +66,7 @@ const HowItWorks = () => {
             {/* Text Content - Mobile First */}
             <div className="text-center lg:text-left order-1 lg:order-2">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
-                La force d'une solution hybride : IA + humain
+                La force d'une solution hybride : IA + Experts
               </h3>
               <p className="text-base text-muted-foreground leading-relaxed">
                 Une réponse d'appel d'offres ne peut pas être laissée à l'IA seule. Chez Tendrix, l'automatisation assure la vitesse et la rigueur, mais c'est l'expertise humaine qui apporte la stratégie, l'adaptation et la force de persuasion. Cette alliance unique maximise vos chances de succès et garantit des dossiers aussi rapides que convaincants.
