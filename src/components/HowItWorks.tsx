@@ -79,7 +79,8 @@ const HowItWorks = () => {
                 <img 
                   src={franceNetworkMap} 
                   alt="Carte de France avec réseau connecté et interface de contact montrant la couverture nationale des managers certifiés" 
-                  className="w-full h-full object-contain rounded-xl"
+                  className="w-full h-full object-cover rounded-xl scale-110"
+                  style={{ objectPosition: 'center' }}
                 />
               </div>
               
