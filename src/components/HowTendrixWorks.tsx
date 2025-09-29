@@ -14,7 +14,7 @@ const HowTendrixWorks = () => {
       icon: () => (
         <div className="relative">
           <div className="bg-primary/10 px-4 py-2 rounded-xl text-primary text-[11px] font-semibold font-mono tracking-wide">
-            Tester Tendrix gratuitement
+            Demander une réponse
           </div>
           {/* Effet de clic avec icône main */}
           <div className="absolute bottom-0 left-0 transform translate-x-1 translate-y-1">
@@ -22,7 +22,7 @@ const HowTendrixWorks = () => {
           </div>
         </div>
       ),
-      title: "Testez une réponse",
+      title: "Demandez une réponse",
       description: "Prenez connaissance du résumé de l'appel d'offre, Prix, Localisation, Budget, Livrable... Et demandez ou non d'entamer la réponse à l'Appel d'offre"
     },
     {

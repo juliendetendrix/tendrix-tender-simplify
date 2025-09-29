@@ -80,7 +80,7 @@ const TenderPreview = () => {
                 onClick={openQuestionnaire}
                 className="btn-secondary w-full group-hover:bg-secondary-hover"
               >
-                Tester Tendrix gratuitement
+                Demander une réponse
               </button>
             </div>
           ))}
