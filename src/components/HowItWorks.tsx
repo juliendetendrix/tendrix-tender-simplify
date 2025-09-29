@@ -132,7 +132,7 @@ const HowItWorks = () => {
             }`}
             onClick={openQuestionnaire}
           >
-            Commencer votre première réponse rapide
+            Obtenir un rendez-vous
           </button>
         </div>
       </div>
