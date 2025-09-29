@@ -43,7 +43,7 @@ const HowItWorks = () => {
 
             {/* Right Content - Software Image */}
             <div className="relative order-2">
-              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-80 lg:h-80 flex items-center justify-center">
                 <img 
                   src={tenderResponseIllustration} 
                   alt="Interface de réponse aux appels d'offres avec progression en temps réel" 
@@ -75,7 +75,7 @@ const HowItWorks = () => {
 
             {/* Left Content - France Network Image */}
             <div className="relative order-2 lg:order-1">
-              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-80 lg:h-80 flex items-center justify-center">
                 <img 
                   src={franceNetworkMap} 
                   alt="Carte de France avec réseau connecté et interface de contact montrant la couverture nationale des managers certifiés" 
@@ -107,7 +107,7 @@ const HowItWorks = () => {
 
             {/* Right Content - Notification Image */}
             <div className="relative order-2">
-              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-80 lg:h-80 flex items-center justify-center">
                 <img 
                   src={notificationIllustration} 
                   alt="Professionnel recevant une notification Tendrix sur une nouvelle opportunité d'appel d'offres pour la rénovation énergétique des bâtiments publics" 
