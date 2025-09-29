@@ -29,7 +29,7 @@ export function AppSidebar() {
     <Sidebar className="border-r border-border/50 bg-card">
       <SidebarHeader className="p-6 border-b border-border/30">
         <div className="flex items-center justify-center">
-          <img src={logoMain} alt="Tendrix" className="h-12 sm:h-10 w-auto" />
+          <img src={logoMain} alt="Tendrix" className="h-10 w-auto" />
         </div>
       </SidebarHeader>
       
