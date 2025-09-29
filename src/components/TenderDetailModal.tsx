@@ -193,7 +193,7 @@ const TenderDetailModal = ({ tender, isOpen, onClose, onShowLockedModal }: Tende
               className="flex-1 bg-primary hover:bg-primary/90"
             >
               <Clock className="w-4 h-4 mr-2" />
-              Demander une réponse
+              Tester Tendrix gratuitement
             </Button>
             
             {tender.url && tender.url !== "#" && (
