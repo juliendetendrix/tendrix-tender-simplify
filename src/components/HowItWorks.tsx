@@ -34,7 +34,7 @@ const HowItWorks = () => {
             {/* Left Content */}
             <div className="text-center lg:text-left order-1">
               <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
-                Répondre à un appel d'offres en moins de 2 heures
+                Obtenez une réponse à vos appels d'offres en quelques heures
               </h3>
               <p className="text-base text-muted-foreground leading-relaxed">
                 Notre IA automatise les tâches administratives et génère la structure de votre réponse en quelques instants. Nos chargés d'affaires certifiés relisent et enrichissent le dossier avec des arguments de vente percutants. Enfin, nous ajoutons le Tendrix Winning Deck, un document exclusif et façonné sur-mesure, qui fait que vos dossiers se démarquent et sortent du lot.
