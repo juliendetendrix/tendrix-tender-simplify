@@ -33,7 +33,7 @@ const Hero = () => {
               className="btn-primary text-lg px-8 py-4"
               onClick={openQuestionnaire}
             >
-              Découvrez les marchés qui correspondent à votre savoir-faire
+              Demander une réponse
             </button>
           </div>
 
