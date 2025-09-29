@@ -19,7 +19,7 @@ const HowItWorks = () => {
           titleVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-4'
         }`}>
           <h2 className="text-xl lg:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-center">
-            Débloquez un marché inexploité
+            Concentrez-vous sur votre métier
           </h2>
         </div>
       </div>
