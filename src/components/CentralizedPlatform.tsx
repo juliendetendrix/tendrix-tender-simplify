@@ -1,9 +1,10 @@
 import mobileMockup from '@/assets/mobile-mockup-new.png';
-import tendrixDashboard from '@/assets/tendrix-dashboard-illustration.png';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
 
 const CentralizedPlatform = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation();
+  const { openQuestionnaire } = useBetaQuestionnaire();
   
   return (
     <section ref={sectionRef} className="section-padding bg-background">
@@ -18,13 +19,37 @@ const CentralizedPlatform = () => {
         {/* Two images side by side */}
         <div className={`grid lg:grid-cols-2 gap-12 items-center ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
           
-          {/* Platform Interface with Map */}
-          <div className={`${isVisible ? 'animate-slide-in-left' : 'opacity-0 -translate-x-16'}`} style={{ animationDelay: '0.5s' }}>
-            <img 
-              src={tendrixDashboard} 
-              alt="Interface complète de la plateforme Tendrix avec sidebar de navigation à gauche et carte interactive des appels d'offres à droite" 
-              className="w-full rounded-xl shadow-medium hover:scale-105 transition-transform duration-300"
-            />
+          {/* App Download Invitation */}
+          <div className={`text-center ${isVisible ? 'animate-slide-in-left' : 'opacity-0 -translate-x-16'}`} style={{ animationDelay: '0.5s' }}>
+            <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-6">
+              Téléchargez l'application mobile
+            </h3>
+            <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto">
+              Accédez à tous vos appels d'offres depuis votre smartphone, où que vous soyez.
+            </p>
+            
+            {/* Download Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button 
+                onClick={openQuestionnaire}
+                className="flex items-center gap-3 bg-black text-white px-6 py-3 rounded-xl hover:bg-gray-800 transition-colors duration-300 shadow-medium"
+              >
+                <div className="flex flex-col items-start">
+                  <span className="text-xs opacity-80">Télécharger sur</span>
+                  <span className="text-lg font-semibold">App Store</span>
+                </div>
+              </button>
+              
+              <button 
+                onClick={openQuestionnaire}
+                className="flex items-center gap-3 bg-black text-white px-6 py-3 rounded-xl hover:bg-gray-800 transition-colors duration-300 shadow-medium"
+              >
+                <div className="flex flex-col items-start">
+                  <span className="text-xs opacity-80">Disponible sur</span>
+                  <span className="text-lg font-semibold">Google Play</span>
+                </div>
+              </button>
+            </div>
           </div>
 
           {/* Right - Mobile Mockup */}
