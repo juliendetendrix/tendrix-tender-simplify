@@ -33,7 +33,7 @@ const Hero = () => {
               className="btn-primary text-lg px-8 py-4"
               onClick={openQuestionnaire}
             >
-              Demander une réponse
+              Tester Tendrix gratuitement
             </button>
           </div>
 
