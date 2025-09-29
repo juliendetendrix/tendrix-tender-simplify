@@ -37,6 +37,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -113,13 +114,28 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
     };
   }, [isOpen]);
 
+  // Animation management
+  useEffect(() => {
+    if (isOpen) {
+      setIsAnimating(true);
+    }
+  }, [isOpen]);
+
+  // Handle animated close
+  const handleClose = () => {
+    setIsAnimating(false);
+    setTimeout(() => {
+      onClose();
+    }, 300); // Match animation duration
+  };
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
       
       if (e.key === 'Escape') {
-        onClose();
+        handleClose();
       } else if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         handleNext();
@@ -222,7 +238,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
       localStorage.removeItem('beta_questionnaire_draft');
       
       // Redirect to dashboard instead of beta offer page
-      onClose();
+      handleClose();
       navigate('/dashboard');
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -436,11 +452,11 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !isAnimating) return null;
 
   if (isCompleted) {
     return (
-      <div className="fixed inset-0 bg-background z-[49] flex items-center justify-center p-4">
+      <div className={`fixed inset-0 bg-background z-[49] flex items-center justify-center p-4 ${isAnimating ? 'animate-fade-in animate-scale-in' : 'animate-fade-out animate-scale-out'}`}>
         <div className="text-center space-y-6 max-w-2xl">
           <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto">
             <Check className="w-10 h-10 text-primary-foreground" />
@@ -450,7 +466,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
             Votre demande d'accès bêta a été envoyée avec succès. 
             Nous vous contacterons très bientôt avec votre accès personnalisé.
           </p>
-          <Button onClick={onClose} className="text-lg px-8 py-4">
+          <Button onClick={handleClose} className="text-lg px-8 py-4">
             Continuer sur le site
           </Button>
         </div>
@@ -459,7 +475,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-background z-[49] flex flex-col overflow-hidden overscroll-none">
+    <div className={`fixed inset-0 bg-background z-[49] flex flex-col overflow-hidden overscroll-none ${isAnimating ? 'animate-fade-in animate-scale-in' : 'animate-fade-out animate-scale-out'}`}>
       {/* Overlay to prevent interaction with background */}
       <div className="absolute inset-0 bg-background"></div>
       {/* Header spacer with border */}
@@ -478,7 +494,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
         <Button 
           variant="ghost" 
           size="sm"
-          onClick={() => { saveDraft(); onClose(); }} 
+          onClick={() => { saveDraft(); handleClose(); }} 
           className="h-8 w-8 p-0"
         >
           <X className="h-4 w-4" />
