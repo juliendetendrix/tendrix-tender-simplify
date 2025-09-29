@@ -6,6 +6,8 @@ const CentralizedPlatform = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation();
   const { openQuestionnaire } = useBetaQuestionnaire();
   
+  // Fixed: Removed tendrixDashboard reference and replaced with app download section
+  
   return (
     <section ref={sectionRef} className="section-padding bg-background">
       <div className="container-max">
