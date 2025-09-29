@@ -32,9 +32,6 @@ const CentralizedPlatform = () => {
 
           {/* Right - App Download Invitation */}
           <div className={`text-center ${isVisible ? 'animate-slide-in-right' : 'opacity-0 translate-x-16'}`} style={{ animationDelay: '0.7s' }}>
-            <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-6">
-              Téléchargez l'application mobile
-            </h3>
             <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto">
               Accédez à tous vos appels d'offres depuis votre smartphone, où que vous soyez.
             </p>
