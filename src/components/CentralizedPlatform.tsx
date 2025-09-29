@@ -18,11 +18,20 @@ const CentralizedPlatform = () => {
           </h2>
         </div>
 
-        {/* Two images side by side */}
+        {/* Two sections side by side */}
         <div className={`grid lg:grid-cols-2 gap-12 items-center ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
           
-          {/* App Download Invitation */}
-          <div className={`text-center ${isVisible ? 'animate-slide-in-left' : 'opacity-0 -translate-x-16'}`} style={{ animationDelay: '0.5s' }}>
+          {/* Left - Mobile Mockup */}
+          <div className={`flex justify-center ${isVisible ? 'animate-slide-in-left' : 'opacity-0 -translate-x-16'}`} style={{ animationDelay: '0.5s' }}>
+            <img 
+              src={mobileMockup} 
+              alt="Application mobile Tendrix montrant l'interface de gestion centralisée des appels d'offres" 
+              className="w-full max-w-sm drop-shadow-2xl hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+
+          {/* Right - App Download Invitation */}
+          <div className={`text-center ${isVisible ? 'animate-slide-in-right' : 'opacity-0 translate-x-16'}`} style={{ animationDelay: '0.7s' }}>
             <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-6">
               Téléchargez l'application mobile
             </h3>
@@ -52,15 +61,6 @@ const CentralizedPlatform = () => {
                 </div>
               </button>
             </div>
-          </div>
-
-          {/* Right - Mobile Mockup */}
-          <div className={`flex justify-center ${isVisible ? 'animate-slide-in-right' : 'opacity-0 translate-x-16'}`} style={{ animationDelay: '0.7s' }}>
-            <img 
-              src={mobileMockup} 
-              alt="Application mobile Tendrix montrant l'interface de gestion centralisée des appels d'offres" 
-              className="w-full max-w-sm drop-shadow-2xl hover:scale-105 transition-transform duration-300"
-            />
           </div>
 
         </div>
