@@ -23,7 +23,7 @@ const Header = () => {
   const navLinks = [
     { label: 'Comment ça marche', href: isHomePage ? '#how-it-works' : '/#how-it-works' },
     { label: 'Tarifs', href: isHomePage ? '#pricing' : '/#pricing' },
-    { label: 'Contact', href: isHomePage ? '#contact' : '/#contact' },
+    { label: 'Exemple', href: '/tender-details' },
   ];
 
   return (
