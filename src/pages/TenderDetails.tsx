@@ -103,6 +103,14 @@ const TenderDetails = () => {
                 Pénalités délais
               </Badge>
             </div>
+
+            {/* See Full Summary Button */}
+            <Button 
+              variant="link" 
+              className="text-[#0c1c98] text-sm px-0 h-auto font-normal mt-2"
+            >
+              Voir le résumé complet
+            </Button>
           </div>
 
           {/* Compatibility Card */}
