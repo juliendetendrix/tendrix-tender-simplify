@@ -18,7 +18,7 @@ const TenderDetails = () => {
       </div>
 
       {/* Header with curved bottom */}
-      <header className="bg-[#f9bd43] relative pb-8 pt-4 px-4">
+      <header className="bg-white relative pb-8 pt-4 px-4">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <Button
             variant="ghost"
