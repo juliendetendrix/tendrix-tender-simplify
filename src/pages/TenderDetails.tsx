@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import tendrixLogo from "@/assets/tendrix-logo-white.png";
+import tendrixLogo from "@/assets/tendrix-logo-blue.png";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const TenderDetails = () => {
