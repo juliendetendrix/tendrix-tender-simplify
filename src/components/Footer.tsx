@@ -1,4 +1,4 @@
-import { Linkedin, Mail, Phone } from 'lucide-react';
+import { Linkedin, Mail, Phone, Instagram, Facebook } from 'lucide-react';
 import logo from '@/assets/tendrix-logo.png';
 
 const Footer = () => {
@@ -85,6 +85,22 @@ const Footer = () => {
                   className="text-background/80 hover:text-background transition-colors"
                 >
                   <Linkedin className="h-5 w-5" />
+                </a>
+                <a
+                  href="https://www.instagram.com/tendrix.fr/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-background/80 hover:text-background transition-colors"
+                >
+                  <Instagram className="h-5 w-5" />
+                </a>
+                <a
+                  href="https://www.facebook.com/profile.php?id=61581168287416"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-background/80 hover:text-background transition-colors"
+                >
+                  <Facebook className="h-5 w-5" />
                 </a>
               </div>
             </div>
