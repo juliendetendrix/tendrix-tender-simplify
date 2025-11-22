@@ -15,6 +15,7 @@ import TopManagers from "./pages/TopManagers";
 import BetaOffer from "./pages/BetaOffer";
 import QuestionnairePME from "./pages/QuestionnairePME";
 import TenderDetails from "./pages/TenderDetails";
+import MobileApp from "./pages/MobileApp";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/beta-offer" element={<BetaOffer />} />
             <Route path="/questionnaire-pme" element={<QuestionnairePME />} />
             <Route path="/tender-details" element={<TenderDetails />} />
+            <Route path="/app" element={<MobileApp />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
