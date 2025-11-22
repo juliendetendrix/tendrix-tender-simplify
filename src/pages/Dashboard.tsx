@@ -7,23 +7,13 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { MapPin, MessageCircle, Phone, Mail, Star, RefreshCw, ExternalLink, AlertCircle } from "lucide-react"
 import { useState } from "react"
-import { useBoampTenders } from "@/hooks/useBoampTenders"
+import { useBoampTenders, type BoampTender } from "@/hooks/useBoampTenders"
 import { useCompanyData } from "@/hooks/useCompanyData"
 import TenderDetailModal from "@/components/TenderDetailModal"
 import { WelcomeModal } from '@/components/WelcomeModal'
 import { LockedFeatureModal } from '@/components/LockedFeatureModal'
 import { useEffect } from "react"
 
-interface BoampTender {
-  id: string
-  title: string
-  organisme: string
-  montant: string
-  datePublication: string
-  famille: string
-  procedure: string
-  url: string
-}
 
 const Dashboard = () => {
   const [chatMessage, setChatMessage] = useState("")
@@ -198,8 +188,8 @@ const Dashboard = () => {
                             <div className="flex-1">
                               <div className="text-sm font-medium text-foreground mb-1">{tender.title}</div>
                               <div className="text-xs text-muted-foreground">{tender.organisme}</div>
-                              {tender.montant && (
-                                <div className="text-xs text-primary font-medium mt-1">{tender.montant}</div>
+                              {tender.budget && (
+                                <div className="text-xs text-primary font-medium mt-1">{tender.budget}</div>
                               )}
                             </div>
                           </div>
