@@ -20,15 +20,15 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Fetching recent BOAMP tenders from DILA API...')
+    console.log('Fetching recent BOAMP tenders from OpenDataSoft API...')
     
-    // API endpoint for BOAMP data via DILA
-    const boampApiUrl = 'https://api.dila.fr/opendata/api-boamp/annonces/v230/search'
+    // API endpoint for BOAMP data via OpenDataSoft
+    const boampApiUrl = 'https://boamp-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/boamp/records'
     
     // Build query parameters
     const params = new URLSearchParams({
-      'rows': '20', // Limit to 20 recent tenders
-      'sort': 'dateParution desc', // Sort by publication date descending
+      'limit': '20', // Limit to 20 recent tenders
+      'order_by': 'dateparution desc', // Sort by publication date descending
     })
 
     console.log('API URL:', `${boampApiUrl}?${params.toString()}`)
@@ -47,42 +47,44 @@ serve(async (req) => {
     }
 
     const data = await response.json()
-    console.log('BOAMP API response:', data.numFound || 0, 'records found')
+    console.log('BOAMP API response:', data.total_count || 0, 'records found')
 
     // Transform the data to match our expected format
-    const tenders = data.docs?.map((doc: any) => {
+    const tenders = data.results?.map((record: any) => {
+      const fields = record.record?.fields || record.fields || {}
+      
       // Extract location
-      const location = doc.lieuExecution?.ville || doc.lieuExecution?.departement || 'Non spécifié'
+      const location = fields.lieuexecution || fields.departement || 'Non spécifié'
       
       // Extract budget
       let budget = 'Montant non spécifié'
-      if (doc.montant?.montantMin && doc.montant?.montantMax) {
-        const avg = (doc.montant.montantMin + doc.montant.montantMax) / 2
-        budget = `${(avg / 1000).toFixed(0)} k€ HT`
-      } else if (doc.montant?.montantEstime) {
-        budget = `${(doc.montant.montantEstime / 1000).toFixed(0)} k€ HT`
+      if (fields.montant) {
+        const montantValue = parseFloat(fields.montant)
+        if (!isNaN(montantValue)) {
+          budget = `${Math.round(montantValue / 1000)} k€ HT`
+        }
       }
       
       // Extract CPV codes
-      const cpvCodes = doc.cpv?.map((c: any) => c.code) || []
+      const cpvCodes = fields.cpv ? [fields.cpv] : []
       
       // Generate summary from description
-      const summary = doc.objetMarche?.slice(0, 150) + '...' || 'Description non disponible'
+      const summary = fields.objetmarche?.slice(0, 150) + '...' || fields.objet?.slice(0, 150) + '...' || 'Description non disponible'
       
       return {
-        id: doc.idweb || doc.id,
-        title: doc.objet || 'Appel d\'offres',
+        id: record.record?.id || record.recordid || Math.random().toString(36),
+        title: fields.objet || 'Appel d\'offres',
         summary: summary,
-        organisme: doc.annonceur?.denomination || 'Organisme non spécifié',
+        organisme: fields.annonceur || 'Organisme non spécifié',
         location: location,
         budget: budget,
-        datePublication: doc.dateParution,
-        deadline: doc.dateLimiteReponse,
-        famille: doc.familleAnnonce || 'Non spécifié',
-        procedure: doc.typeProcedure || 'Non spécifié',
+        datePublication: fields.dateparution || new Date().toISOString(),
+        deadline: fields.datelimitereponse || '',
+        famille: fields.familleannonce || 'Non spécifié',
+        procedure: fields.typeprocedure || 'Non spécifié',
         cpvCodes: cpvCodes,
-        url: `https://www.boamp.fr/avis/detail/${doc.idweb || doc.id}`,
-        hoursAgo: calculateHoursAgo(doc.dateParution)
+        url: `https://www.boamp.fr/avis/detail/${record.record?.id || record.recordid}`,
+        hoursAgo: calculateHoursAgo(fields.dateparution || new Date().toISOString())
       }
     }) || []
 
@@ -92,7 +94,7 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         data: tenders,
-        count: data.nhits || 0,
+        count: data.total_count || 0,
         lastUpdate: new Date().toISOString()
       }),
       {
