@@ -70,7 +70,6 @@ export type Database = {
           contact_sector: string | null
           created_at: string
           externalized_ao: boolean
-          id: string
           important_criteria: string[]
           main_barriers: string[]
           monthly_budget: string
@@ -93,7 +92,6 @@ export type Database = {
           contact_sector?: string | null
           created_at?: string
           externalized_ao: boolean
-          id?: string
           important_criteria?: string[]
           main_barriers?: string[]
           monthly_budget: string
@@ -116,7 +114,6 @@ export type Database = {
           contact_sector?: string | null
           created_at?: string
           externalized_ao?: boolean
-          id?: string
           important_criteria?: string[]
           main_barriers?: string[]
           monthly_budget?: string
