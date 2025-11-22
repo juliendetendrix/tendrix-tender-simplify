@@ -8,12 +8,18 @@ import { ExternalLink, Calendar, Building2, Euro, TrendingUp, Clock, FileText } 
 interface BoampTender {
   id: string
   title: string
+  summary: string
   organisme: string
-  montant: string
+  location: string
+  budget: string
   datePublication: string
+  deadline: string
   famille: string
   procedure: string
+  cpvCodes: string[]
   url: string
+  hoursAgo: number
+  compatibility?: number
 }
 
 interface TenderDetailModalProps {
@@ -60,7 +66,8 @@ const calculateSuccessRate = (tender: BoampTender): number => {
   baseRate += familyBonus[tender.famille as keyof typeof familyBonus] || 0
   
   // Ajustement selon le montant (plus c'est petit, plus c'est accessible)
-  const montantNum = parseInt(tender.montant.replace(/[^\d]/g, '')) || 0
+  const budgetMatch = tender.budget.match(/(\d+)\s*k€/)
+  const montantNum = budgetMatch ? parseInt(budgetMatch[1]) : 0
   if (montantNum < 50) baseRate += 20
   else if (montantNum < 100) baseRate += 15
   else if (montantNum < 200) baseRate += 10
@@ -130,7 +137,7 @@ const TenderDetailModal = ({ tender, isOpen, onClose, onShowLockedModal }: Tende
               <Euro className="w-5 h-5 text-secondary" />
               <div>
                 <div className="text-sm font-medium">Budget estimé</div>
-                <div className="text-sm text-secondary font-semibold">{tender.montant}</div>
+                <div className="text-sm text-secondary font-semibold">{tender.budget}</div>
               </div>
             </div>
 

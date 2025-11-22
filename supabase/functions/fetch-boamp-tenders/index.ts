@@ -5,6 +5,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Helper function to calculate hours ago
+function calculateHoursAgo(dateString: string): number {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  return Math.floor(diffMs / (1000 * 60 * 60))
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -12,28 +20,16 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Fetching recent BOAMP tenders...')
+    console.log('Fetching recent BOAMP tenders from DILA API...')
     
-    // API endpoint for BOAMP data via OpenDataSoft
-    const boampApiUrl = 'https://boamp-datadila.opendatasoft.com/api/records/1.0/search/'
+    // API endpoint for BOAMP data via DILA
+    const boampApiUrl = 'https://api.dila.fr/opendata/api-boamp/annonces/v230/search'
     
-    // Build query parameters for recent tenders
-    const now = new Date()
-    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-    const dateFilter = yesterday.toISOString().split('T')[0]
-    
+    // Build query parameters
     const params = new URLSearchParams({
-      'dataset': 'boamp',
-      'rows': '10', // Limit to 10 recent tenders
-      'sort': '-dateparutionennouveau', // Sort by publication date descending
-      'q': `dateparutionennouveau:[${dateFilter}T00:00:00Z TO NOW]`, // Filter last 24h
-      'refine.etat': 'INITIAL', // Only initial announcements
+      'rows': '20', // Limit to 20 recent tenders
+      'sort': 'dateParution desc', // Sort by publication date descending
     })
-    
-    // Add facets separately as they need to be added multiple times
-    params.append('facet', 'famille_libelle')
-    params.append('facet', 'etat')
-    params.append('facet', 'procedure')
 
     console.log('API URL:', `${boampApiUrl}?${params.toString()}`)
 
@@ -41,7 +37,7 @@ serve(async (req) => {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
-        'User-Agent': 'Tendrix-Dashboard/1.0'
+        'User-Agent': 'Tendrix-App/1.0'
       },
     })
 
@@ -51,20 +47,42 @@ serve(async (req) => {
     }
 
     const data = await response.json()
-    console.log('BOAMP API response:', data.nhits, 'records found')
+    console.log('BOAMP API response:', data.numFound || 0, 'records found')
 
     // Transform the data to match our expected format
-    const tenders = data.records?.map((record: any) => {
-      const fields = record.fields
+    const tenders = data.docs?.map((doc: any) => {
+      // Extract location
+      const location = doc.lieuExecution?.ville || doc.lieuExecution?.departement || 'Non spécifié'
+      
+      // Extract budget
+      let budget = 'Montant non spécifié'
+      if (doc.montant?.montantMin && doc.montant?.montantMax) {
+        const avg = (doc.montant.montantMin + doc.montant.montantMax) / 2
+        budget = `${(avg / 1000).toFixed(0)} k€ HT`
+      } else if (doc.montant?.montantEstime) {
+        budget = `${(doc.montant.montantEstime / 1000).toFixed(0)} k€ HT`
+      }
+      
+      // Extract CPV codes
+      const cpvCodes = doc.cpv?.map((c: any) => c.code) || []
+      
+      // Generate summary from description
+      const summary = doc.objetMarche?.slice(0, 150) + '...' || 'Description non disponible'
+      
       return {
-        id: record.recordid,
-        title: fields.objet || 'AO - Objet non spécifié',
-        organisme: fields.annonceur || 'Organisme non spécifié',
-        montant: fields.montant ? `${(fields.montant / 1000).toFixed(0)} k€` : 'Montant non spécifié',
-        datePublication: fields.dateparutionennouveau || fields.dateparution,
-        famille: fields.famille_libelle,
-        procedure: fields.procedure,
-        url: `https://www.boamp.fr/avis/detail/${record.recordid}`
+        id: doc.idweb || doc.id,
+        title: doc.objet || 'Appel d\'offres',
+        summary: summary,
+        organisme: doc.annonceur?.denomination || 'Organisme non spécifié',
+        location: location,
+        budget: budget,
+        datePublication: doc.dateParution,
+        deadline: doc.dateLimiteReponse,
+        famille: doc.familleAnnonce || 'Non spécifié',
+        procedure: doc.typeProcedure || 'Non spécifié',
+        cpvCodes: cpvCodes,
+        url: `https://www.boamp.fr/avis/detail/${doc.idweb || doc.id}`,
+        hoursAgo: calculateHoursAgo(doc.dateParution)
       }
     }) || []
 
@@ -88,9 +106,36 @@ serve(async (req) => {
     
     // Return fallback data in case of error
     const fallbackTenders = [
-      { title: "AO - Fournitures de bureau", organisme: "Mairie de Paris", montant: "45 k€" },
-      { title: "AO - Travaux de voirie", organisme: "Conseil Départemental", montant: "180 k€" },
-      { title: "AO - Services de nettoyage", organisme: "Université Lyon 1", montant: "75 k€" }
+      { 
+        id: '1',
+        title: "Construction de 4 maisons individuelles",
+        summary: "Projet de construction de 4 maisons individuelles avec garage intégré et aménagement paysager.",
+        organisme: "Commune de Bergerac",
+        location: "Dordogne",
+        budget: "320 k€ HT",
+        datePublication: new Date().toISOString(),
+        deadline: "2025-10-15",
+        famille: "Travaux",
+        procedure: "Appel d'offres ouvert",
+        cpvCodes: ["45000000"],
+        url: "#",
+        hoursAgo: 12
+      },
+      { 
+        id: '2',
+        title: "Rénovation énergétique d'un groupe scolaire",
+        summary: "Travaux d'isolation thermique, remplacement des menuiseries et installation de VMC double flux.",
+        organisme: "Département de la Gironde",
+        location: "Gironde",
+        budget: "450 k€ HT",
+        datePublication: new Date().toISOString(),
+        deadline: "2025-10-22",
+        famille: "Travaux",
+        procedure: "Appel d'offres ouvert",
+        cpvCodes: ["45000000"],
+        url: "#",
+        hoursAgo: 24
+      }
     ]
 
     return new Response(
