@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { MapPin, Calendar, Euro, Zap, AlertCircle, RefreshCw } from "lucide-react";
+import { MapPin, Calendar, Euro, Zap, AlertCircle, RefreshCw, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,6 +28,7 @@ interface LastMinuteAOProps {
 }
 
 export function LastMinuteAO({ onRequestResponse }: LastMinuteAOProps) {
+  const navigate = useNavigate();
   const { tenders, loading, error, usingFallback, lastUpdate, refetch } = useBoampTenders();
   const [selectedTender, setSelectedTender] = useState<BoampTender | null>(null);
 
@@ -114,10 +116,20 @@ export function LastMinuteAO({ onRequestResponse }: LastMinuteAOProps) {
                   )}
                 </div>
 
-              {/* Summary */}
+               {/* Summary */}
               <p className="text-xs text-muted-foreground leading-relaxed">
                 {tender.summary || "Information à venir"}
               </p>
+
+              {/* Read summary link */}
+              <Button
+                variant="link"
+                className="h-auto p-0 text-xs text-primary hover:text-primary/80 font-normal"
+                onClick={() => navigate(`/tender-details?id=${tender.id}`)}
+              >
+                <FileText className="w-3.5 h-3.5 mr-1" />
+                Lire le résumé de l'appel d'offres
+              </Button>
 
               {/* Organisme */}
               <div className="text-xs">
