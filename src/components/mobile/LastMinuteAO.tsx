@@ -111,15 +111,17 @@ export function LastMinuteAO({ onRequestResponse }: LastMinuteAOProps) {
                   {isNew(tender.hoursAgo) && (
                     <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-secondary/20 text-secondary shrink-0">
                       <Zap className="w-3 h-3" />
-                      {tender.hoursAgo}h
+                      il y a {tender.hoursAgo}h
                     </span>
                   )}
                 </div>
 
-               {/* Summary */}
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {tender.summary || "Information à venir"}
-              </p>
+               {/* Summary - only show if exists */}
+              {tender.summary && (
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {tender.summary.length > 70 ? `${tender.summary.substring(0, 70)}...` : tender.summary}
+                </p>
+              )}
 
               {/* Read summary link */}
               <Button
@@ -133,7 +135,7 @@ export function LastMinuteAO({ onRequestResponse }: LastMinuteAOProps) {
 
               {/* Organisme */}
               <div className="text-xs">
-                <span className="font-medium text-foreground">{tender.organisme}</span>
+                <span className="font-medium text-foreground">{tender.organisme || "Organisme non spécifié"}</span>
               </div>
 
               {/* Meta Info */}
