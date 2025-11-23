@@ -52,10 +52,39 @@ serve(async (req) => {
     // Transform the data to match our expected format
     const tenders = data.results?.map((record: any) => {
       // OpenDataSoft v2.1 API structure - fields are directly in the record
-      console.log('Processing record:', JSON.stringify(record).substring(0, 200))
+      console.log('Full record fields:', Object.keys(record).join(', '))
+      console.log('Record sample:', JSON.stringify(record).substring(0, 500))
       
-      // Extract location
-      const location = record.lieuexecution || record.departement || record.lieu_execution || 'Non spécifié'
+      // Extract buyer/organisme with multiple field variations
+      const organisme = record.annonceur 
+        || record.acheteur 
+        || record.nom_acheteur
+        || record.pouvoir_adjudicateur
+        || record.identite_nom
+        || 'Organisme non spécifié'
+      
+      // Extract location with better formatting
+      let location = 'Lieu : Non spécifié'
+      
+      // Try to build location from available fields
+      const ville = record.ville || record.ville_execution || record.lieu_ville
+      const codePostal = record.code_postal || record.cp_execution || record.lieu_code_postal
+      const dept = record.departement || record.code_departement || record.lieu_departement
+      const lieuExec = record.lieuexecution || record.lieu_execution || record.lieu_exec
+      
+      if (ville && codePostal) {
+        location = `${ville} (${codePostal})`
+      } else if (ville) {
+        location = ville
+      } else if (lieuExec) {
+        location = lieuExec
+      } else if (dept) {
+        if (Array.isArray(dept)) {
+          location = `Département ${dept[0]}`
+        } else {
+          location = `Département ${dept}`
+        }
+      }
       
       // Extract budget
       let budget = 'Montant non spécifié'
@@ -76,7 +105,7 @@ serve(async (req) => {
         id: record.id || Math.random().toString(36),
         title: record.objet || 'Appel d\'offres',
         summary: summary,
-        organisme: record.annonceur || 'Organisme non spécifié',
+        organisme: organisme,
         location: location,
         budget: budget,
         datePublication: record.dateparution || new Date().toISOString(),
