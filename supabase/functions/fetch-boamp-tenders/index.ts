@@ -51,40 +51,41 @@ serve(async (req) => {
 
     // Transform the data to match our expected format
     const tenders = data.results?.map((record: any) => {
-      const fields = record.record?.fields || record.fields || {}
+      // OpenDataSoft v2.1 API structure - fields are directly in the record
+      console.log('Processing record:', JSON.stringify(record).substring(0, 200))
       
       // Extract location
-      const location = fields.lieuexecution || fields.departement || 'Non spécifié'
+      const location = record.lieuexecution || record.departement || record.lieu_execution || 'Non spécifié'
       
       // Extract budget
       let budget = 'Montant non spécifié'
-      if (fields.montant) {
-        const montantValue = parseFloat(fields.montant)
+      if (record.montant) {
+        const montantValue = parseFloat(record.montant)
         if (!isNaN(montantValue)) {
           budget = `${Math.round(montantValue / 1000)} k€ HT`
         }
       }
       
       // Extract CPV codes
-      const cpvCodes = fields.cpv ? [fields.cpv] : []
+      const cpvCodes = record.cpv ? [record.cpv] : []
       
       // Generate summary from description
-      const summary = fields.objetmarche?.slice(0, 150) + '...' || fields.objet?.slice(0, 150) + '...' || 'Description non disponible'
+      const summary = record.objetmarche?.slice(0, 150) + '...' || record.objet?.slice(0, 150) + '...' || 'Description non disponible'
       
       return {
-        id: record.record?.id || record.recordid || Math.random().toString(36),
-        title: fields.objet || 'Appel d\'offres',
+        id: record.id || Math.random().toString(36),
+        title: record.objet || 'Appel d\'offres',
         summary: summary,
-        organisme: fields.annonceur || 'Organisme non spécifié',
+        organisme: record.annonceur || 'Organisme non spécifié',
         location: location,
         budget: budget,
-        datePublication: fields.dateparution || new Date().toISOString(),
-        deadline: fields.datelimitereponse || '',
-        famille: fields.familleannonce || 'Non spécifié',
-        procedure: fields.typeprocedure || 'Non spécifié',
+        datePublication: record.dateparution || new Date().toISOString(),
+        deadline: record.datelimitereponse || '',
+        famille: record.familleannonce || 'Non spécifié',
+        procedure: record.typeprocedure || 'Non spécifié',
         cpvCodes: cpvCodes,
-        url: `https://www.boamp.fr/avis/detail/${record.record?.id || record.recordid}`,
-        hoursAgo: calculateHoursAgo(fields.dateparution || new Date().toISOString())
+        url: record.url || `https://www.boamp.fr/avis/detail/${record.id}`,
+        hoursAgo: calculateHoursAgo(record.dateparution || new Date().toISOString())
       }
     }) || []
 
