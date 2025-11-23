@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Calendar, Euro, Zap, AlertCircle } from "lucide-react";
+import { MapPin, Calendar, Euro, Zap, AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,6 +13,8 @@ import { Progress } from "@/components/ui/progress";
 import { useBoampTenders, type BoampTender } from "@/hooks/useBoampTenders";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface LastMinuteAOProps {
   onRequestResponse: (tender: {
@@ -25,7 +27,7 @@ interface LastMinuteAOProps {
 }
 
 export function LastMinuteAO({ onRequestResponse }: LastMinuteAOProps) {
-  const { tenders, loading, error, usingFallback } = useBoampTenders();
+  const { tenders, loading, error, usingFallback, lastUpdate, refetch } = useBoampTenders();
   const [selectedTender, setSelectedTender] = useState<BoampTender | null>(null);
 
   const handleConfirmRequest = () => {
@@ -46,14 +48,31 @@ export function LastMinuteAO({ onRequestResponse }: LastMinuteAOProps) {
   return (
     <>
       <div className="p-4 space-y-4">
-        <div>
-          <h1 className="text-xl font-bold mb-1 text-primary">
-            Dernières opportunités
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Appels d'offres publiés récemment
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold mb-1 text-primary">
+              Dernières opportunités
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {usingFallback ? "Données de démonstration" : "Données BOAMP en temps réel"}
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => refetch()}
+            disabled={loading}
+            className="shrink-0"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          </Button>
         </div>
+
+        {!usingFallback && lastUpdate && (
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span>Mis à jour {formatDistanceToNow(new Date(lastUpdate), { addSuffix: true, locale: fr })}</span>
+          </div>
+        )}
 
         {usingFallback && (
           <Alert variant="default" className="bg-secondary/10 border-secondary">
@@ -97,23 +116,28 @@ export function LastMinuteAO({ onRequestResponse }: LastMinuteAOProps) {
 
               {/* Summary */}
               <p className="text-xs text-muted-foreground leading-relaxed">
-                {tender.summary}
+                {tender.summary || "Information à venir"}
               </p>
+
+              {/* Organisme */}
+              <div className="text-xs">
+                <span className="font-medium text-foreground">{tender.organisme}</span>
+              </div>
 
               {/* Meta Info */}
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-muted-foreground">{tender.location}</span>
+                  <span className="text-muted-foreground">{tender.location || "Non spécifié"}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Euro className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-muted-foreground">{tender.budget}</span>
+                  <span className="text-muted-foreground">{tender.budget || "Montant non spécifié"}</span>
                 </div>
                 <div className="flex items-center gap-1.5 col-span-2">
                   <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
                   <span className="text-muted-foreground">
-                    Date limite : {tender.deadline}
+                    {tender.deadline ? `Date limite : ${tender.deadline}` : "Date limite : Non spécifiée"}
                   </span>
                 </div>
               </div>
