@@ -113,7 +113,7 @@ const HowItWorks = () => {
                   src={notificationIllustration} 
                   alt="Professionnel recevant une notification Tendrix sur une nouvelle opportunité d'appel d'offres pour la rénovation énergétique des bâtiments publics" 
                   className="w-full h-full object-cover rounded-xl"
-                  style={{ objectPosition: '50% 80%' }}
+                  style={{ objectPosition: '50% 15%' }}
                 />
               </div>
               
