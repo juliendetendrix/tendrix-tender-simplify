@@ -8,7 +8,7 @@ const Pricing = () => {
   
   const trialFeatures = [
     "Affectation d'un chargé d'affaires référent",
-    "3 rendez-vous avec nos experts pour optimiser vos futures réponses",
+    "3 rendez-vous avec nos experts pour préparer optimiser vos futures réponses lors de l'utilisation de l'application",
     "15 jours d'accès à la plateforme",
     "Création d'un modèle de réponse personnalisé (Tendrix Winning Deck)",
     "Référencement de votre entreprise dans notre base"
