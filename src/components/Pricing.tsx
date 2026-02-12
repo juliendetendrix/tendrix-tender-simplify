@@ -19,10 +19,10 @@ const Pricing = () => {
       <div className="container-max">
         <div className={`text-center mb-16 transition-all duration-800 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
-            Offre Essai Gratuit
+            Offre Découverte de Tendrix
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Rejoignez les premières PME qui testent Tendrix gratuitement
+            Rejoignez les premières PME qui découvrent Tendrix gratuitement
           </p>
         </div>
 
@@ -38,10 +38,10 @@ const Pricing = () => {
             
             <div className="text-center mb-8">
               <h3 className="text-2xl font-bold text-foreground mb-2">
-                Essai Gratuit Tendrix
+                Découverte de Tendrix
               </h3>
               <p className="text-muted-foreground mb-4">
-                Pour les premières PME qui souhaitent tester l'outil gratuitement
+                Pour les premières PME qui souhaitent découvrir l'outil gratuitement
               </p>
               <p className="text-sm text-primary font-medium">Sur prise de rendez-vous</p>
             </div>
@@ -59,7 +59,7 @@ const Pricing = () => {
               className="btn-primary w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300"
               onClick={openQuestionnaire}
             >
-              Commencer mon essai gratuit
+              Commencer ma découverte
             </button>
           </div>
         </div>
