@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 }
 
 // Helper function to calculate hours ago
@@ -14,7 +14,6 @@ function calculateHoursAgo(dateString: string): number {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -22,16 +21,12 @@ serve(async (req) => {
   try {
     console.log('Fetching recent BOAMP tenders from OpenDataSoft API...')
     
-    // API endpoint for BOAMP data via OpenDataSoft
     const boampApiUrl = 'https://boamp-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/boamp/records'
     
-    // Build query parameters
     const params = new URLSearchParams({
-      'limit': '20', // Limit to 20 recent tenders
-      'order_by': 'dateparution desc', // Sort by publication date descending
+      'limit': '20',
+      'order_by': 'dateparution desc',
     })
-
-    console.log('API URL:', `${boampApiUrl}?${params.toString()}`)
 
     const response = await fetch(`${boampApiUrl}?${params.toString()}`, {
       method: 'GET',
@@ -43,7 +38,7 @@ serve(async (req) => {
 
     if (!response.ok) {
       console.error('BOAMP API error:', response.status, response.statusText)
-      throw new Error(`BOAMP API returned ${response.status}: ${response.statusText}`)
+      throw new Error('External API unavailable')
     }
 
     const data = await response.json()
@@ -51,11 +46,6 @@ serve(async (req) => {
 
     // Transform the data to match our expected format
     const tenders = data.results?.map((record: any) => {
-      // OpenDataSoft v2.1 API structure - fields are directly in the record
-      console.log('Full record fields:', Object.keys(record).join(', '))
-      console.log('Record sample:', JSON.stringify(record).substring(0, 500))
-      
-      // Extract buyer/organisme with multiple field variations
       const organisme = record.annonceur 
         || record.acheteur 
         || record.nom_acheteur
@@ -63,10 +53,7 @@ serve(async (req) => {
         || record.identite_nom
         || 'Organisme non spécifié'
       
-      // Extract location with better formatting
       let location = 'Lieu : Non spécifié'
-      
-      // Try to build location from available fields
       const ville = record.ville || record.ville_execution || record.lieu_ville
       const codePostal = record.code_postal || record.cp_execution || record.lieu_code_postal
       const dept = record.departement || record.code_departement || record.lieu_departement
@@ -86,7 +73,6 @@ serve(async (req) => {
         }
       }
       
-      // Extract budget
       let budget = 'Montant non spécifié'
       if (record.montant) {
         const montantValue = parseFloat(record.montant)
@@ -95,10 +81,7 @@ serve(async (req) => {
         }
       }
       
-      // Extract CPV codes
       const cpvCodes = record.cpv ? [record.cpv] : []
-      
-      // Generate summary from description
       const summary = record.objetmarche?.slice(0, 150) + '...' || record.objet?.slice(0, 150) + '...' || 'Description non disponible'
       
       return {
@@ -136,7 +119,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error fetching BOAMP data:', error)
     
-    // Return fallback data in case of error
+    // Return fallback data with generic error message
     const fallbackTenders = [
       { 
         id: '1',
@@ -173,7 +156,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: 'Failed to fetch tenders',
         data: fallbackTenders,
         fallback: true,
         lastUpdate: new Date().toISOString()
