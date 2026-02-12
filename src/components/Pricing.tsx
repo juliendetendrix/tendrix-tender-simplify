@@ -6,13 +6,12 @@ const Pricing = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation();
   const { openQuestionnaire } = useBetaQuestionnaire();
   
-  const betaFeatures = [
-    "1 réponse offerte pendant la phase bêta",
-    "Support prioritaire pendant toute la phase bêta",
-    "Modèles de réponse personnalisés (Tendrix Winning Deck)",
-    "Onboarding personnalisé",
-    "Réponse en moins de 4h pour des AO fournitures",
-    "1 chargé d'affaires référent dédié à votre entreprise"
+  const trialFeatures = [
+    "Référencement de votre entreprise dans notre base qualifiée",
+    "3 rendez-vous stratégiques avec nos experts marchés publics",
+    "15 jours d'accès complet à la plateforme Tendrix",
+    "Création d'un modèle de réponse sur-mesure (Tendrix Winning Deck)",
+    "Un chargé d'affaires dédié à votre accompagnement"
   ];
 
   return (
@@ -44,18 +43,11 @@ const Pricing = () => {
               <p className="text-muted-foreground mb-4">
                 Pour les premières PME qui souhaitent tester l'outil gratuitement
               </p>
-              <div className="flex items-baseline justify-center">
-                <span className="text-4xl font-bold text-foreground">
-                  0€
-                </span>
-                <span className="text-muted-foreground ml-1">
-                  sur prise de rdv
-                </span>
-              </div>
+              <p className="text-sm text-primary font-medium">Sur prise de rendez-vous</p>
             </div>
 
             <ul className="space-y-4 mb-8">
-              {betaFeatures.map((feature, featureIndex) => (
+              {trialFeatures.map((feature, featureIndex) => (
                 <li key={featureIndex} className="flex items-center">
                   <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
                   <span className="text-muted-foreground">{feature}</span>
