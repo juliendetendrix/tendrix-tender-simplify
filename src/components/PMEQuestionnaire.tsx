@@ -145,9 +145,7 @@ export const PMEQuestionnaire: React.FC = () => {
       
       case 4:
         if (!formData.beta_interest) newErrors.beta_interest = 'Cette question est requise';
-        if (formData.beta_interest === 'Oui, je veux profiter du mois gratuit') {
-          if (!formData.contact_name.trim()) newErrors.contact_name = 'Le nom et prénom sont requis';
-          if (!formData.contact_email.trim()) newErrors.contact_email = 'L\'email professionnel est requis';
+        if (formData.beta_interest === 'Oui, je veux profiter d\'un essai gratuit') {
           if (formData.contact_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contact_email)) {
             newErrors.contact_email = 'Format d\'email invalide';
           }
@@ -189,11 +187,11 @@ export const PMEQuestionnaire: React.FC = () => {
         important_criteria: formData.important_criteria,
         other_criteria: formData.other_criteria || null,
         monthly_budget: formData.monthly_budget,
-        beta_interest: formData.beta_interest === 'Oui, je veux profiter du mois gratuit',
-        contact_name: formData.beta_interest === 'Oui, je veux profiter du mois gratuit' ? formData.contact_name : null,
-        contact_email: formData.beta_interest === 'Oui, je veux profiter du mois gratuit' ? formData.contact_email : null,
-        city_department: formData.beta_interest === 'Oui, je veux profiter du mois gratuit' ? formData.city_department : null,
-        contact_sector: formData.beta_interest === 'Oui, je veux profiter du mois gratuit' ? formData.contact_sector : null,
+        beta_interest: formData.beta_interest === 'Oui, je veux profiter d\'un essai gratuit',
+        contact_name: formData.beta_interest === 'Oui, je veux profiter d\'un essai gratuit' ? formData.contact_name : null,
+        contact_email: formData.beta_interest === 'Oui, je veux profiter d\'un essai gratuit' ? formData.contact_email : null,
+        city_department: formData.beta_interest === 'Oui, je veux profiter d\'un essai gratuit' ? formData.city_department : null,
+        contact_sector: formData.beta_interest === 'Oui, je veux profiter d\'un essai gratuit' ? formData.contact_sector : null,
         consent: formData.consent,
         source_page: '/questionnaire-pme'
       };
@@ -211,7 +209,7 @@ export const PMEQuestionnaire: React.FC = () => {
           event_label: 'pme_questionnaire'
         });
 
-        if (formData.beta_interest === 'Oui, je veux profiter du mois gratuit') {
+        if (formData.beta_interest === 'Oui, je veux profiter d\'un essai gratuit') {
           (window as any).gtag('event', 'beta_optin', {
             event_category: 'conversion',
             event_label: 'pme_questionnaire'
@@ -222,7 +220,7 @@ export const PMEQuestionnaire: React.FC = () => {
       localStorage.removeItem('pme-questionnaire-draft');
       
       // Redirect to dashboard for beta users
-      if (formData.beta_interest === 'Oui, je veux profiter du mois gratuit') {
+      if (formData.beta_interest === 'Oui, je veux profiter d\'un essai gratuit') {
         navigate('/dashboard');
         return;
       }
@@ -571,15 +569,15 @@ export const PMEQuestionnaire: React.FC = () => {
             </div>
 
             <div className="space-y-4">
-              <Label>Souhaitez-vous tester la bêta gratuitement ? *</Label>
+              <Label>Souhaitez-vous profiter d'un essai gratuit ? *</Label>
               <RadioGroup 
                 value={formData.beta_interest} 
                 onValueChange={(value) => updateFormData('beta_interest', value)}
                 className={errors.beta_interest ? 'border border-destructive rounded-md p-2' : ''}
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Oui, je veux profiter du mois gratuit" id="beta1" />
-                  <Label htmlFor="beta1">Oui, je veux profiter du mois gratuit</Label>
+                   <RadioGroupItem value="Oui, je veux profiter d'un essai gratuit" id="beta1" />
+                   <Label htmlFor="beta1">Oui, je veux profiter d'un essai gratuit</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="Non, pas pour l'instant" id="beta2" />
@@ -589,7 +587,7 @@ export const PMEQuestionnaire: React.FC = () => {
               {errors.beta_interest && <p className="text-sm text-destructive">{errors.beta_interest}</p>}
             </div>
 
-            {formData.beta_interest === 'Oui, je veux profiter du mois gratuit' && (
+            {formData.beta_interest === 'Oui, je veux profiter d\'un essai gratuit' && (
               <div className="space-y-6 border-t pt-6">
                 <div className="space-y-2">
                   <Label htmlFor="contact_name">Nom & prénom *</Label>
@@ -663,7 +661,7 @@ export const PMEQuestionnaire: React.FC = () => {
   };
 
   if (isCompleted) {
-    const isBetaUser = formData.beta_interest === 'Oui, je veux profiter du mois gratuit';
+    const isBetaUser = formData.beta_interest === 'Oui, je veux profiter d\'un essai gratuit';
     
     return (
       <Card className="max-w-2xl mx-auto">

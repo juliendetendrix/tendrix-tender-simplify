@@ -413,7 +413,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
                 Comment pouvons-nous vous contacter ?
               </h2>
               <p className="text-muted-foreground text-lg">
-                Pour vous envoyer votre accès bêta personnalisé
+                Pour vous envoyer votre accès gratuit personnalisé
               </p>
             </div>
             <div className="max-w-md mx-auto space-y-4">
@@ -463,7 +463,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
           </div>
           <h2 className="text-4xl font-bold text-foreground">Merci !</h2>
           <p className="text-xl text-muted-foreground">
-            Votre demande d'accès bêta a été envoyée avec succès. 
+            Votre demande d'essai gratuit a été envoyée avec succès. 
             Nous vous contacterons très bientôt avec votre accès personnalisé.
           </p>
           <Button onClick={handleClose} className="text-lg px-8 py-4">
