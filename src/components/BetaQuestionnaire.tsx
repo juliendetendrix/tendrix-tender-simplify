@@ -463,7 +463,7 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
           </div>
           <h2 className="text-4xl font-bold text-foreground">Merci !</h2>
           <p className="text-xl text-muted-foreground">
-            Votre demande d'essai gratuit a été envoyée avec succès. 
+            Votre demande de découverte de Tendrix a été envoyée avec succès. 
             Nous vous contacterons très bientôt avec votre accès personnalisé.
           </p>
           <Button onClick={handleClose} className="text-lg px-8 py-4">
