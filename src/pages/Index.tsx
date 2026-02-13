@@ -19,9 +19,9 @@ const Index = () => {
         <HowItWorks />
         <TenderPreview />
         <HowTendrixWorks />
+        <VideoExplainer />
         <CentralizedPlatform />
         <Callout />
-        <VideoExplainer />
         <Pricing />
       </main>
       <Footer />
