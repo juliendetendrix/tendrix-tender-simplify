@@ -1,90 +1,121 @@
-import { Calendar, Building, Euro } from 'lucide-react';
+import { Calendar, Building, Euro, MapPin, Zap, RefreshCw } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
+import { useBoampTenders } from '@/hooks/useBoampTenders';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 
 const TenderPreview = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation();
   const { openQuestionnaire } = useBetaQuestionnaire();
-  
-  const tenders = [
-    {
-      title: 'Rénovation énergétique des bâtiments publics',
-      buyer: 'Mairie du 13ème arrondissement de Paris',
-      budget: '€180,000 - €320,000',
-      deadline: '2024-02-15',
-      summary: 'Modernisation énergétique des équipements municipaux incluant isolation thermique, installation de pompes à chaleur et systèmes de ventilation.',
-    },
-    {
-      title: 'Services informatiques et cybersécurité',
-      buyer: 'Hôpital de la Pitié-Salpêtrière',
-      budget: '€95,000 - €150,000',
-      deadline: '2024-01-30',
-      summary: 'Mise en place d\'une infrastructure de sécurité informatique renforcée avec solutions de sauvegarde et protection des données de santé.',
-    },
-    {
-      title: 'Aménagement d\'espaces verts urbains',
-      buyer: 'Ville de Paris - Secteur 13ème',
-      budget: '€60,000 - €110,000',
-      deadline: '2024-02-08',
-      summary: 'Conception et réalisation d\'espaces verts écologiques dans le quartier de la Butte-aux-Cailles avec végétalisation et mobilier urbain.',
-    },
-  ];
+  const { tenders, loading, refetch } = useBoampTenders();
+
+  const displayTenders = tenders.slice(0, 3);
 
   return (
     <section ref={sectionRef} className="section-padding bg-gradient-hero">
       <div className="container-max">
         <div className={`text-center mb-16 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
-          <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
-            Récentes opportunités
-          </h2>
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <h2 className="text-3xl lg:text-5xl font-bold text-foreground">
+              Récentes opportunités
+            </h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => refetch()}
+              disabled={loading}
+              className="shrink-0"
+            >
+              <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Des appels d'offres près de chez vous
+            Données BOAMP en temps réel — Des appels d'offres près de chez vous
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {tenders.map((tender, index) => (
-            <div
-              key={index}
-              className={`bg-white rounded-2xl p-6 shadow-soft hover:shadow-medium hover:scale-105 transition-all duration-300 border border-border group ${
-                isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
-              }`}
-              style={{ animationDelay: `${0.2 + index * 0.2}s` }}
-            >
-              <h3 className="text-xl font-semibold text-foreground mb-4 line-clamp-2">
-                {tender.title}
-              </h3>
-              
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center text-muted-foreground">
-                  <Building className="h-4 w-4 mr-2 flex-shrink-0" />
-                  <span className="text-sm">{tender.buyer}</span>
-                </div>
-                
-                <div className="flex items-center text-muted-foreground">
-                  <Euro className="h-4 w-4 mr-2 flex-shrink-0" />
-                  <span className="text-sm font-medium">{tender.budget}</span>
-                </div>
-                
-                <div className="flex items-center text-muted-foreground">
-                  <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
-                  <span className="text-sm">Date limite : {tender.deadline}</span>
-                </div>
+        {loading ? (
+          <div className="grid lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white rounded-2xl p-6 shadow-soft border border-border space-y-4">
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-4 w-1/3" />
+                <Skeleton className="h-10 w-full" />
               </div>
-              
-              <p className="text-muted-foreground text-sm mb-6 line-clamp-3">
-                {tender.summary}
-              </p>
-              
-              <button 
-                onClick={openQuestionnaire}
-                className="btn-secondary w-full group-hover:bg-secondary-hover"
+            ))}
+          </div>
+        ) : (
+          <div className="grid lg:grid-cols-3 gap-8">
+            {displayTenders.map((tender, index) => (
+              <div
+                key={tender.id}
+                className={`bg-white rounded-2xl p-6 shadow-soft hover:shadow-medium hover:scale-105 transition-all duration-300 border border-border group ${
+                  isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
+                }`}
+                style={{ animationDelay: `${0.2 + index * 0.2}s` }}
               >
-                Demander une réponse
-              </button>
-            </div>
-          ))}
-        </div>
+                {/* Title + badge */}
+                <div className="flex items-start gap-2 mb-4">
+                  <h3 className="text-xl font-semibold text-foreground flex-1 line-clamp-3">
+                    {tender.title}
+                  </h3>
+                  {tender.hoursAgo < 48 && (
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-secondary/20 text-secondary shrink-0">
+                      <Zap className="w-3 h-3" />
+                      il y a {tender.hoursAgo}h
+                    </span>
+                  )}
+                </div>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center text-muted-foreground">
+                    <Building className="h-4 w-4 mr-2 flex-shrink-0" />
+                    <span className="text-sm">{tender.organisme || 'Organisme non spécifié'}</span>
+                  </div>
+
+                  <div className="flex items-center text-muted-foreground">
+                    <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
+                    <span className="text-sm">{tender.location || 'Non spécifié'}</span>
+                  </div>
+
+                  <div className="flex items-center text-muted-foreground">
+                    <Euro className="h-4 w-4 mr-2 flex-shrink-0" />
+                    <span className="text-sm font-medium">{tender.budget || 'Montant non spécifié'}</span>
+                  </div>
+
+                  <div className="flex items-center text-muted-foreground">
+                    <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
+                    <span className="text-sm">
+                      {tender.deadline ? `Date limite : ${tender.deadline}` : 'Date limite : Non spécifiée'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Compatibility */}
+                {tender.compatibility && (
+                  <div className="mb-6 space-y-1.5">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium text-foreground">Compatibilité</span>
+                      <span className="font-semibold text-primary">{tender.compatibility}%</span>
+                    </div>
+                    <Progress value={tender.compatibility} className="h-1.5" />
+                  </div>
+                )}
+
+                <button
+                  onClick={openQuestionnaire}
+                  className="btn-secondary w-full group-hover:bg-secondary-hover"
+                >
+                  Demander une réponse
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
