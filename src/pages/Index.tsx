@@ -6,7 +6,7 @@ import TenderPreview from '@/components/TenderPreview';
 import HowTendrixWorks from '@/components/HowTendrixWorks';
 import CentralizedPlatform from '@/components/CentralizedPlatform';
 import Callout from '@/components/Callout';
-
+import VideoExplainer from '@/components/VideoExplainer';
 import Pricing from '@/components/Pricing';
 import Footer from '@/components/Footer';
 
@@ -21,6 +21,7 @@ const Index = () => {
         <HowTendrixWorks />
         <CentralizedPlatform />
         <Callout />
+        <VideoExplainer />
         <Pricing />
       </main>
       <Footer />
