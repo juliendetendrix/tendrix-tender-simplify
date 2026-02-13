@@ -58,6 +58,7 @@ const CentralizedPlatform = () => {
                 </div>
               </button>
             </div>
+            <p className="text-sm text-muted-foreground italic mt-3">Bientôt disponible</p>
           </div>
 
         </div>
