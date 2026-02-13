@@ -24,7 +24,7 @@ const Callout = () => {
           <p className={`text-xl text-primary-foreground/80 mb-8 max-w-2xl mx-auto transition-all duration-800 ${
             isVisible ? 'animate-fade-in-left' : 'opacity-0 -translate-x-8'
           }`} style={{animationDelay: '0.2s'}}>
-            Rejoignez des milliers d'entreprises qui utilisent déjà Tendrix pour remporter plus de marchés et accélérer leur croissance.
+            Rejoignez le réseau d'entreprises qui utilisent Tendrix pour remporter plus de marchés et accélérer leur croissance.
           </p>
           
           <button 
