@@ -1,5 +1,5 @@
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { Play, Instagram } from 'lucide-react';
+import { Instagram } from 'lucide-react';
 
 const VideoExplainer = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation();
@@ -30,20 +30,16 @@ const VideoExplainer = () => {
             rel="noopener noreferrer"
             className="group relative w-full max-w-sm mx-auto rounded-3xl overflow-hidden shadow-strong bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 hover:border-secondary/50 transition-all duration-500 hover:shadow-[0_20px_60px_-12px_hsl(var(--secondary)/0.4)] hover:scale-[1.02]"
           >
-            {/* Instagram embed hidden, used as video display */}
             <div className="relative aspect-[9/16] w-full">
               <iframe
-                src="https://www.instagram.com/reel/DUnuP_PDgXV/embed"
-                className="absolute inset-0 w-[calc(100%+2px)] h-[calc(100%+2px)] -top-[1px] -left-[1px] border-0 pointer-events-none"
-                allowFullScreen
+                src="https://drive.google.com/file/d/16qEBGcbW1IQtlIxy3GdxReEOk-LOM0NQ/preview"
+                className="absolute inset-0 w-full h-full border-0 pointer-events-none"
+                allow="autoplay"
                 loading="lazy"
-                scrolling="no"
               />
-              {/* Overlay to capture clicks and hide Instagram chrome */}
+              {/* Overlay to capture clicks */}
               <div className="absolute inset-0 z-10" />
-              {/* Top overlay to hide Instagram header */}
-              <div className="absolute top-0 left-0 right-0 h-14 bg-gradient-to-b from-primary/90 to-transparent z-20" />
-              {/* Bottom overlay to hide Instagram footer */}
+              {/* Bottom badge */}
               <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-primary/90 to-transparent z-20 flex items-end justify-center pb-3">
                 <span className="inline-flex items-center gap-2 text-primary-foreground/90 text-sm font-medium">
                   <Instagram className="h-4 w-4" />
