@@ -34,7 +34,7 @@ const Callout = () => {
             }`} 
             style={{animationDelay: '0.4s'}}
           >
-            Rejoindre la bêta privée
+            Je découvre Tendrix
           </button>
         </div>
       </div>
