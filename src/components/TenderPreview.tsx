@@ -96,15 +96,14 @@ const TenderPreview = () => {
                 </div>
 
                 {/* Compatibility */}
-                {tender.compatibility && (
-                  <div className="mb-6 space-y-1.5">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-medium text-foreground">Compatibilité</span>
-                      <span className="font-semibold text-primary">{tender.compatibility}%</span>
-                    </div>
-                    <Progress value={tender.compatibility} className="h-1.5" />
+                <div className="mb-6 space-y-1.5">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium text-foreground">Compatibilité</span>
+                    <span className="font-semibold text-muted-foreground">N/A</span>
                   </div>
-                )}
+                  <Progress value={0} className="h-1.5" />
+                  <p className="text-xs text-muted-foreground italic">Inscrivez-vous pour un score personnalisé</p>
+                </div>
 
                 <button
                   onClick={openQuestionnaire}
