@@ -102,7 +102,7 @@ const TenderPreview = () => {
                     <span className="font-semibold text-muted-foreground">N/A</span>
                   </div>
                   <Progress value={0} className="h-1.5" />
-                  <p className="text-xs text-muted-foreground italic">Inscrivez-vous pour un score personnalisé</p>
+                  <p className="text-xs text-muted-foreground italic">Nous pourrons estimer la compatibilité de votre entreprise une fois inscrite et onboarding réalisé</p>
                 </div>
 
                 <button
