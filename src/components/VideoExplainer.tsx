@@ -31,14 +31,15 @@ const VideoExplainer = () => {
             className="group relative w-full max-w-sm mx-auto rounded-3xl overflow-hidden shadow-strong bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 hover:border-secondary/50 transition-all duration-500 hover:shadow-[0_20px_60px_-12px_hsl(var(--secondary)/0.4)] hover:scale-[1.02]"
           >
             <div className="relative aspect-[9/16] w-full">
-              {isVisible && (
-                <iframe
-                  src="https://drive.google.com/file/d/16qEBGcbW1IQtlIxy3GdxReEOk-LOM0NQ/preview"
-                  className="absolute inset-0 w-full h-full border-0 pointer-events-none"
-                  allow="autoplay"
-                  loading="lazy"
-                />
-              )}
+              <video
+                src="/videos/tendrix-explainer.mov"
+                className="absolute inset-0 w-full h-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+              />
               {/* Overlay to capture clicks */}
               <div className="absolute inset-0 z-10" />
               {/* Bottom badge */}
