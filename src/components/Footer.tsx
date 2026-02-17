@@ -50,11 +50,6 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/tender-details" className="text-background/80 hover:text-background transition-colors">
-                  Exemple d'appel d'offre
-                </a>
-              </li>
-              <li>
                 <a href="/mentions-legales" className="text-background/80 hover:text-background transition-colors">
                   Mentions légales
                 </a>
