@@ -111,7 +111,7 @@ const Footer = () => {
         <div className="border-t border-background/20 pt-8">
           <div className="flex justify-center items-center">
             <p className="text-background/60 text-sm">
-              © 2025 Tendrix. Tous droits réservés.
+              © 2025 Tendrix. Tous droits réservés. · <a href="/mentions-legales" className="hover:text-background transition-colors underline">Mentions légales</a>
             </p>
           </div>
         </div>
