@@ -23,12 +23,11 @@ const MentionsLegales = () => {
           <section>
             <h2 className="text-xl font-bold text-foreground mb-4">EDITION DU SITE</h2>
             <p>
-              L'édition du Site est assurée par la société Julien Malherbe, Micro-Entreprise au capital de _______________ euros, immatriculée au Registre du Commerce et des Sociétés de _______________ sous le numéro 952515476 dont le siège social est situé au 45 AVENUE DU GENERAL LECLERC,
+              L'édition du Site est assurée par la société Julien Malherbe, Micro-Entreprise sous le numéro 952515476 dont le siège social est situé au 45 AVENUE DU GENERAL LECLERC,
             </p>
             <ul className="list-none space-y-1 mt-2">
               <li>&gt; <strong>Numéro de téléphone</strong> : 0771819729</li>
               <li>&gt; <strong>Adresse e-mail</strong> : julien.malherbe@tendrix.fr</li>
-              <li>&gt; <strong>N° de TVA intracommunautaire</strong> : _______________</li>
               <li>&gt; <strong>Directeur de la publication</strong> : Julien Malherbe</li>
             </ul>
             <p className="mt-2">ci-après l'"<strong>Editeur</strong>".</p>
