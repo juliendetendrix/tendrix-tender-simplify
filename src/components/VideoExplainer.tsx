@@ -1,5 +1,5 @@
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { Instagram } from 'lucide-react';
+import { Linkedin } from 'lucide-react';
 
 const VideoExplainer = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation();
@@ -25,7 +25,7 @@ const VideoExplainer = () => {
         <div className={`flex flex-col items-center gap-8 transition-all duration-800 ${isVisible ? 'animate-scale-in' : 'opacity-0 scale-95'}`}>
           {/* Video container */}
           <a
-            href="https://www.instagram.com/reel/DUnuP_PDgXV/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
+            href="https://www.linkedin.com/posts/julienmalherbe-_cest-lanc%C3%A9-apr%C3%A8s-plusieurs-mois-de-travail-activity-7430506561002745856-OblB?utm_source=share&utm_medium=member_desktop&rcm=ACoAADM_yQcBTeNysd4eLCiYJDW_lR-9HkdWPYo"
             target="_blank"
             rel="noopener noreferrer"
             className="group relative w-full max-w-sm mx-auto rounded-3xl overflow-hidden shadow-strong bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 hover:border-secondary/50 transition-all duration-500 hover:shadow-[0_20px_60px_-12px_hsl(var(--secondary)/0.4)] hover:scale-[1.02]"
@@ -45,8 +45,8 @@ const VideoExplainer = () => {
               {/* Bottom badge */}
               <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-primary/90 to-transparent z-20 flex items-end justify-center pb-3">
                 <span className="inline-flex items-center gap-2 text-primary-foreground/90 text-sm font-medium">
-                  <Instagram className="h-4 w-4" />
-                  Voir sur Instagram
+                  <Linkedin className="h-4 w-4" />
+                  Voir sur LinkedIn
                 </span>
               </div>
             </div>
@@ -54,13 +54,13 @@ const VideoExplainer = () => {
 
           {/* Instagram CTA */}
           <a
-            href="https://www.instagram.com/tendrix.fr?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+            href="https://www.linkedin.com/in/julienmalherbe-/"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-primary-foreground hover:text-secondary font-semibold transition-colors"
           >
-            <Instagram className="h-5 w-5" />
-            Voir plus de vidéos sur notre Instagram
+            <Linkedin className="h-5 w-5" />
+            Voir plus sur notre LinkedIn
           </a>
         </div>
       </div>
