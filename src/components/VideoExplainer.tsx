@@ -1,7 +1,6 @@
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { Linkedin, Instagram, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
-import instagramThumbnail from '@/assets/instagram-reel-thumbnail.gif';
 
 const videos = [
   {
@@ -14,8 +13,8 @@ const videos = [
   },
   {
     id: 'instagram',
-    type: 'image' as const,
-    src: instagramThumbnail,
+    type: 'video' as const,
+    src: '/videos/instagram-reel.mov',
     href: 'https://www.instagram.com/reel/DPiV0g9iLTE/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
     badge: 'Voir sur Instagram',
     icon: Instagram,
@@ -30,6 +29,7 @@ const VideoExplainer = () => {
   const next = () => setCurrent((c) => (c === videos.length - 1 ? 0 : c + 1));
 
   const video = videos[current];
+  const nextVideo = videos[(current + 1) % videos.length];
   const Icon = video.icon;
 
   return (
@@ -51,26 +51,45 @@ const VideoExplainer = () => {
         </div>
 
         <div className={`flex flex-col items-center gap-8 transition-all duration-800 ${isVisible ? 'animate-scale-in' : 'opacity-0 scale-95'}`}>
-          {/* Carousel container */}
-          <div className="relative w-full max-w-sm mx-auto flex items-center gap-4">
+          {/* Carousel with peek effect */}
+          <div className="relative w-full max-w-lg mx-auto flex items-center justify-center">
             {/* Prev button */}
             <button
               onClick={prev}
-              className="absolute -left-14 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 flex items-center justify-center text-primary-foreground hover:bg-primary-foreground/20 transition-colors"
+              className="absolute left-0 sm:-left-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 flex items-center justify-center text-primary-foreground hover:bg-primary-foreground/20 transition-colors"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
 
-            {/* Video / Image card */}
-            <a
-              href={video.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative w-full rounded-3xl overflow-hidden shadow-strong bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 hover:border-secondary/50 transition-all duration-500 hover:shadow-[0_20px_60px_-12px_hsl(var(--secondary)/0.4)] hover:scale-[1.02]"
-            >
-              <div className="relative aspect-[9/16] w-full">
-                {video.type === 'video' ? (
+            {/* Cards wrapper */}
+            <div className="relative w-full max-w-sm mx-auto" style={{ height: 'auto', aspectRatio: '9/16' }}>
+              {/* Next video peeking on the right */}
+              <div
+                onClick={next}
+                className="hidden sm:block absolute top-4 -right-20 w-[70%] rounded-2xl overflow-hidden opacity-40 blur-[1px] scale-90 cursor-pointer hover:opacity-50 transition-all duration-500 border border-primary-foreground/10"
+                style={{ aspectRatio: '9/16' }}
+              >
+                <video
+                  src={nextVideo.src}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                />
+              </div>
+
+              {/* Main active card */}
+              <a
+                href={video.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative block w-full rounded-3xl overflow-hidden shadow-strong bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 hover:border-secondary/50 transition-all duration-500 hover:shadow-[0_20px_60px_-12px_hsl(var(--secondary)/0.4)] hover:scale-[1.02] z-10"
+              >
+                <div className="relative aspect-[9/16] w-full">
                   <video
+                    key={video.id}
                     src={video.src}
                     className="absolute inset-0 w-full h-full object-cover"
                     autoPlay
@@ -79,29 +98,23 @@ const VideoExplainer = () => {
                     playsInline
                     preload="metadata"
                   />
-                ) : (
-                  <img
-                    src={video.src}
-                    alt="Miniature vidéo"
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                )}
-                {/* Overlay to capture clicks */}
-                <div className="absolute inset-0 z-10" />
-                {/* Bottom badge */}
-                <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-primary/90 to-transparent z-20 flex items-end justify-center pb-3">
-                  <span className="inline-flex items-center gap-2 text-primary-foreground/90 text-sm font-medium">
-                    <Icon className="h-4 w-4" />
-                    {video.badge}
-                  </span>
+                  {/* Overlay to capture clicks */}
+                  <div className="absolute inset-0 z-10" />
+                  {/* Bottom badge */}
+                  <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-primary/90 to-transparent z-20 flex items-end justify-center pb-3">
+                    <span className="inline-flex items-center gap-2 text-primary-foreground/90 text-sm font-medium">
+                      <Icon className="h-4 w-4" />
+                      {video.badge}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </a>
+              </a>
+            </div>
 
             {/* Next button */}
             <button
               onClick={next}
-              className="absolute -right-14 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 flex items-center justify-center text-primary-foreground hover:bg-primary-foreground/20 transition-colors"
+              className="absolute right-0 sm:-right-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 flex items-center justify-center text-primary-foreground hover:bg-primary-foreground/20 transition-colors"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
