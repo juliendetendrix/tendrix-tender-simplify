@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Calendar, Euro, Zap, AlertCircle, RefreshCw, FileText } from "lucide-react";
+import { MapPin, Calendar, Euro, Zap, RefreshCw, FileText, HelpCircle, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,77 +12,89 @@ import {
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { useBoampTenders, type BoampTender } from "@/hooks/useBoampTenders";
+import { useCurrentCompany } from "@/hooks/useCurrentCompany";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { toast } from "@/hooks/use-toast";
+import { AddTenderDialog } from "./AddTenderDialog";
 
 interface LastMinuteAOProps {
-  onRequestResponse: (tender: {
-    id: string;
-    title: string;
-    location: string;
-    budget: string;
-    deadline: string;
-  }) => void;
+  onRequestCreated: () => void;
 }
 
-export function LastMinuteAO({ onRequestResponse }: LastMinuteAOProps) {
+export function LastMinuteAO({ onRequestCreated }: LastMinuteAOProps) {
   const navigate = useNavigate();
-  const { tenders, loading, error, usingFallback, lastUpdate, refetch } = useBoampTenders();
+  const { user } = useAuth();
+  const { company } = useCurrentCompany();
+  const { tenders, loading, lastUpdate, refetch } = useBoampTenders();
   const [selectedTender, setSelectedTender] = useState<BoampTender | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
 
-  const handleConfirmRequest = () => {
-    if (selectedTender) {
-      onRequestResponse({
-        id: selectedTender.id,
-        title: selectedTender.title,
-        location: selectedTender.location,
-        budget: selectedTender.budget,
-        deadline: selectedTender.deadline,
+  const handleConfirm = async () => {
+    if (!selectedTender || !company || !user) return;
+    setSubmitting(true);
+    const { error } = await supabase.from("tender_requests").insert({
+      tender_id: selectedTender.id,
+      company_id: company.id,
+      charge_affaires_id: company.assigned_charge_affaires,
+      status: "demande",
+    });
+    setSubmitting(false);
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    } else {
+      toast({
+        title: "Demande envoyée",
+        description: "Votre chargé d'affaires reviendra vers vous sous 4 heures.",
       });
       setSelectedTender(null);
+      onRequestCreated();
     }
   };
 
-  const isNew = (hoursAgo: number) => hoursAgo < 48;
+  const isNew = (h: number) => h < 48;
 
   return (
     <>
       <div className="p-4 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold mb-1 text-primary">
-              Dernières opportunités
-            </h1>
+            <h1 className="text-xl font-bold mb-1 text-primary">Opportunités</h1>
             <p className="text-sm text-muted-foreground">
-              {usingFallback ? "Données de démonstration" : "Données BOAMP en temps réel"}
+              Données BOAMP en temps réel
             </p>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => refetch()}
-            disabled={loading}
-            className="shrink-0"
-          >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setAddOpen(true)}
+              className="shrink-0"
+              aria-label="Ajouter un appel d'offres"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => refetch()}
+              disabled={loading}
+              className="shrink-0"
+              aria-label="Rafraîchir"
+            >
+              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            </Button>
+          </div>
         </div>
 
-        {!usingFallback && lastUpdate && (
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span>Mis à jour {formatDistanceToNow(new Date(lastUpdate), { addSuffix: true, locale: fr })}</span>
+        {lastUpdate && (
+          <div className="text-xs text-muted-foreground">
+            Mis à jour {formatDistanceToNow(new Date(lastUpdate), { addSuffix: true, locale: fr })}
           </div>
-        )}
-
-        {usingFallback && (
-          <Alert variant="default" className="bg-secondary/10 border-secondary">
-            <AlertCircle className="h-4 w-4 text-secondary" />
-            <AlertDescription className="text-sm">
-              Données de démonstration - L'API BOAMP est temporairement indisponible
-            </AlertDescription>
-          </Alert>
         )}
 
         {loading ? (
@@ -92,9 +104,12 @@ export function LastMinuteAO({ onRequestResponse }: LastMinuteAOProps) {
                 <Skeleton className="h-6 w-3/4" />
                 <Skeleton className="h-12 w-full" />
                 <Skeleton className="h-4 w-1/2" />
-                <Skeleton className="h-4 w-1/3" />
               </div>
             ))}
+          </div>
+        ) : tenders.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground text-sm">
+            Aucune opportunité pour le moment
           </div>
         ) : (
           <div className="space-y-4">
@@ -103,7 +118,6 @@ export function LastMinuteAO({ onRequestResponse }: LastMinuteAOProps) {
                 key={tender.id}
                 className="bg-card border border-border rounded-lg p-4 space-y-3 shadow-sm"
               >
-                {/* Title and New Badge */}
                 <div className="flex items-start gap-2">
                   <h3 className="font-semibold text-sm flex-1 leading-tight text-foreground">
                     {tender.title}
@@ -116,61 +130,70 @@ export function LastMinuteAO({ onRequestResponse }: LastMinuteAOProps) {
                   )}
                 </div>
 
-               {/* Summary - only show if exists */}
-              {tender.summary && (
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {tender.summary.length > 70 ? `${tender.summary.substring(0, 70)}...` : tender.summary}
-                </p>
-              )}
+                {tender.summary && (
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {tender.summary.length > 100 ? `${tender.summary.slice(0, 100)}…` : tender.summary}
+                  </p>
+                )}
 
-              {/* Read summary link */}
-              <Button
-                variant="link"
-                className="h-auto p-0 text-xs text-primary hover:text-primary/80 font-normal"
-                onClick={() => navigate(`/tender-details?id=${tender.id}`)}
-              >
-                <FileText className="w-3.5 h-3.5 mr-1" />
-                Lire le résumé de l'appel d'offres
-              </Button>
-
-              {/* Organisme */}
-              <div className="text-xs">
-                <span className="font-medium text-foreground">{tender.organisme || "Organisme non spécifié"}</span>
-              </div>
-
-              {/* Meta Info */}
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-muted-foreground">{tender.location || "Non spécifié"}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Euro className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-muted-foreground">{tender.budget || "Montant non spécifié"}</span>
-                </div>
-                <div className="flex items-center gap-1.5 col-span-2">
-                  <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-muted-foreground">
-                    {tender.deadline ? `Date limite : ${tender.deadline}` : "Date limite : Non spécifiée"}
-                  </span>
-                </div>
-              </div>
-
-                {/* Compatibility */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-medium text-foreground">Compatibilité</span>
-                    <span className="font-semibold text-primary">
-                      {tender.compatibility}%
-                    </span>
-                  </div>
-                  <Progress value={tender.compatibility} className="h-1.5" />
-                </div>
-
-                {/* CTA Button */}
                 <Button
-                  className="w-full h-11 text-sm font-semibold bg-primary hover:bg-primary-hover text-primary-foreground"
+                  variant="link"
+                  className="h-auto p-0 text-xs text-primary hover:text-primary/80 font-normal"
+                  onClick={() => navigate(`/tender-details?id=${tender.id}`)}
+                >
+                  <FileText className="w-3.5 h-3.5 mr-1" />
+                  Lire le résumé de l'appel d'offres
+                </Button>
+
+                {tender.organisme && (
+                  <div className="text-xs">
+                    <span className="font-medium text-foreground">{tender.organisme}</span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  {tender.location && (
+                    <div className="flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="text-muted-foreground">{tender.location}</span>
+                    </div>
+                  )}
+                  {tender.budget && (
+                    <div className="flex items-center gap-1.5">
+                      <Euro className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="text-muted-foreground">{tender.budget}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5 col-span-2">
+                    <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                    {tender.deadline ? (
+                      <span className="text-muted-foreground">Date limite : {tender.deadline}</span>
+                    ) : (
+                      <button
+                        onClick={() => navigate(`/tender-details?id=${tender.id}`)}
+                        className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                      >
+                        Date limite
+                        <HelpCircle className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {tender.compatibility != null && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-medium text-foreground">Compatibilité</span>
+                      <span className="font-semibold text-primary">{tender.compatibility}%</span>
+                    </div>
+                    <Progress value={tender.compatibility} className="h-1.5" />
+                  </div>
+                )}
+
+                <Button
+                  className="w-full h-11 text-sm font-semibold"
                   onClick={() => setSelectedTender(tender)}
+                  disabled={!company}
                 >
                   Demander une réponse
                 </Button>
@@ -180,7 +203,6 @@ export function LastMinuteAO({ onRequestResponse }: LastMinuteAOProps) {
         )}
       </div>
 
-      {/* Confirmation Dialog */}
       <Dialog open={!!selectedTender} onOpenChange={() => setSelectedTender(null)}>
         <DialogContent className="max-w-[340px] rounded-lg">
           <DialogHeader>
@@ -195,18 +217,18 @@ export function LastMinuteAO({ onRequestResponse }: LastMinuteAOProps) {
               variant="outline"
               onClick={() => setSelectedTender(null)}
               className="flex-1"
+              disabled={submitting}
             >
               Annuler
             </Button>
-            <Button
-              onClick={handleConfirmRequest}
-              className="flex-1 bg-primary hover:bg-primary-hover text-primary-foreground"
-            >
-              Confirmer
+            <Button onClick={handleConfirm} className="flex-1" disabled={submitting}>
+              {submitting ? "..." : "Confirmer"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AddTenderDialog open={addOpen} onOpenChange={setAddOpen} onCreated={refetch} />
     </>
   );
 }
