@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   User,
   Building2,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -18,99 +19,143 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useAuth } from "@/hooks/useAuth";
+import { useCurrentCompany } from "@/hooks/useCurrentCompany";
+import { supabase } from "@/integrations/supabase/client";
+
+interface CAProfile {
+  display_name: string;
+  email: string | null;
+  phone: string | null;
+}
 
 export function MonCompte() {
+  const { user } = useAuth();
+  const { company, loading } = useCurrentCompany();
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [notifyNewAO, setNotifyNewAO] = useState(true);
   const [notifyUpdates, setNotifyUpdates] = useState(true);
+  const [ca, setCA] = useState<CAProfile | null>(null);
+
+  useEffect(() => {
+    const loadCA = async () => {
+      if (!company?.assigned_charge_affaires) return;
+      const { data } = await supabase
+        .from("charge_affaires_profiles")
+        .select("display_name, email, phone")
+        .eq("user_id", company.assigned_charge_affaires)
+        .maybeSingle();
+      setCA(data as any);
+    };
+    loadCA();
+  }, [company?.assigned_charge_affaires]);
 
   const documents = [
-    { id: "1", name: "K-bis", hasFile: true },
-    { id: "2", name: "Attestation fiscale", hasFile: true },
+    { id: "1", name: "K-bis", hasFile: false },
+    { id: "2", name: "Attestation fiscale", hasFile: false },
     { id: "3", name: "Attestation sociale (URSSAF)", hasFile: false },
-    { id: "4", name: "Assurance RC Pro", hasFile: true },
+    { id: "4", name: "Assurance RC Pro", hasFile: false },
     { id: "5", name: "Attestation de vigilance", hasFile: false },
-    { id: "6", name: "Références clients", hasFile: true },
+    { id: "6", name: "Références clients", hasFile: false },
   ];
+
+  if (loading) {
+    return (
+      <div className="p-4 space-y-4">
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-40 w-full" />
+      </div>
+    );
+  }
 
   return (
     <>
       <div className="p-4 space-y-6 pb-8">
-        {/* Header */}
         <div>
-          <h1 className="text-xl font-bold mb-1" style={{ color: "#0c1c98" }}>
-            Mon compte
-          </h1>
+          <h1 className="text-xl font-bold mb-1 text-primary">Mon compte</h1>
           <p className="text-sm text-muted-foreground">
             Gérez votre profil et vos documents
           </p>
         </div>
 
-        {/* Mon Profil */}
         <section className="bg-white border border-border rounded-lg p-4 space-y-3">
           <h2 className="font-semibold text-sm mb-3">Mon profil</h2>
-          
+
           <div className="space-y-2.5">
-            <div className="flex items-center gap-3">
-              <Building2 className="w-4 h-4 text-muted-foreground" />
-              <div className="flex-1">
-                <div className="text-xs text-muted-foreground">Entreprise</div>
-                <div className="text-sm font-medium">Entreprise Dupont SARL</div>
+            {company?.name && (
+              <div className="flex items-center gap-3">
+                <Building2 className="w-4 h-4 text-muted-foreground" />
+                <div className="flex-1">
+                  <div className="text-xs text-muted-foreground">Entreprise</div>
+                  <div className="text-sm font-medium">{company.name}</div>
+                </div>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <User className="w-4 h-4 text-muted-foreground" />
-              <div className="flex-1">
-                <div className="text-xs text-muted-foreground">Nom</div>
-                <div className="text-sm font-medium">Pierre Dupont</div>
+            )}
+
+            {company?.contact_name && (
+              <div className="flex items-center gap-3">
+                <User className="w-4 h-4 text-muted-foreground" />
+                <div className="flex-1">
+                  <div className="text-xs text-muted-foreground">Nom</div>
+                  <div className="text-sm font-medium">{company.contact_name}</div>
+                </div>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <Mail className="w-4 h-4 text-muted-foreground" />
-              <div className="flex-1">
-                <div className="text-xs text-muted-foreground">Email</div>
-                <div className="text-sm font-medium">p.dupont@exemple.fr</div>
+            )}
+
+            {user?.email && (
+              <div className="flex items-center gap-3">
+                <Mail className="w-4 h-4 text-muted-foreground" />
+                <div className="flex-1">
+                  <div className="text-xs text-muted-foreground">Email</div>
+                  <div className="text-sm font-medium">{user.email}</div>
+                </div>
               </div>
-            </div>
+            )}
+
+            {company?.sector && (
+              <div className="flex items-center gap-3">
+                <FileText className="w-4 h-4 text-muted-foreground" />
+                <div className="flex-1">
+                  <div className="text-xs text-muted-foreground">Secteur</div>
+                  <div className="text-sm font-medium">{company.sector}</div>
+                </div>
+              </div>
+            )}
           </div>
         </section>
 
-        {/* Chargé d'affaires */}
-        <section className="bg-white border border-border rounded-lg p-4 space-y-3">
-          <h2 className="font-semibold text-sm mb-3">Mon chargé d'affaires référent</h2>
-          
-          <div className="flex items-start gap-3">
-            <div
-              className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-              style={{ backgroundColor: "#0c1c98" }}
+        {ca && (
+          <section className="bg-white border border-border rounded-lg p-4 space-y-3">
+            <h2 className="font-semibold text-sm mb-3">Mon chargé d'affaires référent</h2>
+
+            <div className="flex items-start gap-3">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-primary">
+                <User className="w-6 h-6 text-primary-foreground" />
+              </div>
+              <div className="flex-1">
+                <div className="font-medium text-sm">{ca.display_name}</div>
+                <div className="text-xs text-muted-foreground">Chargé d'affaires</div>
+                {ca.phone && (
+                  <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
+                    <Phone className="w-3 h-3" />
+                    <span>{ca.phone}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <Button
+              className="w-full h-10 text-sm"
+              onClick={() => setContactDialogOpen(true)}
             >
-              <User className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <div className="font-medium text-sm">Marie Lambert</div>
-              <div className="text-xs text-muted-foreground">Chargée d'affaires</div>
-              <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
-                <Phone className="w-3 h-3" />
-                <span>06 12 34 56 78</span>
-              </div>
-            </div>
-          </div>
+              Contacter mon chargé d'affaires
+            </Button>
+          </section>
+        )}
 
-          <Button
-            className="w-full h-10 text-sm"
-            style={{ backgroundColor: "#0c1c98" }}
-            onClick={() => setContactDialogOpen(true)}
-          >
-            Contacter mon chargé d'affaires
-          </Button>
-        </section>
-
-        {/* Mes Documents */}
         <section className="bg-white border border-border rounded-lg p-4 space-y-3">
           <h2 className="font-semibold text-sm mb-3">Mes documents</h2>
-          
+
           <div className="space-y-2">
             {documents.map((doc) => (
               <div
@@ -127,10 +172,7 @@ export function MonCompte() {
                     Voir
                   </button>
                 ) : (
-                  <button
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-white transition-colors"
-                    style={{ backgroundColor: "#f9bd43" }}
-                  >
+                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-white bg-secondary transition-colors">
                     <Upload className="w-3.5 h-3.5" />
                     Ajouter
                   </button>
@@ -140,10 +182,9 @@ export function MonCompte() {
           </div>
         </section>
 
-        {/* Paramètres & Notifications */}
         <section className="bg-white border border-border rounded-lg p-4 space-y-3">
           <h2 className="font-semibold text-sm mb-3">Paramètres & notifications</h2>
-          
+
           <div className="space-y-3">
             <div className="flex items-center justify-between py-2">
               <div className="flex items-center gap-2.5 flex-1">
@@ -162,7 +203,7 @@ export function MonCompte() {
               <div className="flex items-center gap-2.5 flex-1">
                 <Bell className="w-4 h-4 text-muted-foreground" />
                 <div>
-                  <div className="text-sm font-medium">Évolutions des demandes</div>
+                  <div className="text-sm font-medium">Évolutions des dossiers</div>
                   <div className="text-xs text-muted-foreground">
                     Être notifié des changements de statut
                   </div>
@@ -174,32 +215,35 @@ export function MonCompte() {
         </section>
       </div>
 
-      {/* Contact Dialog */}
       <Dialog open={contactDialogOpen} onOpenChange={setContactDialogOpen}>
         <DialogContent className="max-w-[340px] rounded-lg">
           <DialogHeader>
-            <DialogTitle>Contacter Marie Lambert</DialogTitle>
+            <DialogTitle>Contacter {ca?.display_name}</DialogTitle>
             <DialogDescription>
               Choisissez votre moyen de contact préféré
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
-            <Button
-              className="w-full justify-start gap-3"
-              variant="outline"
-              onClick={() => window.location.href = "tel:0612345678"}
-            >
-              <Phone className="w-4 h-4" />
-              Appeler : 06 12 34 56 78
-            </Button>
-            <Button
-              className="w-full justify-start gap-3"
-              variant="outline"
-              onClick={() => window.location.href = "mailto:m.lambert@tendrix.fr"}
-            >
-              <Mail className="w-4 h-4" />
-              Email : m.lambert@tendrix.fr
-            </Button>
+            {ca?.phone && (
+              <Button
+                className="w-full justify-start gap-3"
+                variant="outline"
+                onClick={() => (window.location.href = `tel:${ca.phone}`)}
+              >
+                <Phone className="w-4 h-4" />
+                Appeler : {ca.phone}
+              </Button>
+            )}
+            {ca?.email && (
+              <Button
+                className="w-full justify-start gap-3"
+                variant="outline"
+                onClick={() => (window.location.href = `mailto:${ca.email}`)}
+              >
+                <Mail className="w-4 h-4" />
+                Email : {ca.email}
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>

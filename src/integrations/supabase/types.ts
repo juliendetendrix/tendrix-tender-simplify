@@ -56,6 +56,119 @@ export type Database = {
         }
         Relationships: []
       }
+      charge_affaires_profiles: {
+        Row: {
+          created_at: string
+          display_name: string
+          email: string | null
+          phone: string | null
+          specialties: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          email?: string | null
+          phone?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          email?: string | null
+          phone?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      companies: {
+        Row: {
+          assigned_charge_affaires: string | null
+          certifications: string[] | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string
+          id: string
+          name: string
+          onboarding_completed: boolean
+          owner_user_id: string
+          sector: string | null
+          siren: string | null
+          updated_at: string
+          zone: string | null
+        }
+        Insert: {
+          assigned_charge_affaires?: string | null
+          certifications?: string[] | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          onboarding_completed?: boolean
+          owner_user_id: string
+          sector?: string | null
+          siren?: string | null
+          updated_at?: string
+          zone?: string | null
+        }
+        Update: {
+          assigned_charge_affaires?: string | null
+          certifications?: string[] | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          onboarding_completed?: boolean
+          owner_user_id?: string
+          sector?: string | null
+          siren?: string | null
+          updated_at?: string
+          zone?: string | null
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          attachments: Json
+          body: string
+          created_at: string
+          id: string
+          request_id: string
+          sender_user_id: string
+        }
+        Insert: {
+          attachments?: Json
+          body: string
+          created_at?: string
+          id?: string
+          request_id: string
+          sender_user_id: string
+        }
+        Update: {
+          attachments?: Json
+          body?: string
+          created_at?: string
+          id?: string
+          request_id?: string
+          sender_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "tender_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pme_questionnaire_responses: {
         Row: {
           ao_experience: string
@@ -125,15 +238,152 @@ export type Database = {
         }
         Relationships: []
       }
+      tender_requests: {
+        Row: {
+          amount_won: number | null
+          charge_affaires_id: string | null
+          company_id: string
+          created_at: string
+          id: string
+          status: string
+          tender_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount_won?: number | null
+          charge_affaires_id?: string | null
+          company_id: string
+          created_at?: string
+          id?: string
+          status?: string
+          tender_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount_won?: number | null
+          charge_affaires_id?: string | null
+          company_id?: string
+          created_at?: string
+          id?: string
+          status?: string
+          tender_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tender_requests_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tender_requests_tender_id_fkey"
+            columns: ["tender_id"]
+            isOneToOne: false
+            referencedRelation: "tenders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenders: {
+        Row: {
+          budget: string | null
+          cpv_codes: string[] | null
+          created_at: string
+          created_by: string | null
+          date_publication: string | null
+          deadline: string | null
+          famille: string | null
+          id: string
+          location: string | null
+          organisme: string | null
+          pdf_path: string | null
+          procedure: string | null
+          raw: Json | null
+          source: string
+          source_url: string | null
+          summary: string | null
+          title: string
+        }
+        Insert: {
+          budget?: string | null
+          cpv_codes?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          date_publication?: string | null
+          deadline?: string | null
+          famille?: string | null
+          id: string
+          location?: string | null
+          organisme?: string | null
+          pdf_path?: string | null
+          procedure?: string | null
+          raw?: Json | null
+          source?: string
+          source_url?: string | null
+          summary?: string | null
+          title: string
+        }
+        Update: {
+          budget?: string | null
+          cpv_codes?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          date_publication?: string | null
+          deadline?: string | null
+          famille?: string | null
+          id?: string
+          location?: string | null
+          organisme?: string | null
+          pdf_path?: string | null
+          procedure?: string | null
+          raw?: Json | null
+          source?: string
+          source_url?: string | null
+          summary?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_access_request: { Args: { _request_id: string }; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_company_owner: { Args: { _company_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "entreprise" | "charge_affaires" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -260,6 +510,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["entreprise", "charge_affaires", "admin"],
+    },
   },
 } as const
