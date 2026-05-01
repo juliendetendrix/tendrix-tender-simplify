@@ -1,6 +1,6 @@
 import { Clock, FileText, User } from "lucide-react";
 
-type Tab = "last-minute" | "requests" | "account";
+type Tab = "opportunites" | "dossiers" | "compte";
 
 interface BottomNavProps {
   activeTab: Tab;
@@ -9,9 +9,9 @@ interface BottomNavProps {
 
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
   const tabs = [
-    { id: "last-minute" as Tab, icon: Clock, label: "Last Minute AO" },
-    { id: "requests" as Tab, icon: FileText, label: "Mes demandes" },
-    { id: "account" as Tab, icon: User, label: "Mon compte" },
+    { id: "opportunites" as Tab, icon: Clock, label: "Opportunités" },
+    { id: "dossiers" as Tab, icon: FileText, label: "Mes dossiers" },
+    { id: "compte" as Tab, icon: User, label: "Mon compte" },
   ];
 
   return (
@@ -25,17 +25,11 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={`flex flex-col items-center justify-center gap-1 px-4 py-2 rounded-lg transition-all min-w-[80px] ${
-                isActive ? "bg-[#0c1c98]/5" : "hover:bg-muted/50"
+                isActive ? "bg-primary/5" : "hover:bg-muted/50"
               }`}
             >
-              <Icon
-                className="w-5 h-5"
-                style={{ color: isActive ? "#0c1c98" : "#64748b" }}
-              />
-              <span
-                className="text-xs font-medium"
-                style={{ color: isActive ? "#0c1c98" : "#64748b" }}
-              >
+              <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+              <span className={`text-xs font-medium ${isActive ? "text-primary" : "text-muted-foreground"}`}>
                 {tab.label}
               </span>
             </button>
