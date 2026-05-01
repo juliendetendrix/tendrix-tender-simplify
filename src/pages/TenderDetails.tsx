@@ -159,48 +159,51 @@ const TenderDetails = () => {
           </h2>
 
           <div className="space-y-3">
-            {/* Organisme */}
-            <div className="flex items-start gap-3">
-              <Building2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs text-muted-foreground font-medium">Organisme</p>
-                <p className="text-sm font-semibold text-foreground">{tender.organisme}</p>
+            {tender.organisme && (
+              <div className="flex items-start gap-3">
+                <Building2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-muted-foreground font-medium">Organisme</p>
+                  <p className="text-sm font-semibold text-foreground">{tender.organisme}</p>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Location */}
-            <div className="flex items-start gap-3">
-              <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs text-muted-foreground font-medium">Lieu d'exécution</p>
-                <p className="text-sm font-semibold text-foreground">{tender.location}</p>
+            {tender.location && (
+              <div className="flex items-start gap-3">
+                <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-muted-foreground font-medium">Lieu d'exécution</p>
+                  <p className="text-sm font-semibold text-foreground">{tender.location}</p>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Publication Date */}
-            <div className="flex items-start gap-3">
-              <Calendar className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs text-muted-foreground font-medium">Date de publication</p>
-                <p className="text-sm font-semibold text-foreground">
-                  {tender.datePublication ? format(new Date(tender.datePublication), "d MMMM yyyy", { locale: fr }) : "Non spécifiée"}
-                </p>
+            {tender.datePublication && (
+              <div className="flex items-start gap-3">
+                <Calendar className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-muted-foreground font-medium">Date de publication</p>
+                  <p className="text-sm font-semibold text-foreground">
+                    {format(new Date(tender.datePublication), "d MMMM yyyy", { locale: fr })}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Deadline */}
-            <div className="flex items-start gap-3">
-              <Calendar className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs text-muted-foreground font-medium">Date limite de réponse</p>
-                <p className="text-sm font-semibold text-destructive">
-                  {tender.deadline ? formatDeadline(tender.deadline) : "Non spécifiée"}
-                </p>
+            {tender.deadline && (
+              <div className="flex items-start gap-3">
+                <Calendar className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-muted-foreground font-medium">Date limite de réponse</p>
+                  <p className="text-sm font-semibold text-destructive">
+                    {formatDeadline(tender.deadline)}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Type / CPV */}
-            {(tender.famille || tender.cpvCodes) && (
+            {(tender.famille || (tender.cpvCodes && tender.cpvCodes.length > 0)) && (
               <div className="pt-2 border-t">
                 <p className="text-xs text-muted-foreground font-medium mb-1">Type de marché</p>
                 <div className="flex flex-wrap gap-2">
@@ -209,24 +212,21 @@ const TenderDetails = () => {
                       {tender.famille}
                     </Badge>
                   )}
-                  {tender.cpvCodes && tender.cpvCodes.length > 0 && (
-                    tender.cpvCodes.slice(0, 2).map((cpv, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs">
-                        CPV: {cpv}
-                      </Badge>
-                    ))
-                  )}
+                  {tender.cpvCodes?.slice(0, 2).map((cpv, idx) => (
+                    <Badge key={idx} variant="outline" className="text-xs">
+                      CPV: {cpv}
+                    </Badge>
+                  ))}
                 </div>
               </div>
             )}
 
-            {/* BOAMP Reference */}
             {tender.url && (
               <div className="pt-2">
                 <Button
                   variant="link"
                   className="h-auto p-0 text-sm"
-                  onClick={() => window.open(tender.url, "_blank")}
+                  onClick={() => window.open(tender.url!, "_blank")}
                 >
                   <ExternalLink className="w-4 h-4 mr-1" />
                   Voir l'annonce officielle BOAMP
@@ -236,44 +236,39 @@ const TenderDetails = () => {
           </div>
         </div>
 
-        {/* Budget Section */}
-        <div className="bg-card rounded-xl border p-5 space-y-3">
-          <div className="flex items-start gap-3">
-            <Euro className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-            <div className="flex-1">
-              <p className="text-xs text-muted-foreground font-medium">Budget</p>
-              <p className="text-lg font-bold text-foreground">
-                {tender.budget}
-              </p>
-              {tender.budget === "Montant non spécifié" && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  Budget estimé : à partir de chantiers similaires (bientôt disponible)
-                </p>
-              )}
+        {tender.budget && (
+          <div className="bg-card rounded-xl border p-5 space-y-3">
+            <div className="flex items-start gap-3">
+              <Euro className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground font-medium">Budget</p>
+                <p className="text-lg font-bold text-foreground">{tender.budget}</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Compatibility Section */}
-        <div className="bg-card rounded-xl border p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-semibold text-foreground">
-              Compatibilité avec votre entreprise
-            </h3>
-            <span className="text-2xl font-bold text-primary">{tender.compatibility}%</span>
+        {tender.compatibility != null && (
+          <div className="bg-card rounded-xl border p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-semibold text-foreground">
+                Compatibilité avec votre entreprise
+              </h3>
+              <span className="text-2xl font-bold text-primary">{tender.compatibility}%</span>
+            </div>
+            <Progress value={tender.compatibility} className="h-2.5" />
+
+            <div className="flex items-center gap-2 pt-2">
+              <Badge
+                variant={tender.compatibility >= 70 ? "default" : "secondary"}
+                className="text-xs px-3 py-1.5"
+              >
+                <TrendingUp className="h-3.5 w-3.5 mr-1" />
+                Chances : {tender.compatibility >= 70 ? "élevées" : "moyennes"}
+              </Badge>
+            </div>
           </div>
-          <Progress value={tender.compatibility} className="h-2.5" />
-          
-          <div className="flex items-center gap-2 pt-2">
-            <Badge 
-              variant={tender.compatibility >= 70 ? "default" : "secondary"}
-              className="text-xs px-3 py-1.5"
-            >
-              <TrendingUp className="h-3.5 w-3.5 mr-1" />
-              Chances : {tender.compatibility >= 70 ? "élevées" : "moyennes"}
-            </Badge>
-          </div>
-        </div>
+        )}
       </main>
 
       {/* Sticky CTA Button */}

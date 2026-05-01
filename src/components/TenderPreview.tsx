@@ -72,37 +72,33 @@ const TenderPreview = () => {
                 </div>
 
                 <div className="space-y-3 mb-6">
-                  <div className="flex items-center text-muted-foreground">
-                    <Building className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="text-sm">{tender.organisme || 'Organisme non spécifié'}</span>
-                  </div>
+                  {tender.organisme && (
+                    <div className="flex items-center text-muted-foreground">
+                      <Building className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span className="text-sm">{tender.organisme}</span>
+                    </div>
+                  )}
 
-                  <div className="flex items-center text-muted-foreground">
-                    <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="text-sm">{tender.location || 'Non spécifié'}</span>
-                  </div>
+                  {tender.location && (
+                    <div className="flex items-center text-muted-foreground">
+                      <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span className="text-sm">{tender.location}</span>
+                    </div>
+                  )}
 
-                  <div className="flex items-center text-muted-foreground">
-                    <Euro className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="text-sm font-medium">{tender.budget || 'Montant non spécifié'}</span>
-                  </div>
+                  {tender.budget && (
+                    <div className="flex items-center text-muted-foreground">
+                      <Euro className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span className="text-sm font-medium">{tender.budget}</span>
+                    </div>
+                  )}
 
-                  <div className="flex items-center text-muted-foreground">
-                    <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <span className="text-sm">
-                      {tender.deadline ? `Date limite : ${tender.deadline}` : 'Date limite : Non spécifiée'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Compatibility */}
-                <div className="mb-6 space-y-1.5">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-foreground">Compatibilité</span>
-                    <span className="font-semibold text-muted-foreground">N/A</span>
-                  </div>
-                  <Progress value={0} className="h-1.5" />
-                  <p className="text-xs text-muted-foreground italic">Nous pourrons estimer la compatibilité de votre entreprise une fois inscrite et onboarding réalisé</p>
+                  {tender.deadline && (
+                    <div className="flex items-center text-muted-foreground">
+                      <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span className="text-sm">Date limite : {tender.deadline}</span>
+                    </div>
+                  )}
                 </div>
 
                 <button
