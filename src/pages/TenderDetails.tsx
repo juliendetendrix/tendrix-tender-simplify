@@ -27,8 +27,25 @@ const TenderDetails = () => {
   const { ref: contentRef, isVisible } = useScrollAnimation();
   const { tenders, loading: tendersLoading } = useBoampTenders();
   
-  const tender = tenders.find(t => t.id === tenderId);
-  const { summary, loading: summaryLoading, error: summaryError } = useTenderSummary(tender || null);
+  const demoTender = tenderId === "reco-demo" ? {
+    id: "reco-demo",
+    title: "Rénovation énergétique du groupe scolaire Jean Jaurès",
+    summary: "La Mairie de Lyon lance un appel d'offres pour la rénovation énergétique complète du groupe scolaire Jean Jaurès. Les travaux comprennent l'isolation thermique par l'extérieur, le remplacement des menuiseries, la mise en place d'une ventilation double flux et l'installation de panneaux photovoltaïques. L'objectif est d'atteindre le niveau BBC rénovation. Le marché est alloti pour permettre aux PME locales de candidater.",
+    organisme: "Mairie de Lyon",
+    location: "Lyon (69)",
+    budget: "320 000 €",
+    datePublication: new Date(Date.now() - 2 * 86400000).toISOString(),
+    deadline: new Date(Date.now() + 21 * 86400000).toISOString(),
+    famille: "Travaux",
+    procedure: "Procédure adaptée",
+    cpvCodes: ["45214210", "45321000"],
+    url: null,
+    hoursAgo: 48,
+    compatibility: 92,
+  } : null;
+
+  const tender = demoTender ?? tenders.find(t => t.id === tenderId);
+  const { summary, loading: summaryLoading, error: summaryError } = useTenderSummary(demoTender ? null : (tender || null));
   const [lotsOpen, setLotsOpen] = useState(false);
   const [selectedLots, setSelectedLots] = useState<number[]>([]);
 
