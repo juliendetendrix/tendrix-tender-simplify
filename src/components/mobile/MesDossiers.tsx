@@ -70,6 +70,24 @@ export function MesDossiers({ onOpenChat }: Props) {
         <p className="text-sm text-muted-foreground">Suivez vos demandes de réponse</p>
       </div>
 
+      <div className="bg-white border border-border rounded-lg p-4">
+        <h2 className="font-semibold text-sm mb-3">Statistiques</h2>
+        <div className="grid grid-cols-3 gap-2">
+          <div className="text-center p-2 rounded-md bg-primary/5">
+            <div className="text-2xl font-bold text-primary leading-none">15</div>
+            <div className="text-[11px] text-muted-foreground mt-1 leading-tight">Dossiers déposés</div>
+          </div>
+          <div className="text-center p-2 rounded-md bg-emerald-50">
+            <div className="text-2xl font-bold text-emerald-600 leading-none">5</div>
+            <div className="text-[11px] text-muted-foreground mt-1 leading-tight">Remportés</div>
+          </div>
+          <div className="text-center p-2 rounded-md bg-slate-100">
+            <div className="text-2xl font-bold text-slate-500 leading-none">10</div>
+            <div className="text-[11px] text-muted-foreground mt-1 leading-tight">Refusés</div>
+          </div>
+        </div>
+      </div>
+
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {[
           { v: "all", label: "Tous" },
