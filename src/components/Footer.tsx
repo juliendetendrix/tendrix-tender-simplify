@@ -1,4 +1,4 @@
-import { Linkedin, Mail, Phone, Instagram, Facebook } from 'lucide-react';
+import { Linkedin, Mail, Phone, Instagram, Facebook, Smartphone } from 'lucide-react';
 import logo from '@/assets/tendrix-logo.png';
 
 const Footer = () => {
@@ -47,6 +47,12 @@ const Footer = () => {
               <li>
                 <a href="/dashboard" className="text-background/80 hover:text-background transition-colors">
                   Dashboard
+                </a>
+              </li>
+              <li>
+                <a href="/app" className="inline-flex items-center gap-1.5 text-secondary hover:text-secondary/80 font-semibold transition-colors">
+                  <Smartphone className="h-4 w-4" />
+                  Accéder à l'app
                 </a>
               </li>
               <li>
