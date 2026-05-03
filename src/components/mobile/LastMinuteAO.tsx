@@ -142,7 +142,6 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                   </div>
                 )}
               <div
-                key={tender.id}
                 className="bg-card border border-border rounded-lg p-4 space-y-3 shadow-sm"
               >
                 <div className="flex items-start gap-2">
