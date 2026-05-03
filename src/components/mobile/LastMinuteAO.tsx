@@ -202,7 +202,6 @@ export function LastMinuteAO({ onRequestCreated }: LastMinuteAOProps) {
                 <Button
                   className="w-full h-11 text-sm font-semibold"
                   onClick={() => setSelectedTender(tender)}
-                  disabled={!company}
                 >
                   Demander une réponse
                 </Button>
