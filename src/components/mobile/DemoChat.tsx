@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { ArrowLeft, Send, Phone } from "lucide-react";
+import { ArrowLeft, Send, Phone, FileText, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -8,6 +8,7 @@ interface DemoMessage {
   body: string;
   mine: boolean;
   time: string;
+  type?: "text" | "proposal";
 }
 
 interface Props {
@@ -22,21 +23,16 @@ export function DemoChat({ dossierTitle, onBack }: Props) {
   const [messages, setMessages] = useState<DemoMessage[]>([
     {
       id: "1",
-      body: `Bonjour, je prends en charge votre dossier "${dossierTitle}". Je reviens vers vous rapidement avec une première analyse.`,
+      body: "Proposition de réponse V1 — IA Tendrix",
       mine: false,
-      time: "09:14",
+      time: "09:10",
+      type: "proposal",
     },
     {
       id: "2",
-      body: "Parfait, merci ! Tenez-moi au courant.",
-      mine: true,
-      time: "09:22",
-    },
-    {
-      id: "3",
-      body: "Le dossier est éligible. Je prépare la réponse technique et je vous transmets le devis dans la journée.",
+      body: "Bonjour, je vais m'appuyer sur l'IA de Tendrix qui s'est basée sur vos dossiers, sur vos appels d'offres déjà remportés que nous avons en base, ainsi que sur tout ce que nous avons fait ensemble pour peaufiner au mieux cette réponse d'appel d'offres. Je reviens vers vous rapidement avec une version finale.",
       mine: false,
-      time: "10:05",
+      time: "09:14",
     },
   ]);
   const [body, setBody] = useState("");
@@ -87,6 +83,24 @@ export function DemoChat({ dossierTitle, onBack }: Props) {
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 space-y-3 bg-muted/30">
         {messages.map((m) => (
           <div key={m.id} className={`flex ${m.mine ? "justify-end" : "justify-start"}`}>
+            {m.type === "proposal" ? (
+              <button className="max-w-[85%] text-left rounded-2xl rounded-bl-sm bg-white border border-primary/30 shadow-sm p-3 hover:bg-primary/5 transition-colors">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[11px] font-medium text-primary uppercase tracking-wide">IA Tendrix</div>
+                    <div className="text-sm font-semibold leading-tight">Proposition de réponse V1</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-medium text-primary border-t border-border pt-2">
+                  <FileText className="w-3.5 h-3.5" />
+                  Voir la proposition
+                </div>
+                <div className="text-[10px] mt-1 text-muted-foreground">{m.time}</div>
+              </button>
+            ) : (
             <div
               className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
                 m.mine
@@ -103,6 +117,7 @@ export function DemoChat({ dossierTitle, onBack }: Props) {
                 {m.time}
               </div>
             </div>
+            )}
           </div>
         ))}
       </div>
