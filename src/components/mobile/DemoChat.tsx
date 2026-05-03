@@ -8,6 +8,7 @@ interface DemoMessage {
   body: string;
   mine: boolean;
   time: string;
+  type?: "text" | "proposal";
 }
 
 interface Props {
