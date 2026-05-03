@@ -52,11 +52,22 @@ export function MonCompte() {
     loadCA();
   }, [company?.assigned_charge_affaires]);
 
+  const demoProfile = {
+    companyName: "Maçonnerie Dubois & Fils",
+    contactName: "Jean Dubois",
+    role: "Gérant",
+    email: "jean.dubois@maconnerie-dubois.fr",
+    phone: "06 24 58 91 37",
+    address: "12 rue des Artisans, 78000 Versailles",
+    sector: "BTP – Maçonnerie générale",
+    siren: "812 345 678",
+  };
+
   const documents = [
-    { id: "1", name: "K-bis", hasFile: false },
-    { id: "2", name: "Attestation fiscale", hasFile: false },
-    { id: "3", name: "Attestation sociale (URSSAF)", hasFile: false },
-    { id: "4", name: "Assurance RC Pro", hasFile: false },
+    { id: "1", name: "K-bis", hasFile: true },
+    { id: "2", name: "Attestation fiscale", hasFile: true },
+    { id: "3", name: "Attestation sociale (URSSAF)", hasFile: true },
+    { id: "4", name: "Assurance RC Pro", hasFile: true },
     { id: "5", name: "Attestation de vigilance", hasFile: false },
     { id: "6", name: "Références clients", hasFile: false },
   ];
