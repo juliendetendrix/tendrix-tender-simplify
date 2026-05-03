@@ -222,6 +222,39 @@ export function MonCompte() {
           </div>
         </section>
 
+        <section className="rounded-lg p-4 space-y-3 bg-secondary text-secondary-foreground shadow-sm">
+          <div className="flex items-center gap-2">
+            <GraduationCap className="w-5 h-5" />
+            <h2 className="font-semibold text-sm">Formation</h2>
+          </div>
+          <h3 className="font-bold text-base leading-tight">
+            Comment augmenter vos chances de remporter des appels d'offres ?
+          </h3>
+
+          <button className="relative block w-full rounded-lg overflow-hidden group">
+            <img
+              src={formationThumbnail}
+              alt="Comment gagner des appels d'offres"
+              width={768}
+              height={512}
+              loading="lazy"
+              className="w-full h-32 object-cover"
+            />
+            <div className="absolute inset-0 bg-primary/30 group-hover:bg-primary/40 transition-colors flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-white/95 flex items-center justify-center shadow-lg">
+                <Play className="w-5 h-5 text-primary fill-primary ml-0.5" />
+              </div>
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 to-transparent text-white text-xs font-medium text-left">
+              Comment gagner des appels d'offres ?
+            </div>
+          </button>
+
+          <Button className="w-full h-10 text-sm bg-primary text-primary-foreground hover:bg-primary/90">
+            Voir les conseils et formations
+          </Button>
+        </section>
+
         <section className="bg-white border border-border rounded-lg p-4 space-y-3">
           <h2 className="font-semibold text-sm mb-3">Paramètres & notifications</h2>
 
