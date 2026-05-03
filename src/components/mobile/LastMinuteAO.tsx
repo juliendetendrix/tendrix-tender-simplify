@@ -34,6 +34,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
   const { tenders, loading, lastUpdate, refetch } = useBoampTenders();
   const [selectedTender, setSelectedTender] = useState<BoampTender | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(5);
 
   const handleConfirm = async () => {
     if (!selectedTender) return;
