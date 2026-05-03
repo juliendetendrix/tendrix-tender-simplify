@@ -1,0 +1,1 @@
+CREATE POLICY "Public read tenders" ON public.tenders FOR SELECT TO anon USING (true);
