@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Calendar, Euro, Zap, RefreshCw, FileText, HelpCircle, Plus } from "lucide-react";
+import { MapPin, Calendar, Euro, Zap, RefreshCw, FileText, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
