@@ -78,27 +78,16 @@ export function LastMinuteAO({ onRequestCreated }: LastMinuteAOProps) {
               Données BOAMP en temps réel
             </p>
           </div>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setAddOpen(true)}
-              className="shrink-0"
-              aria-label="Ajouter un appel d'offres"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => refetch()}
-              disabled={loading}
-              className="shrink-0"
-              aria-label="Rafraîchir"
-            >
-              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => refetch()}
+            disabled={loading}
+            className="shrink-0"
+            aria-label="Rafraîchir"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
         </div>
 
         {lastUpdate && (
