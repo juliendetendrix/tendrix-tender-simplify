@@ -179,15 +179,6 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-medium text-foreground">Compatibilité</span>
-                    <span className="font-semibold text-primary">
-                      {tender.compatibility != null ? `${tender.compatibility}%` : "N/A"}
-                    </span>
-                  </div>
-                  <Progress value={tender.compatibility ?? 0} className="h-1.5" />
-                </div>
 
                 <Button
                   className="w-full h-11 text-sm font-semibold"
