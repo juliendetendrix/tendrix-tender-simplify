@@ -6,7 +6,7 @@ import { MonCompte } from "@/components/mobile/MonCompte";
 import { DossierDetail } from "@/components/mobile/DossierDetail";
 import { BottomNav } from "@/components/mobile/BottomNav";
 import { useAuth } from "@/hooks/useAuth";
-import tendrixLogo from "@/assets/tendrix-logo-blue.png";
+import tendrixLogo from "@/assets/tendrix-logo-new.png";
 
 type Tab = "opportunites" | "dossiers" | "compte";
 
@@ -22,7 +22,7 @@ export default function MobileApp() {
   return (
     <div className="min-h-screen bg-background flex flex-col max-w-[430px] mx-auto">
       <header className="sticky top-0 z-50 bg-white border-b border-border px-4 py-3 flex items-center justify-between">
-        <img src={tendrixLogo} alt="Tendrix" className="h-6" />
+        <img src={tendrixLogo} alt="Tendrix" className="h-8" />
         <div className="flex items-center gap-1">
           <button className="p-2 hover:bg-muted rounded-full transition-colors">
             <Bell className="w-5 h-5 text-primary" />
