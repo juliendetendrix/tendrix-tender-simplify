@@ -1,4 +1,4 @@
-import { Linkedin, Mail, Phone, Instagram, Facebook } from 'lucide-react';
+import { Linkedin, Mail, Phone, Instagram, Facebook, Smartphone } from 'lucide-react';
 import logo from '@/assets/tendrix-logo.png';
 
 const Footer = () => {
