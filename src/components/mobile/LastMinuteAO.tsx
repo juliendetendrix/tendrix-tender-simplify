@@ -226,7 +226,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
         </DialogContent>
       </Dialog>
 
-      <AddTenderDialog open={addOpen} onOpenChange={setAddOpen} onCreated={refetch} />
+      <AddTenderDialog open={addOpen} onOpenChange={onAddOpenChange} onCreated={refetch} />
     </>
   );
 }
