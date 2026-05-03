@@ -225,7 +225,7 @@ export function MonCompte() {
         <section className="rounded-lg p-4 space-y-3 bg-secondary text-secondary-foreground shadow-sm">
           <div className="flex items-center gap-2">
             <GraduationCap className="w-5 h-5" />
-            <h2 className="font-semibold text-sm">Formation</h2>
+            <h2 className="font-semibold text-sm">Formation Tendrix</h2>
           </div>
           <h3 className="font-bold text-base leading-tight">
             Comment augmenter vos chances de remporter des appels d'offres ?
@@ -250,7 +250,7 @@ export function MonCompte() {
             </div>
           </button>
 
-          <Button className="w-full h-10 text-sm bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button className="w-full h-10 text-sm bg-white text-primary hover:bg-white/90">
             Voir les conseils et formations
           </Button>
         </section>
