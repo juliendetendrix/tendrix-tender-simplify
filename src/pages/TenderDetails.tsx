@@ -1,14 +1,22 @@
-import { ArrowLeft, MapPin, Calendar, Euro, TrendingUp, ExternalLink, Building2, FileText } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Euro, TrendingUp, ExternalLink, Building2, FileText, Package, Check } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useBoampTenders } from "@/hooks/useBoampTenders";
 import { useTenderSummary } from "@/hooks/useTenderSummary";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -21,6 +29,8 @@ const TenderDetails = () => {
   
   const tender = tenders.find(t => t.id === tenderId);
   const { summary, loading: summaryLoading, error: summaryError } = useTenderSummary(tender || null);
+  const [lotsOpen, setLotsOpen] = useState(false);
+  const [selectedLots, setSelectedLots] = useState<number[]>([]);
 
   if (tendersLoading) {
     return (
@@ -150,6 +160,82 @@ const TenderDetails = () => {
               {summary || tender.summary || "Résumé non disponible."}
             </p>
           )}
+
+          {/* Postuler par lots */}
+          <Collapsible open={lotsOpen} onOpenChange={setLotsOpen}>
+            <CollapsibleTrigger asChild>
+              <button className="w-full flex items-center justify-between gap-2 mt-2 p-3 rounded-lg border border-secondary/40 bg-secondary/10 hover:bg-secondary/20 transition-colors text-left">
+                <div className="flex items-center gap-2">
+                  <Package className="w-4 h-4 text-secondary-foreground" />
+                  <span className="text-sm font-semibold text-foreground">Postuler par lots</span>
+                  {selectedLots.length > 0 && (
+                    <span className="text-[11px] font-bold bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
+                      {selectedLots.length}
+                    </span>
+                  )}
+                </div>
+                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${lotsOpen ? "rotate-180" : ""}`} />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-2 pt-3">
+              <p className="text-xs text-muted-foreground">
+                Sélectionnez les lots auxquels vous souhaitez répondre.
+              </p>
+              {[
+                { n: 1, title: "Gros œuvre — Maçonnerie", budget: "45 000 €" },
+                { n: 2, title: "Charpente et couverture", budget: "28 000 €" },
+                { n: 3, title: "Menuiseries extérieures", budget: "18 500 €" },
+                { n: 4, title: "Revêtements de sols", budget: "12 000 €" },
+                { n: 5, title: "Peinture et finitions", budget: "9 800 €" },
+              ].map((lot) => {
+                const checked = selectedLots.includes(lot.n);
+                return (
+                  <button
+                    key={lot.n}
+                    onClick={() =>
+                      setSelectedLots((p) =>
+                        checked ? p.filter((x) => x !== lot.n) : [...p, lot.n]
+                      )
+                    }
+                    className={`w-full text-left flex items-center gap-3 p-3 rounded-lg border transition-colors ${
+                      checked
+                        ? "border-primary bg-primary/5"
+                        : "border-border bg-card hover:bg-muted/40"
+                    }`}
+                  >
+                    <div
+                      className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 ${
+                        checked
+                          ? "bg-primary border-primary text-primary-foreground"
+                          : "border-muted-foreground/40"
+                      }`}
+                    >
+                      {checked && <Check className="w-3 h-3" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-bold text-primary">Lot {lot.n}</div>
+                      <div className="text-sm font-medium text-foreground truncate">{lot.title}</div>
+                    </div>
+                    <div className="text-xs font-semibold text-muted-foreground shrink-0">
+                      {lot.budget}
+                    </div>
+                  </button>
+                );
+              })}
+              <Button
+                className="w-full mt-2"
+                disabled={selectedLots.length === 0}
+                onClick={() =>
+                  toast({
+                    title: `Postulation à ${selectedLots.length} lot(s)`,
+                    description: "Votre chargé d'affaires reviendra vers vous rapidement.",
+                  })
+                }
+              >
+                Postuler aux lots sélectionnés
+              </Button>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
 
         {/* Main Details Section */}
