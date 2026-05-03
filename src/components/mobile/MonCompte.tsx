@@ -8,6 +8,8 @@ import {
   Bell,
   Upload,
   Eye,
+  Pencil,
+  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -50,11 +52,22 @@ export function MonCompte() {
     loadCA();
   }, [company?.assigned_charge_affaires]);
 
+  const demoProfile = {
+    companyName: "Maçonnerie Dubois & Fils",
+    contactName: "Jean Dubois",
+    role: "Gérant",
+    email: "jean.dubois@maconnerie-dubois.fr",
+    phone: "06 24 58 91 37",
+    address: "12 rue des Artisans, 78000 Versailles",
+    sector: "BTP – Maçonnerie générale",
+    siren: "812 345 678",
+  };
+
   const documents = [
-    { id: "1", name: "K-bis", hasFile: false },
-    { id: "2", name: "Attestation fiscale", hasFile: false },
-    { id: "3", name: "Attestation sociale (URSSAF)", hasFile: false },
-    { id: "4", name: "Assurance RC Pro", hasFile: false },
+    { id: "1", name: "K-bis", hasFile: true },
+    { id: "2", name: "Attestation fiscale", hasFile: true },
+    { id: "3", name: "Attestation sociale (URSSAF)", hasFile: true },
+    { id: "4", name: "Assurance RC Pro", hasFile: true },
     { id: "5", name: "Attestation de vigilance", hasFile: false },
     { id: "6", name: "Références clients", hasFile: false },
   ];
@@ -78,49 +91,76 @@ export function MonCompte() {
           </p>
         </div>
 
-        <section className="bg-white border border-border rounded-lg p-4 space-y-3">
-          <h2 className="font-semibold text-sm mb-3">Mon profil</h2>
+        <section className="bg-white border border-border rounded-lg p-4 space-y-3 relative">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold text-sm">Mon profil</h2>
+            <button
+              className="flex items-center gap-1 text-xs font-medium text-primary hover:bg-muted px-2 py-1 rounded-md transition-colors"
+              aria-label="Modifier le profil"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              Modifier
+            </button>
+          </div>
 
           <div className="space-y-2.5">
-            {company?.name && (
-              <div className="flex items-center gap-3">
-                <Building2 className="w-4 h-4 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="text-xs text-muted-foreground">Entreprise</div>
-                  <div className="text-sm font-medium">{company.name}</div>
-                </div>
+            <div className="flex items-center gap-3">
+              <Building2 className="w-4 h-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground">Entreprise</div>
+                <div className="text-sm font-medium">{demoProfile.companyName}</div>
               </div>
-            )}
+            </div>
 
-            {company?.contact_name && (
-              <div className="flex items-center gap-3">
-                <User className="w-4 h-4 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="text-xs text-muted-foreground">Nom</div>
-                  <div className="text-sm font-medium">{company.contact_name}</div>
+            <div className="flex items-center gap-3">
+              <User className="w-4 h-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground">Référent contact</div>
+                <div className="text-sm font-medium">
+                  {demoProfile.contactName} — {demoProfile.role}
                 </div>
               </div>
-            )}
+            </div>
 
-            {user?.email && (
-              <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="text-xs text-muted-foreground">Email</div>
-                  <div className="text-sm font-medium">{user.email}</div>
-                </div>
+            <div className="flex items-center gap-3">
+              <Phone className="w-4 h-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground">Téléphone</div>
+                <div className="text-sm font-medium">{demoProfile.phone}</div>
               </div>
-            )}
+            </div>
 
-            {company?.sector && (
-              <div className="flex items-center gap-3">
-                <FileText className="w-4 h-4 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="text-xs text-muted-foreground">Secteur</div>
-                  <div className="text-sm font-medium">{company.sector}</div>
-                </div>
+            <div className="flex items-center gap-3">
+              <Mail className="w-4 h-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground">Email</div>
+                <div className="text-sm font-medium break-all">{demoProfile.email}</div>
               </div>
-            )}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <MapPin className="w-4 h-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground">Adresse</div>
+                <div className="text-sm font-medium">{demoProfile.address}</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <FileText className="w-4 h-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground">Secteur</div>
+                <div className="text-sm font-medium">{demoProfile.sector}</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <FileText className="w-4 h-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground">SIREN</div>
+                <div className="text-sm font-medium">{demoProfile.siren}</div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -167,9 +207,9 @@ export function MonCompte() {
                   <span className="text-sm">{doc.name}</span>
                 </div>
                 {doc.hasFile ? (
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium hover:bg-muted transition-colors">
-                    <Eye className="w-3.5 h-3.5" />
-                    Voir
+                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-primary border border-primary/20 hover:bg-primary/5 transition-colors">
+                    <Pencil className="w-3.5 h-3.5" />
+                    Modifier
                   </button>
                 ) : (
                   <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-white bg-secondary transition-colors">
