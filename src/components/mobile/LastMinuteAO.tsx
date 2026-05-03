@@ -112,12 +112,24 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
           </div>
         ) : (
           <div className="space-y-4">
-            {tenders.map((tender, idx) => (
-              <div key={tender.id} className="contents">
-                {idx === 3 && (
-                  <div className="rounded-lg p-4 space-y-3 bg-secondary text-secondary-foreground shadow-sm">
-                    <h3 className="font-semibold text-sm">🏆 Top chargés d'affaires</h3>
-                    <div className="space-y-2">
+            {tenders.flatMap((tender, idx) => {
+              const items: JSX.Element[] = [];
+              if (idx === 3) {
+                items.push(
+                  <div
+                    key="top-ca"
+                    className="bg-card border border-secondary/40 rounded-lg p-4 space-y-3 shadow-sm"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-sm text-foreground">
+                        Top chargés d'affaires
+                      </h3>
+                      <span className="text-[10px] font-bold uppercase tracking-wide bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
+                        Classement
+                      </span>
+                    </div>
+
+                    <div className="space-y-1">
                       {[
                         { rank: 1, name: "Marc Lefèvre", rate: 78 },
                         { rank: 2, name: "Sophie Martin", rate: 72 },
@@ -126,96 +138,110 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                       ].map((ca) => (
                         <div
                           key={ca.rank}
-                          className="flex items-center gap-3 bg-white/90 rounded-md p-2.5"
+                          className="flex items-center gap-3 py-2 border-b border-border last:border-0"
                         >
-                          <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold shrink-0">
+                          <div className="w-6 text-center text-sm font-bold text-muted-foreground shrink-0">
                             {ca.rank}
                           </div>
-                          <div className="flex-1 text-sm font-medium text-foreground">{ca.name}</div>
-                          <div className="text-sm font-bold text-primary">{ca.rate}%</div>
+                          <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold shrink-0">
+                            {ca.name.split(" ").map((n) => n[0]).join("")}
+                          </div>
+                          <div className="flex-1 text-sm font-medium text-foreground truncate">
+                            {ca.name}
+                          </div>
+                          <div className="text-sm font-bold text-secondary-foreground bg-secondary/20 px-2 py-0.5 rounded-md">
+                            {ca.rate}%
+                          </div>
                         </div>
                       ))}
                     </div>
-                    <Button className="w-full h-10 text-sm bg-primary text-primary-foreground hover:bg-primary/90">
+
+                    <Button
+                      variant="outline"
+                      className="w-full h-10 text-sm border-primary/30 text-primary hover:bg-primary/5"
+                    >
                       Choisir un top chargé d'affaires
                     </Button>
                   </div>
-                )}
-              <div
-                className="bg-card border border-border rounded-lg p-4 space-y-3 shadow-sm"
-              >
-                <div className="flex items-start gap-2">
-                  <h3 className="font-semibold text-sm flex-1 leading-tight text-foreground">
-                    {tender.title}
-                  </h3>
-                  {isNew(tender.hoursAgo) && (
-                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-secondary/20 text-secondary shrink-0">
-                      <Zap className="w-3 h-3" />
-                      il y a {tender.hoursAgo}h
-                    </span>
-                  )}
-                </div>
-
-                {tender.summary && (
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {tender.summary.length > 100 ? `${tender.summary.slice(0, 100)}…` : tender.summary}
-                  </p>
-                )}
-
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-xs text-primary hover:text-primary/80 font-normal"
-                  onClick={() => navigate(`/tender-details?id=${tender.id}`)}
+                );
+              }
+              items.push(
+                <div
+                  key={tender.id}
+                  className="bg-card border border-border rounded-lg p-4 space-y-3 shadow-sm"
                 >
-                  <FileText className="w-3.5 h-3.5 mr-1" />
-                  Lire le résumé de l'appel d'offres
-                </Button>
-
-                {tender.organisme && (
-                  <div className="text-xs">
-                    <span className="font-medium text-foreground">{tender.organisme}</span>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  {tender.location && (
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-                      <span className="text-muted-foreground">{tender.location}</span>
-                    </div>
-                  )}
-                  {tender.budget && (
-                    <div className="flex items-center gap-1.5">
-                      <Euro className="w-3.5 h-3.5 text-muted-foreground" />
-                      <span className="text-muted-foreground">{tender.budget}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1.5 col-span-2">
-                    <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                    {tender.deadline ? (
-                      <span className="text-muted-foreground">Date limite : {tender.deadline}</span>
-                    ) : (
-                      <button
-                        onClick={() => navigate(`/tender-details?id=${tender.id}`)}
-                        className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
-                      >
-                        Date limite
-                        <HelpCircle className="w-3.5 h-3.5" />
-                      </button>
+                  <div className="flex items-start gap-2">
+                    <h3 className="font-semibold text-sm flex-1 leading-tight text-foreground">
+                      {tender.title}
+                    </h3>
+                    {isNew(tender.hoursAgo) && (
+                      <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-secondary/20 text-secondary shrink-0">
+                        <Zap className="w-3 h-3" />
+                        il y a {tender.hoursAgo}h
+                      </span>
                     )}
                   </div>
+
+                  {tender.summary && (
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {tender.summary.length > 100 ? `${tender.summary.slice(0, 100)}…` : tender.summary}
+                    </p>
+                  )}
+
+                  <Button
+                    variant="link"
+                    className="h-auto p-0 text-xs text-primary hover:text-primary/80 font-normal"
+                    onClick={() => navigate(`/tender-details?id=${tender.id}`)}
+                  >
+                    <FileText className="w-3.5 h-3.5 mr-1" />
+                    Lire le résumé de l'appel d'offres
+                  </Button>
+
+                  {tender.organisme && (
+                    <div className="text-xs">
+                      <span className="font-medium text-foreground">{tender.organisme}</span>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    {tender.location && (
+                      <div className="flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+                        <span className="text-muted-foreground">{tender.location}</span>
+                      </div>
+                    )}
+                    {tender.budget && (
+                      <div className="flex items-center gap-1.5">
+                        <Euro className="w-3.5 h-3.5 text-muted-foreground" />
+                        <span className="text-muted-foreground">{tender.budget}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1.5 col-span-2">
+                      <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                      {tender.deadline ? (
+                        <span className="text-muted-foreground">Date limite : {tender.deadline}</span>
+                      ) : (
+                        <button
+                          onClick={() => navigate(`/tender-details?id=${tender.id}`)}
+                          className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                        >
+                          Date limite
+                          <HelpCircle className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <Button
+                    className="w-full h-11 text-sm font-semibold"
+                    onClick={() => setSelectedTender(tender)}
+                  >
+                    Demander une réponse
+                  </Button>
                 </div>
-
-
-                <Button
-                  className="w-full h-11 text-sm font-semibold"
-                  onClick={() => setSelectedTender(tender)}
-                >
-                  Demander une réponse
-                </Button>
-              </div>
-              </div>
-            ))}
+              );
+              return items;
+            })}
           </div>
         )}
       </div>
