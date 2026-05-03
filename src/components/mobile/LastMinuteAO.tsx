@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Calendar, Euro, Zap, RefreshCw, FileText, HelpCircle, Plus } from "lucide-react";
+import { MapPin, Calendar, Euro, Zap, RefreshCw, FileText, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,16 +23,17 @@ import { AddTenderDialog } from "./AddTenderDialog";
 
 interface LastMinuteAOProps {
   onRequestCreated: () => void;
+  addOpen: boolean;
+  onAddOpenChange: (open: boolean) => void;
 }
 
-export function LastMinuteAO({ onRequestCreated }: LastMinuteAOProps) {
+export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: LastMinuteAOProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { company } = useCurrentCompany();
   const { tenders, loading, lastUpdate, refetch } = useBoampTenders();
   const [selectedTender, setSelectedTender] = useState<BoampTender | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [addOpen, setAddOpen] = useState(false);
 
   const handleConfirm = async () => {
     if (!selectedTender) return;
@@ -77,27 +78,16 @@ export function LastMinuteAO({ onRequestCreated }: LastMinuteAOProps) {
               Données BOAMP en temps réel
             </p>
           </div>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setAddOpen(true)}
-              className="shrink-0"
-              aria-label="Ajouter un appel d'offres"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => refetch()}
-              disabled={loading}
-              className="shrink-0"
-              aria-label="Rafraîchir"
-            >
-              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => refetch()}
+            disabled={loading}
+            className="shrink-0"
+            aria-label="Rafraîchir"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
         </div>
 
         {lastUpdate && (
@@ -189,15 +179,15 @@ export function LastMinuteAO({ onRequestCreated }: LastMinuteAOProps) {
                   </div>
                 </div>
 
-                {tender.compatibility != null && (
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-medium text-foreground">Compatibilité</span>
-                      <span className="font-semibold text-primary">{tender.compatibility}%</span>
-                    </div>
-                    <Progress value={tender.compatibility} className="h-1.5" />
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-medium text-foreground">Compatibilité</span>
+                    <span className="font-semibold text-primary">
+                      {tender.compatibility != null ? `${tender.compatibility}%` : "N/A"}
+                    </span>
                   </div>
-                )}
+                  <Progress value={tender.compatibility ?? 0} className="h-1.5" />
+                </div>
 
                 <Button
                   className="w-full h-11 text-sm font-semibold"
@@ -236,7 +226,7 @@ export function LastMinuteAO({ onRequestCreated }: LastMinuteAOProps) {
         </DialogContent>
       </Dialog>
 
-      <AddTenderDialog open={addOpen} onOpenChange={setAddOpen} onCreated={refetch} />
+      <AddTenderDialog open={addOpen} onOpenChange={onAddOpenChange} onCreated={refetch} />
     </>
   );
 }
