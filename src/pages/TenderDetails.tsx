@@ -29,6 +29,8 @@ const TenderDetails = () => {
   
   const tender = tenders.find(t => t.id === tenderId);
   const { summary, loading: summaryLoading, error: summaryError } = useTenderSummary(tender || null);
+  const [lotsOpen, setLotsOpen] = useState(false);
+  const [selectedLots, setSelectedLots] = useState<number[]>([]);
 
   if (tendersLoading) {
     return (
