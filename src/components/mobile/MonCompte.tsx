@@ -255,32 +255,28 @@ export function MonCompte() {
       <Dialog open={contactDialogOpen} onOpenChange={setContactDialogOpen}>
         <DialogContent className="max-w-[340px] rounded-lg">
           <DialogHeader>
-            <DialogTitle>Contacter {ca?.display_name}</DialogTitle>
+            <DialogTitle>Contacter Marc Lefèvre</DialogTitle>
             <DialogDescription>
               Choisissez votre moyen de contact préféré
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
-            {ca?.phone && (
-              <Button
-                className="w-full justify-start gap-3"
-                variant="outline"
-                onClick={() => (window.location.href = `tel:${ca.phone}`)}
-              >
-                <Phone className="w-4 h-4" />
-                Appeler : {ca.phone}
-              </Button>
-            )}
-            {ca?.email && (
-              <Button
-                className="w-full justify-start gap-3"
-                variant="outline"
-                onClick={() => (window.location.href = `mailto:${ca.email}`)}
-              >
-                <Mail className="w-4 h-4" />
-                Email : {ca.email}
-              </Button>
-            )}
+            <Button
+              className="w-full justify-start gap-3"
+              variant="outline"
+              onClick={() => (window.location.href = "tel:0678451290")}
+            >
+              <Phone className="w-4 h-4" />
+              Appeler : 06 78 45 12 90
+            </Button>
+            <Button
+              className="w-full justify-start gap-3"
+              variant="outline"
+              onClick={() => (window.location.href = "mailto:marc.lefevre@tendrix.fr")}
+            >
+              <Mail className="w-4 h-4" />
+              Email : marc.lefevre@tendrix.fr
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
