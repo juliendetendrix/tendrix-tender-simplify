@@ -3,7 +3,7 @@ import { Bell, LogOut, Plus } from "lucide-react";
 import { LastMinuteAO } from "@/components/mobile/LastMinuteAO";
 import { MesDossiers } from "@/components/mobile/MesDossiers";
 import { MonCompte } from "@/components/mobile/MonCompte";
-import { DossierDetail } from "@/components/mobile/DossierDetail";
+import { DemoChat } from "@/components/mobile/DemoChat";
 import { BottomNav } from "@/components/mobile/BottomNav";
 import { useAuth } from "@/hooks/useAuth";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
@@ -13,7 +13,7 @@ type Tab = "opportunites" | "dossiers" | "compte";
 export default function MobileApp() {
   const { signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("opportunites");
-  const [openedDossier, setOpenedDossier] = useState<string | null>(null);
+  const [openedChat, setOpenedChat] = useState<{ id: string; title: string } | null>(null);
   const [addOpen, setAddOpen] = useState(false);
 
   const handleRequestCreated = () => {
@@ -49,8 +49,11 @@ export default function MobileApp() {
       </header>
 
       <main className="flex-1 overflow-y-auto pb-20">
-        {openedDossier ? (
-          <DossierDetail requestId={openedDossier} onBack={() => setOpenedDossier(null)} />
+        {openedChat ? (
+          <DemoChat
+            dossierTitle={openedChat.title}
+            onBack={() => setOpenedChat(null)}
+          />
         ) : (
           <>
             {activeTab === "opportunites" && (
@@ -61,14 +64,16 @@ export default function MobileApp() {
               />
             )}
             {activeTab === "dossiers" && (
-              <MesDossiers onOpenDossier={setOpenedDossier} />
+              <MesDossiers
+                onOpenChat={(id, title) => setOpenedChat({ id, title })}
+              />
             )}
             {activeTab === "compte" && <MonCompte />}
           </>
         )}
       </main>
 
-      {!openedDossier && (
+      {!openedChat && (
         <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       )}
     </div>
