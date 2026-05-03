@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEffect } from "react";
 import { MapPin, Calendar, Euro, Zap, RefreshCw, FileText, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
