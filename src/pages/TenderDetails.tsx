@@ -1,14 +1,22 @@
-import { ArrowLeft, MapPin, Calendar, Euro, TrendingUp, ExternalLink, Building2, FileText } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Euro, TrendingUp, ExternalLink, Building2, FileText, Package, Check } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useBoampTenders } from "@/hooks/useBoampTenders";
 import { useTenderSummary } from "@/hooks/useTenderSummary";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
