@@ -112,9 +112,36 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
           </div>
         ) : (
           <div className="space-y-4">
-            {tenders.map((tender) => (
+            {tenders.map((tender, idx) => (
+              <div key={tender.id} className="contents">
+                {idx === 3 && (
+                  <div className="rounded-lg p-4 space-y-3 bg-secondary text-secondary-foreground shadow-sm">
+                    <h3 className="font-semibold text-sm">🏆 Top chargés d'affaires</h3>
+                    <div className="space-y-2">
+                      {[
+                        { rank: 1, name: "Marc Lefèvre", rate: 78 },
+                        { rank: 2, name: "Sophie Martin", rate: 72 },
+                        { rank: 3, name: "Antoine Garnier", rate: 68 },
+                        { rank: 4, name: "Claire Bernard", rate: 64 },
+                      ].map((ca) => (
+                        <div
+                          key={ca.rank}
+                          className="flex items-center gap-3 bg-white/90 rounded-md p-2.5"
+                        >
+                          <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold shrink-0">
+                            {ca.rank}
+                          </div>
+                          <div className="flex-1 text-sm font-medium text-foreground">{ca.name}</div>
+                          <div className="text-sm font-bold text-primary">{ca.rate}%</div>
+                        </div>
+                      ))}
+                    </div>
+                    <Button className="w-full h-10 text-sm bg-primary text-primary-foreground hover:bg-primary/90">
+                      Choisir un top chargé d'affaires
+                    </Button>
+                  </div>
+                )}
               <div
-                key={tender.id}
                 className="bg-card border border-border rounded-lg p-4 space-y-3 shadow-sm"
               >
                 <div className="flex items-start gap-2">
@@ -186,6 +213,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                 >
                   Demander une réponse
                 </Button>
+              </div>
               </div>
             ))}
           </div>
