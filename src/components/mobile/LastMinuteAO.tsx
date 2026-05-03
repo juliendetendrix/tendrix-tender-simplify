@@ -252,6 +252,15 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
               );
               return items;
             })}
+            {visibleCount < tenders.length && (
+              <Button
+                variant="outline"
+                className="w-full h-11 text-sm font-semibold border-primary/30 text-primary hover:bg-primary/5"
+                onClick={() => setVisibleCount((c) => c + 5)}
+              >
+                Charger plus d'opportunités
+              </Button>
+            )}
           </div>
         )}
       </div>
