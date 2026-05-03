@@ -117,6 +117,7 @@ export function DemoChat({ dossierTitle, onBack }: Props) {
                 {m.time}
               </div>
             </div>
+            )}
           </div>
         ))}
       </div>
