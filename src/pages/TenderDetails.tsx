@@ -42,7 +42,7 @@ const TenderDetails = () => {
     url: null,
     hoursAgo: 48,
     compatibility: 92,
-  } as const : null;
+  } : null;
 
   const tender = demoTender ?? tenders.find(t => t.id === tenderId);
   const { summary, loading: summaryLoading, error: summaryError } = useTenderSummary(demoTender ? null : (tender || null));
