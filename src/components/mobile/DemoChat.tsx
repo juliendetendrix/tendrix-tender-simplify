@@ -83,6 +83,24 @@ export function DemoChat({ dossierTitle, onBack }: Props) {
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 space-y-3 bg-muted/30">
         {messages.map((m) => (
           <div key={m.id} className={`flex ${m.mine ? "justify-end" : "justify-start"}`}>
+            {m.type === "proposal" ? (
+              <button className="max-w-[85%] text-left rounded-2xl rounded-bl-sm bg-white border border-primary/30 shadow-sm p-3 hover:bg-primary/5 transition-colors">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[11px] font-medium text-primary uppercase tracking-wide">IA Tendrix</div>
+                    <div className="text-sm font-semibold leading-tight">Proposition de réponse V1</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-medium text-primary border-t border-border pt-2">
+                  <FileText className="w-3.5 h-3.5" />
+                  Voir la proposition
+                </div>
+                <div className="text-[10px] mt-1 text-muted-foreground">{m.time}</div>
+              </button>
+            ) : (
             <div
               className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
                 m.mine
