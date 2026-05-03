@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Bell, LogOut, Plus } from "lucide-react";
+import { MessageCircle, LogOut, Plus } from "lucide-react";
 import { LastMinuteAO } from "@/components/mobile/LastMinuteAO";
 import { MesDossiers } from "@/components/mobile/MesDossiers";
 import { MonCompte } from "@/components/mobile/MonCompte";
 import { DemoChat } from "@/components/mobile/DemoChat";
+import { MessagesInbox } from "@/components/mobile/MessagesInbox";
 import { BottomNav } from "@/components/mobile/BottomNav";
 import { useAuth } from "@/hooks/useAuth";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
@@ -14,6 +15,7 @@ export default function MobileApp() {
   const { signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("opportunites");
   const [openedChat, setOpenedChat] = useState<{ id: string; title: string } | null>(null);
+  const [messagesOpen, setMessagesOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
 
   const handleRequestCreated = () => {
