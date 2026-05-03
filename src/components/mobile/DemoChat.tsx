@@ -30,7 +30,7 @@ export function DemoChat({ dossierTitle, onBack }: Props) {
     },
     {
       id: "2",
-      body: "Bonjour, je vais m'appuyer sur l'IA de Tendrix qui s'est basée sur vos dossiers, sur vos appels d'offres déjà remportés que nous avons en base, ainsi que sur tout ce que nous avons fait ensemble pour peaufiner au mieux cette réponse d'appel d'offres. Je reviens vers vous rapidement avec une version finale.",
+      body: "Bonjour, je vais m'appuyer sur l'IA de Tendrix qui s'est basée sur toutes les données que nous avons collectées lors de votre onboarding et sur les appels d'offres auxquels nous avons déjà répondu ensemble, pour réaliser une première version de cet appel d'offres. Nous pourrons rediscuter des mentions techniques ensemble rapidement si besoin.",
       mine: false,
       time: "09:14",
     },
