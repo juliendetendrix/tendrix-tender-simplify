@@ -118,23 +118,23 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                 items.push(
                   <div
                     key="top-ca"
-                    className="bg-card border border-secondary/40 rounded-lg p-4 space-y-3 shadow-sm"
+                    className="bg-card border-2 border-secondary rounded-lg p-4 space-y-3 shadow-sm"
                   >
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold text-sm text-foreground">
                         Top chargés d'affaires
                       </h3>
                       <span className="text-[10px] font-bold uppercase tracking-wide bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
-                        Classement
+                        Taux de réussite
                       </span>
                     </div>
 
                     <div className="space-y-1">
                       {[
-                        { rank: 1, name: "Marc Lefèvre", rate: 78 },
-                        { rank: 2, name: "Sophie Martin", rate: 72 },
-                        { rank: 3, name: "Antoine Garnier", rate: 68 },
-                        { rank: 4, name: "Claire Bernard", rate: 64 },
+                        { rank: 1, name: "Marc Lefèvre", rate: 78, photo: "https://i.pravatar.cc/64?img=12" },
+                        { rank: 2, name: "Sophie Martin", rate: 72, photo: "https://i.pravatar.cc/64?img=47" },
+                        { rank: 3, name: "Antoine Garnier", rate: 68, photo: null },
+                        { rank: 4, name: "Claire Bernard", rate: 64, photo: "https://i.pravatar.cc/64?img=32" },
                       ].map((ca) => (
                         <div
                           key={ca.rank}
@@ -143,9 +143,18 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                           <div className="w-6 text-center text-sm font-bold text-muted-foreground shrink-0">
                             {ca.rank}
                           </div>
-                          <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold shrink-0">
-                            {ca.name.split(" ").map((n) => n[0]).join("")}
-                          </div>
+                          {ca.photo ? (
+                            <img
+                              src={ca.photo}
+                              alt={ca.name}
+                              loading="lazy"
+                              className="w-8 h-8 rounded-full object-cover shrink-0"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold shrink-0">
+                              {ca.name.split(" ").map((n) => n[0]).join("")}
+                            </div>
+                          )}
                           <div className="flex-1 text-sm font-medium text-foreground truncate">
                             {ca.name}
                           </div>
