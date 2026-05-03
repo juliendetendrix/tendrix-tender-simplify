@@ -50,6 +50,12 @@ const Footer = () => {
                 </a>
               </li>
               <li>
+                <a href="/app" className="inline-flex items-center gap-1.5 text-secondary hover:text-secondary/80 font-semibold transition-colors">
+                  <Smartphone className="h-4 w-4" />
+                  Accéder à l'app
+                </a>
+              </li>
+              <li>
                 <a href="/mentions-legales" className="text-background/80 hover:text-background transition-colors">
                   Mentions légales
                 </a>
