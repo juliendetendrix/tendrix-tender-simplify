@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Bell, LogOut, Plus } from "lucide-react";
+import { MessageCircle, LogOut, Plus } from "lucide-react";
 import { LastMinuteAO } from "@/components/mobile/LastMinuteAO";
 import { MesDossiers } from "@/components/mobile/MesDossiers";
 import { MonCompte } from "@/components/mobile/MonCompte";
 import { DemoChat } from "@/components/mobile/DemoChat";
+import { MessagesInbox } from "@/components/mobile/MessagesInbox";
 import { BottomNav } from "@/components/mobile/BottomNav";
 import { useAuth } from "@/hooks/useAuth";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
@@ -14,6 +15,7 @@ export default function MobileApp() {
   const { signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("opportunites");
   const [openedChat, setOpenedChat] = useState<{ id: string; title: string } | null>(null);
+  const [messagesOpen, setMessagesOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
 
   const handleRequestCreated = () => {
@@ -35,8 +37,13 @@ export default function MobileApp() {
           >
             <Plus className="w-5 h-5" />
           </button>
-          <button className="p-2 hover:bg-muted rounded-full transition-colors">
-            <Bell className="w-5 h-5 text-primary" />
+          <button
+            onClick={() => setMessagesOpen(true)}
+            className="p-2 hover:bg-muted rounded-full transition-colors relative"
+            aria-label="Messages"
+          >
+            <MessageCircle className="w-5 h-5 text-primary" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-secondary" />
           </button>
           <button
             onClick={signOut}
@@ -53,6 +60,14 @@ export default function MobileApp() {
           <DemoChat
             dossierTitle={openedChat.title}
             onBack={() => setOpenedChat(null)}
+          />
+        ) : messagesOpen ? (
+          <MessagesInbox
+            onBack={() => setMessagesOpen(false)}
+            onOpenChat={(id, title) => {
+              setMessagesOpen(false);
+              setOpenedChat({ id, title });
+            }}
           />
         ) : (
           <>
@@ -73,7 +88,7 @@ export default function MobileApp() {
         )}
       </main>
 
-      {!openedChat && (
+      {!openedChat && !messagesOpen && (
         <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       )}
     </div>
