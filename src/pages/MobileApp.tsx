@@ -61,6 +61,14 @@ export default function MobileApp() {
             dossierTitle={openedChat.title}
             onBack={() => setOpenedChat(null)}
           />
+        ) : messagesOpen ? (
+          <MessagesInbox
+            onBack={() => setMessagesOpen(false)}
+            onOpenChat={(id, title) => {
+              setMessagesOpen(false);
+              setOpenedChat({ id, title });
+            }}
+          />
         ) : (
           <>
             {activeTab === "opportunites" && (
@@ -80,7 +88,7 @@ export default function MobileApp() {
         )}
       </main>
 
-      {!openedChat && (
+      {!openedChat && !messagesOpen && (
         <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       )}
     </div>
