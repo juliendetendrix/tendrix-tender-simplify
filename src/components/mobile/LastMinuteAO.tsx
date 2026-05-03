@@ -113,7 +113,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
           </div>
         ) : (
           <div className="space-y-4">
-            {tenders.flatMap((tender, idx) => {
+            {tenders.slice(0, visibleCount).flatMap((tender, idx) => {
               const items: JSX.Element[] = [];
               if (idx === 3) {
                 items.push(
