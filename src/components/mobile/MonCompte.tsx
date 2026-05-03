@@ -167,8 +167,8 @@ export function MonCompte() {
           </div>
         </section>
 
-        <section className="rounded-lg p-4 space-y-3 bg-secondary text-white shadow-sm">
-          <h2 className="font-semibold text-sm mb-1 text-white/90">Mon chargé d'affaires</h2>
+        <section className="rounded-lg p-4 space-y-3 bg-primary text-primary-foreground shadow-sm">
+          <h2 className="font-semibold text-sm mb-1 text-primary-foreground/90">Mon chargé d'affaires</h2>
 
           <div className="flex items-start gap-3">
             <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-white/20 backdrop-blur-sm font-semibold">
@@ -176,7 +176,7 @@ export function MonCompte() {
             </div>
             <div className="flex-1">
               <div className="font-semibold text-base">Marc Lefèvre</div>
-              <div className="text-xs text-white/80">Chargé d'affaires référent</div>
+              <div className="text-xs text-primary-foreground/80">Chargé d'affaires référent</div>
               <div className="flex items-center gap-1.5 mt-1.5 text-sm">
                 <Phone className="w-3.5 h-3.5" />
                 <span>06 78 45 12 90</span>
@@ -185,7 +185,7 @@ export function MonCompte() {
           </div>
 
           <Button
-            className="w-full h-10 text-sm bg-white text-secondary hover:bg-white/90"
+            className="w-full h-10 text-sm bg-white text-primary hover:bg-white/90"
             onClick={() => setContactDialogOpen(true)}
           >
             <Mail className="w-4 h-4 mr-2" />
