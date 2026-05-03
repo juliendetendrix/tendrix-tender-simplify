@@ -10,7 +10,10 @@ import {
   Eye,
   Pencil,
   MapPin,
+  GraduationCap,
+  Play,
 } from "lucide-react";
+import formationThumbnail from "@/assets/formation-thumbnail.jpg";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -164,8 +167,8 @@ export function MonCompte() {
           </div>
         </section>
 
-        <section className="rounded-lg p-4 space-y-3 bg-secondary text-white shadow-sm">
-          <h2 className="font-semibold text-sm mb-1 text-white/90">Mon chargé d'affaires</h2>
+        <section className="rounded-lg p-4 space-y-3 bg-primary text-primary-foreground shadow-sm">
+          <h2 className="font-semibold text-sm mb-1 text-primary-foreground/90">Mon chargé d'affaires</h2>
 
           <div className="flex items-start gap-3">
             <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-white/20 backdrop-blur-sm font-semibold">
@@ -173,7 +176,7 @@ export function MonCompte() {
             </div>
             <div className="flex-1">
               <div className="font-semibold text-base">Marc Lefèvre</div>
-              <div className="text-xs text-white/80">Chargé d'affaires référent</div>
+              <div className="text-xs text-primary-foreground/80">Chargé d'affaires référent</div>
               <div className="flex items-center gap-1.5 mt-1.5 text-sm">
                 <Phone className="w-3.5 h-3.5" />
                 <span>06 78 45 12 90</span>
@@ -182,7 +185,7 @@ export function MonCompte() {
           </div>
 
           <Button
-            className="w-full h-10 text-sm bg-white text-secondary hover:bg-white/90"
+            className="w-full h-10 text-sm bg-white text-primary hover:bg-white/90"
             onClick={() => setContactDialogOpen(true)}
           >
             <Mail className="w-4 h-4 mr-2" />
@@ -217,6 +220,39 @@ export function MonCompte() {
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="rounded-lg p-4 space-y-3 bg-secondary text-secondary-foreground shadow-sm">
+          <div className="flex items-center gap-2">
+            <GraduationCap className="w-5 h-5" />
+            <h2 className="font-semibold text-sm">Formation</h2>
+          </div>
+          <h3 className="font-bold text-base leading-tight">
+            Comment augmenter vos chances de remporter des appels d'offres ?
+          </h3>
+
+          <button className="relative block w-full rounded-lg overflow-hidden group">
+            <img
+              src={formationThumbnail}
+              alt="Comment gagner des appels d'offres"
+              width={768}
+              height={512}
+              loading="lazy"
+              className="w-full h-32 object-cover"
+            />
+            <div className="absolute inset-0 bg-primary/30 group-hover:bg-primary/40 transition-colors flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-white/95 flex items-center justify-center shadow-lg">
+                <Play className="w-5 h-5 text-primary fill-primary ml-0.5" />
+              </div>
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 to-transparent text-white text-xs font-medium text-left">
+              Comment gagner des appels d'offres ?
+            </div>
+          </button>
+
+          <Button className="w-full h-10 text-sm bg-primary text-primary-foreground hover:bg-primary/90">
+            Voir les conseils et formations
+          </Button>
         </section>
 
         <section className="bg-white border border-border rounded-lg p-4 space-y-3">
