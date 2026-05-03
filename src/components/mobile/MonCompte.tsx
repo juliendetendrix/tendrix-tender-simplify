@@ -250,7 +250,7 @@ export function MonCompte() {
             </div>
           </button>
 
-          <Button className="w-full h-10 text-sm bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button className="w-full h-10 text-sm bg-white text-primary hover:bg-white/90">
             Voir les conseils et formations
           </Button>
         </section>
