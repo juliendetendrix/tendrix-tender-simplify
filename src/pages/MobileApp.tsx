@@ -13,7 +13,7 @@ type Tab = "opportunites" | "dossiers" | "compte";
 export default function MobileApp() {
   const { signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("opportunites");
-  const [openedDossier, setOpenedDossier] = useState<string | null>(null);
+  const [openedChat, setOpenedChat] = useState<{ id: string; title: string } | null>(null);
   const [addOpen, setAddOpen] = useState(false);
 
   const handleRequestCreated = () => {
