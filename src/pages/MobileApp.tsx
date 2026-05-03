@@ -3,7 +3,7 @@ import { Bell, LogOut, Plus } from "lucide-react";
 import { LastMinuteAO } from "@/components/mobile/LastMinuteAO";
 import { MesDossiers } from "@/components/mobile/MesDossiers";
 import { MonCompte } from "@/components/mobile/MonCompte";
-import { DossierDetail } from "@/components/mobile/DossierDetail";
+import { DemoChat } from "@/components/mobile/DemoChat";
 import { BottomNav } from "@/components/mobile/BottomNav";
 import { useAuth } from "@/hooks/useAuth";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
