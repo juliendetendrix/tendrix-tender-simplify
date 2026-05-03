@@ -6,7 +6,7 @@ import { MonCompte } from "@/components/mobile/MonCompte";
 import { DossierDetail } from "@/components/mobile/DossierDetail";
 import { BottomNav } from "@/components/mobile/BottomNav";
 import { useAuth } from "@/hooks/useAuth";
-import tendrixLogo from "@/assets/tendrix-logo-new.png";
+import tendrixLogo from "@/assets/tendrix-logo-blue.png";
 
 type Tab = "opportunites" | "dossiers" | "compte";
 
