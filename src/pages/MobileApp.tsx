@@ -49,8 +49,11 @@ export default function MobileApp() {
       </header>
 
       <main className="flex-1 overflow-y-auto pb-20">
-        {openedDossier ? (
-          <DossierDetail requestId={openedDossier} onBack={() => setOpenedDossier(null)} />
+        {openedChat ? (
+          <DemoChat
+            dossierTitle={openedChat.title}
+            onBack={() => setOpenedChat(null)}
+          />
         ) : (
           <>
             {activeTab === "opportunites" && (
@@ -61,14 +64,16 @@ export default function MobileApp() {
               />
             )}
             {activeTab === "dossiers" && (
-              <MesDossiers onOpenDossier={setOpenedDossier} />
+              <MesDossiers
+                onOpenChat={(id, title) => setOpenedChat({ id, title })}
+              />
             )}
             {activeTab === "compte" && <MonCompte />}
           </>
         )}
       </main>
 
-      {!openedDossier && (
+      {!openedChat && (
         <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       )}
     </div>
