@@ -70,8 +70,11 @@ export function MesDossiers({ onOpenChat }: Props) {
         <p className="text-sm text-muted-foreground">Suivez vos demandes de réponse</p>
       </div>
 
-      <div className="bg-white border border-border rounded-lg p-4">
-        <h2 className="font-semibold text-sm mb-3">Statistiques</h2>
+      <div className="bg-white border border-border rounded-lg p-4 space-y-3">
+        <div className="flex items-baseline justify-between gap-2">
+          <h2 className="font-semibold text-sm">Statistiques</h2>
+          <span className="text-xs text-muted-foreground truncate">Maçonnerie Dubois & Fils</span>
+        </div>
         <div className="grid grid-cols-3 gap-2">
           <div className="text-center p-2 rounded-md bg-primary/5">
             <div className="text-2xl font-bold text-primary leading-none">15</div>
@@ -86,7 +89,27 @@ export function MesDossiers({ onOpenChat }: Props) {
             <div className="text-[11px] text-muted-foreground mt-1 leading-tight">Refusés</div>
           </div>
         </div>
+
+        <div className="rounded-md bg-secondary/15 p-3">
+          <div className="flex items-baseline justify-between mb-1.5">
+            <span className="text-xs font-medium text-foreground">Taux de réussite</span>
+            <span className="text-lg font-bold text-secondary-foreground">33%</span>
+          </div>
+          <div className="h-2 rounded-full bg-white overflow-hidden">
+            <div className="h-full bg-secondary rounded-full" style={{ width: "33%" }} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 pt-1">
+          <button className="text-xs font-medium px-3 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+            Voir nos formations
+          </button>
+          <button className="text-xs font-medium px-3 py-2 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors">
+            Top chargés d'affaires
+          </button>
+        </div>
       </div>
+
 
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {[
