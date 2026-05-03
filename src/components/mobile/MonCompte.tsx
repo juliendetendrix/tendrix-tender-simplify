@@ -91,49 +91,76 @@ export function MonCompte() {
           </p>
         </div>
 
-        <section className="bg-white border border-border rounded-lg p-4 space-y-3">
-          <h2 className="font-semibold text-sm mb-3">Mon profil</h2>
+        <section className="bg-white border border-border rounded-lg p-4 space-y-3 relative">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold text-sm">Mon profil</h2>
+            <button
+              className="flex items-center gap-1 text-xs font-medium text-primary hover:bg-muted px-2 py-1 rounded-md transition-colors"
+              aria-label="Modifier le profil"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              Modifier
+            </button>
+          </div>
 
           <div className="space-y-2.5">
-            {company?.name && (
-              <div className="flex items-center gap-3">
-                <Building2 className="w-4 h-4 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="text-xs text-muted-foreground">Entreprise</div>
-                  <div className="text-sm font-medium">{company.name}</div>
-                </div>
+            <div className="flex items-center gap-3">
+              <Building2 className="w-4 h-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground">Entreprise</div>
+                <div className="text-sm font-medium">{demoProfile.companyName}</div>
               </div>
-            )}
+            </div>
 
-            {company?.contact_name && (
-              <div className="flex items-center gap-3">
-                <User className="w-4 h-4 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="text-xs text-muted-foreground">Nom</div>
-                  <div className="text-sm font-medium">{company.contact_name}</div>
+            <div className="flex items-center gap-3">
+              <User className="w-4 h-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground">Référent contact</div>
+                <div className="text-sm font-medium">
+                  {demoProfile.contactName} — {demoProfile.role}
                 </div>
               </div>
-            )}
+            </div>
 
-            {user?.email && (
-              <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="text-xs text-muted-foreground">Email</div>
-                  <div className="text-sm font-medium">{user.email}</div>
-                </div>
+            <div className="flex items-center gap-3">
+              <Phone className="w-4 h-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground">Téléphone</div>
+                <div className="text-sm font-medium">{demoProfile.phone}</div>
               </div>
-            )}
+            </div>
 
-            {company?.sector && (
-              <div className="flex items-center gap-3">
-                <FileText className="w-4 h-4 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="text-xs text-muted-foreground">Secteur</div>
-                  <div className="text-sm font-medium">{company.sector}</div>
-                </div>
+            <div className="flex items-center gap-3">
+              <Mail className="w-4 h-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground">Email</div>
+                <div className="text-sm font-medium break-all">{demoProfile.email}</div>
               </div>
-            )}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <MapPin className="w-4 h-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground">Adresse</div>
+                <div className="text-sm font-medium">{demoProfile.address}</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <FileText className="w-4 h-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground">Secteur</div>
+                <div className="text-sm font-medium">{demoProfile.sector}</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <FileText className="w-4 h-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground">SIREN</div>
+                <div className="text-sm font-medium">{demoProfile.siren}</div>
+              </div>
+            </div>
           </div>
         </section>
 
