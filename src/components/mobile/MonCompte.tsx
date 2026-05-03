@@ -10,7 +10,10 @@ import {
   Eye,
   Pencil,
   MapPin,
+  GraduationCap,
+  Play,
 } from "lucide-react";
+import formationThumbnail from "@/assets/formation-thumbnail.jpg";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
