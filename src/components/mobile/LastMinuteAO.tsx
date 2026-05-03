@@ -35,7 +35,16 @@ export function LastMinuteAO({ onRequestCreated }: LastMinuteAOProps) {
   const [addOpen, setAddOpen] = useState(false);
 
   const handleConfirm = async () => {
-    if (!selectedTender || !company || !user) return;
+    if (!selectedTender) return;
+    if (!company || !user) {
+      toast({
+        title: "Demande envoyée",
+        description: "Votre chargé d'affaires reviendra vers vous sous 4 heures.",
+      });
+      setSelectedTender(null);
+      onRequestCreated();
+      return;
+    }
     setSubmitting(true);
     const { error } = await supabase.from("tender_requests").insert({
       tender_id: selectedTender.id,
@@ -193,7 +202,6 @@ export function LastMinuteAO({ onRequestCreated }: LastMinuteAOProps) {
                 <Button
                   className="w-full h-11 text-sm font-semibold"
                   onClick={() => setSelectedTender(tender)}
-                  disabled={!company}
                 >
                   Demander une réponse
                 </Button>
