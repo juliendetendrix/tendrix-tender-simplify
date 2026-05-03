@@ -37,8 +37,13 @@ export default function MobileApp() {
           >
             <Plus className="w-5 h-5" />
           </button>
-          <button className="p-2 hover:bg-muted rounded-full transition-colors">
-            <Bell className="w-5 h-5 text-primary" />
+          <button
+            onClick={() => setMessagesOpen(true)}
+            className="p-2 hover:bg-muted rounded-full transition-colors relative"
+            aria-label="Messages"
+          >
+            <MessageCircle className="w-5 h-5 text-primary" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-secondary" />
           </button>
           <button
             onClick={signOut}
