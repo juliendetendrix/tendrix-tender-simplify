@@ -147,7 +147,11 @@ const TenderDetails = () => {
               Résumé de l'appel d'offres
             </h2>
           </div>
-          {summaryLoading ? (
+          {demoTender ? (
+            <p className="text-sm text-foreground leading-relaxed">
+              {demoTender.summary}
+            </p>
+          ) : summaryLoading ? (
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground italic">
                 Génération du résumé en cours...
