@@ -29,7 +29,9 @@ serve(async (req) => {
 
   try {
     const url = 'https://boamp-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/boamp/records'
-    const params = new URLSearchParams({ limit: '20', order_by: 'dateparution desc' })
+    // Sectorisation BTP: travaux + mots-clés bâtiment/construction
+    const btpWhere = `famille_libelle like "Travaux" OR objet like "BTP" OR objet like "bâtiment" OR objet like "construction" OR objet like "travaux" OR objet like "rénovation" OR objet like "voirie" OR objet like "génie civil"`
+    const params = new URLSearchParams({ limit: '30', order_by: 'dateparution desc', where: btpWhere })
     const resp = await fetch(`${url}?${params}`, {
       headers: { Accept: 'application/json', 'User-Agent': 'Tendrix-App/1.0' },
     })
