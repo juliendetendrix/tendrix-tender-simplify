@@ -207,9 +207,9 @@ export function MonCompte() {
                   <span className="text-sm">{doc.name}</span>
                 </div>
                 {doc.hasFile ? (
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium hover:bg-muted transition-colors">
-                    <Eye className="w-3.5 h-3.5" />
-                    Voir
+                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-primary border border-primary/20 hover:bg-primary/5 transition-colors">
+                    <Pencil className="w-3.5 h-3.5" />
+                    Modifier
                   </button>
                 ) : (
                   <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-white bg-secondary transition-colors">
