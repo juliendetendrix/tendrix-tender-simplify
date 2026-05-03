@@ -108,9 +108,9 @@ export function AddTenderDialog({ open, onOpenChange, onCreated }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[400px] rounded-lg">
         <DialogHeader>
-          <DialogTitle>Ajouter un appel d'offres</DialogTitle>
+          <DialogTitle>Vous avez trouvé un appel d'offres hors de l'application ?</DialogTitle>
           <DialogDescription>
-            Coller une URL ou téléverser un PDF, puis compléter les informations clés.
+            Intégrez les informations de celui-ci pour que nous entamions la réponse pour vous.
           </DialogDescription>
         </DialogHeader>
 
@@ -140,28 +140,6 @@ export function AddTenderDialog({ open, onOpenChange, onCreated }: Props) {
           <div className="space-y-1.5">
             <Label htmlFor="title">Objet du marché *</Label>
             <Input id="title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="budget">Budget</Label>
-              <Input id="budget" value={form.budget} onChange={(e) => setForm({ ...form, budget: e.target.value })} placeholder="120 k€" />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="deadline">Deadline</Label>
-              <Input id="deadline" type="date" value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })} />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="location">Lieu</Label>
-            <Input id="location" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="organisme">Organisme</Label>
-            <Input id="organisme" value={form.organisme} onChange={(e) => setForm({ ...form, organisme: e.target.value })} />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="summary">Documents requis / résumé</Label>
-            <Textarea id="summary" rows={3} value={form.summary} onChange={(e) => setForm({ ...form, summary: e.target.value })} />
           </div>
 
           <Button onClick={handleSubmit} disabled={submitting} className="w-full">
