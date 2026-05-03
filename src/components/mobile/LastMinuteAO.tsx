@@ -23,16 +23,17 @@ import { AddTenderDialog } from "./AddTenderDialog";
 
 interface LastMinuteAOProps {
   onRequestCreated: () => void;
+  addOpen: boolean;
+  onAddOpenChange: (open: boolean) => void;
 }
 
-export function LastMinuteAO({ onRequestCreated }: LastMinuteAOProps) {
+export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: LastMinuteAOProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { company } = useCurrentCompany();
   const { tenders, loading, lastUpdate, refetch } = useBoampTenders();
   const [selectedTender, setSelectedTender] = useState<BoampTender | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [addOpen, setAddOpen] = useState(false);
 
   const handleConfirm = async () => {
     if (!selectedTender) return;
