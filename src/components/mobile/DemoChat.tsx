@@ -23,21 +23,16 @@ export function DemoChat({ dossierTitle, onBack }: Props) {
   const [messages, setMessages] = useState<DemoMessage[]>([
     {
       id: "1",
-      body: `Bonjour, je prends en charge votre dossier "${dossierTitle}". Je reviens vers vous rapidement avec une première analyse.`,
+      body: "Proposition de réponse V1 — IA Tendrix",
       mine: false,
-      time: "09:14",
+      time: "09:10",
+      type: "proposal",
     },
     {
       id: "2",
-      body: "Parfait, merci ! Tenez-moi au courant.",
-      mine: true,
-      time: "09:22",
-    },
-    {
-      id: "3",
-      body: "Le dossier est éligible. Je prépare la réponse technique et je vous transmets le devis dans la journée.",
+      body: "Bonjour, je vais m'appuyer sur l'IA de Tendrix qui s'est basée sur vos dossiers, sur vos appels d'offres déjà remportés que nous avons en base, ainsi que sur tout ce que nous avons fait ensemble pour peaufiner au mieux cette réponse d'appel d'offres. Je reviens vers vous rapidement avec une version finale.",
       mine: false,
-      time: "10:05",
+      time: "09:14",
     },
   ]);
   const [body, setBody] = useState("");
