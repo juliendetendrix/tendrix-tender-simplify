@@ -5,7 +5,6 @@ import { MesDossiers } from "@/components/mobile/MesDossiers";
 import { MonCompte } from "@/components/mobile/MonCompte";
 import { DemoChat } from "@/components/mobile/DemoChat";
 import { MessagesInbox } from "@/components/mobile/MessagesInbox";
-import { RecommendedTenderNotification } from "@/components/mobile/RecommendedTenderNotification";
 import { BottomNav } from "@/components/mobile/BottomNav";
 import { useAuth } from "@/hooks/useAuth";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
@@ -25,7 +24,7 @@ export default function MobileApp() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col max-w-[430px] mx-auto">
-      <RecommendedTenderNotification />
+      
       <header className="sticky top-0 z-50 bg-white border-b border-border px-4 py-3 flex items-center justify-between">
         <img src={tendrixLogo} alt="Tendrix" className="h-8" />
         <div className="flex items-center gap-2">

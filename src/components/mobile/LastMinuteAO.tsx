@@ -113,53 +113,6 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
           </div>
         ) : (
           <div className="space-y-4">
-            {/* Recommended demo tender */}
-            <div className="bg-card border-2 border-secondary rounded-lg p-4 space-y-3 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 bg-secondary text-secondary-foreground text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-bl-lg flex items-center gap-1">
-                <Sparkles className="w-3 h-3" />
-                Recommandé
-              </div>
-              <div className="flex items-start gap-2 pr-24">
-                <h3 className="font-semibold text-sm flex-1 leading-tight text-foreground">
-                  Rénovation énergétique du groupe scolaire Jean Jaurès
-                </h3>
-              </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                La Mairie de Lyon lance un appel d'offres pour la rénovation énergétique complète du groupe scolaire…
-              </p>
-              <Button
-                variant="link"
-                className="h-auto p-0 text-xs text-primary hover:text-primary/80 font-normal"
-                onClick={() => navigate(`/tender-details?id=reco-demo`)}
-              >
-                <FileText className="w-3.5 h-3.5 mr-1" />
-                Lire le résumé de l'appel d'offres
-              </Button>
-              <div className="text-xs">
-                <span className="font-medium text-foreground">Mairie de Lyon</span>
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-muted-foreground">Lyon (69)</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Euro className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-muted-foreground">320 000 €</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between bg-primary/5 rounded-md px-3 py-2">
-                <span className="text-xs font-medium text-foreground">Compatibilité</span>
-                <span className="text-sm font-bold text-primary">92%</span>
-              </div>
-              <Button
-                className="w-full h-11 text-sm font-semibold"
-                onClick={() => navigate(`/tender-details?id=reco-demo`)}
-              >
-                Voir l'opportunité
-              </Button>
-            </div>
-
             {tenders.slice(0, visibleCount).flatMap((tender, idx) => {
               const items: JSX.Element[] = [];
               if (idx === 3) {
