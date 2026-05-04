@@ -5,7 +5,6 @@ import { MesDossiers } from "@/components/mobile/MesDossiers";
 import { MonCompte } from "@/components/mobile/MonCompte";
 import { DemoChat } from "@/components/mobile/DemoChat";
 import { MessagesInbox } from "@/components/mobile/MessagesInbox";
-import { RecommendedTenderNotification } from "@/components/mobile/RecommendedTenderNotification";
 import { BottomNav } from "@/components/mobile/BottomNav";
 import { useAuth } from "@/hooks/useAuth";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
