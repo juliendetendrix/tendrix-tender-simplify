@@ -112,9 +112,11 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
       <div className="p-4 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold mb-1 text-primary">Opportunités</h1>
+            <h1 className="text-xl font-bold mb-1 text-primary">
+              Bonjour{company?.contact_name ? ` ${company.contact_name}` : ""}
+            </h1>
             <p className="text-sm text-muted-foreground">
-              Données BOAMP en temps réel
+              Voici les récentes opportunités recommandées pour votre entreprise
             </p>
           </div>
           <Button
@@ -129,11 +131,6 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
           </Button>
         </div>
 
-        {lastUpdate && (
-          <div className="text-xs text-muted-foreground">
-            Mis à jour {formatDistanceToNow(new Date(lastUpdate), { addSuffix: true, locale: fr })}
-          </div>
-        )}
 
         {loading ? (
           <div className="space-y-4">
