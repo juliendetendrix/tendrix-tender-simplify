@@ -103,7 +103,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
     }
   };
 
-  const isNew = (h: number) => h < 48;
+  
 
   return (
     <>
