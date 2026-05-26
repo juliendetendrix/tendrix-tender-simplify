@@ -1,5 +1,6 @@
 import { Linkedin, Mail, Phone, Instagram, Facebook, Smartphone } from 'lucide-react';
 import logo from '@/assets/tendrix-logo.png';
+import { isMobileDevice } from '@/lib/device';
 
 const Footer = () => {
   return (
@@ -45,8 +46,8 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/dashboard" className="text-background/80 hover:text-background transition-colors">
-                  Dashboard
+                <a href={isMobileDevice() ? '/app' : '/dashboard'} className="text-background/80 hover:text-background transition-colors">
+                  {isMobileDevice() ? 'App' : 'Dashboard'}
                 </a>
               </li>
               <li>

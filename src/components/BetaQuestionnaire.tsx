@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, X, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { isMobileDevice } from '@/lib/device';
 
 interface FormData {
   company_name: string;
@@ -237,9 +238,9 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
       // Clear saved draft
       localStorage.removeItem('beta_questionnaire_draft');
       
-      // Redirect to dashboard instead of beta offer page
+      // Redirect to app on mobile, dashboard on desktop
       handleClose();
-      navigate('/dashboard');
+      navigate(isMobileDevice() ? '/app' : '/dashboard');
     } catch (error) {
       console.error('Error submitting form:', error);
       toast({

@@ -10,6 +10,7 @@ import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { isMobileDevice } from '@/lib/device';
 
 interface FormData {
   // Section 1: Profil entreprise
@@ -219,9 +220,9 @@ export const PMEQuestionnaire: React.FC = () => {
 
       localStorage.removeItem('pme-questionnaire-draft');
       
-      // Redirect to dashboard for beta users
+      // Redirect to app on mobile, dashboard on desktop for beta users
       if (formData.beta_interest === 'Oui, je veux profiter d\'un essai gratuit') {
-        navigate('/dashboard');
+        navigate(isMobileDevice() ? '/app' : '/dashboard');
         return;
       }
       

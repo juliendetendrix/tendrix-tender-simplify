@@ -13,9 +13,14 @@ import TenderDetailModal from "@/components/TenderDetailModal"
 import { WelcomeModal } from '@/components/WelcomeModal'
 import { LockedFeatureModal } from '@/components/LockedFeatureModal'
 import { useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "@/hooks/useAuth"
+import { isMobileDevice } from "@/lib/device"
 
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const { roles } = useAuth();
   const [chatMessage, setChatMessage] = useState("")
   const [showChat, setShowChat] = useState(false)
   const [selectedTender, setSelectedTender] = useState<BoampTender | null>(null)
@@ -34,6 +39,13 @@ const Dashboard = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Redirect mobile users to /app
+  useEffect(() => {
+    if (isMobileDevice() && roles.includes("entreprise")) {
+      navigate("/app", { replace: true });
+    }
+  }, [roles, navigate]);
 
   const isBetaMode = () => {
     return localStorage.getItem('tendrix_beta_mode') === 'true';
