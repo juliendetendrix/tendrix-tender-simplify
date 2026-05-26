@@ -120,7 +120,7 @@ export function MonCompte() {
               <div className="flex-1">
                 <div className="text-xs text-muted-foreground">Référent contact</div>
                 <div className="text-sm font-medium">
-                  {profile.contactName} — {profile.role}
+                  {profile.contactName}
                 </div>
               </div>
             </div>
