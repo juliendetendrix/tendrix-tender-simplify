@@ -54,8 +54,6 @@ import { useCurrentCompany } from "@/hooks/useCurrentCompany";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
 import { toast } from "@/hooks/use-toast";
 import { AddTenderDialog } from "./AddTenderDialog";
 
