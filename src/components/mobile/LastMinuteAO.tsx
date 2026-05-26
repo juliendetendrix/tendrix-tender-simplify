@@ -9,9 +9,7 @@ function estimateBudget(t: { title?: string | null; summary?: string | null; fam
   else if (/service|conseil|maintenance|nettoyage|formation/.test(text)) base = 60;
   if (/groupe scolaire|école|ecole|mairie|hôpital|hopital|université|universite/.test(text)) base *= 1.6;
   if (/national|région|region|métropole|metropole/.test(text)) base *= 1.4;
-  const low = Math.round(base * 0.7);
-  const high = Math.round(base * 1.3);
-  return `≈ ${low}k – ${high}k €`;
+  return `≈ ${Math.round(base)}k €`;
 }
 
 type MarketType = "Travaux" | "Services" | "Fournitures" | "Marché public";
@@ -33,24 +31,28 @@ function getDeadlineInfo(deadline: string | null) {
     return { label: "Date non précisée", message: null, color: "#9ca3af" };
   }
   const diffMs = d.getTime() - Date.now();
+  const RED = "#dc2626";
+  const GREEN = "#16a34a";
+  const AMBER = "#f9bd43";
   if (diffMs <= 0) {
-    return { label: "Clôturé", message: "Cet appel d'offres est terminé.", color: "#9ca3af" };
+    return { label: "Clôturé", message: "Cet appel d'offres est terminé.", color: RED };
   }
   const hours = Math.floor(diffMs / 3_600_000);
   if (hours < 24) {
-    return { label: `Plus que ${hours} h`, message: "Vous pouvez encore tenter, mais dépêchez-vous !", color: "#f9bd43" };
+    return { label: `Plus que ${hours} h`, message: "Vous pouvez encore tenter, mais dépêchez-vous !", color: AMBER };
   }
   const days = Math.floor(diffMs / 86_400_000);
   if (days < 30) {
-    return { label: `Plus que ${days} j`, message: "Vous êtes encore dans les temps.", color: "#0c1c98" };
+    return { label: `Plus que ${days} j`, message: "Vous êtes encore dans les temps.", color: GREEN };
   }
   const months = Math.floor(days / 30);
   return {
     label: months <= 1 ? "Plus qu'un mois" : `Plus que ${months} mois`,
     message: "Vous êtes encore dans les temps.",
-    color: "#0c1c98",
+    color: GREEN,
   };
 }
+
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -238,7 +240,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                     </span>
                     <span
                       className="text-[11px] font-bold px-3 py-1 text-white"
-                      style={{ borderRadius: 20, backgroundColor: "#0c1c98" }}
+                      style={{ borderRadius: 20, backgroundColor: "#f9bd43" }}
                     >
                       {score}% compatible
                     </span>
@@ -251,11 +253,6 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                   </div>
 
 
-                  {tender.summary && (
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {tender.summary.length > 100 ? `${tender.summary.slice(0, 100)}…` : tender.summary}
-                    </p>
-                  )}
 
                   {tender.organisme && (
                     <div className="flex items-start gap-1.5 text-xs">
