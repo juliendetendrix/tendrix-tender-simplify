@@ -1,5 +1,43 @@
 import { useState } from "react";
-import { MapPin, Calendar, Euro, Zap, RefreshCw, FileText, HelpCircle, Sparkles } from "lucide-react";
+import { MapPin, Euro, Zap, RefreshCw, FileText, Hourglass } from "lucide-react";
+
+type MarketType = "Travaux" | "Services" | "Fournitures" | "Marché public";
+
+function getMarketType(text: string | null | undefined): MarketType {
+  const t = (text ?? "").toLowerCase();
+  if (/fourniture/.test(t)) return "Fournitures";
+  if (/travaux|construction|rénovation|renovation|maçonnerie|maconnerie/.test(t)) return "Travaux";
+  if (/service/.test(t)) return "Services";
+  return "Marché public";
+}
+
+function getDeadlineInfo(deadline: string | null) {
+  if (!deadline) {
+    return { label: "Date non précisée", message: null as string | null, color: "#9ca3af" };
+  }
+  const d = new Date(deadline);
+  if (isNaN(d.getTime())) {
+    return { label: "Date non précisée", message: null, color: "#9ca3af" };
+  }
+  const diffMs = d.getTime() - Date.now();
+  if (diffMs <= 0) {
+    return { label: "Clôturé", message: "Cet appel d'offres est terminé.", color: "#9ca3af" };
+  }
+  const hours = Math.floor(diffMs / 3_600_000);
+  if (hours < 24) {
+    return { label: `Plus que ${hours} h`, message: "Vous pouvez encore tenter, mais dépêchez-vous !", color: "#ea580c" };
+  }
+  const days = Math.floor(diffMs / 86_400_000);
+  if (days < 30) {
+    return { label: `Plus que ${days} j`, message: "Vous êtes encore dans les temps.", color: "#16a34a" };
+  }
+  const months = Math.floor(days / 30);
+  return {
+    label: months <= 1 ? "Plus qu'un mois" : `Plus que ${months} mois`,
+    message: "Vous êtes encore dans les temps.",
+    color: "#16a34a",
+  };
+}
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
