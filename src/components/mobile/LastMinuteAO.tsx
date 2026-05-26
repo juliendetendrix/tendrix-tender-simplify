@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Euro, Zap, RefreshCw, FileText, Hourglass } from "lucide-react";
+import { MapPin, Euro, RefreshCw, FileText, Hourglass } from "lucide-react";
 
 type MarketType = "Travaux" | "Services" | "Fournitures" | "Marché public";
 
@@ -54,8 +54,6 @@ import { useCurrentCompany } from "@/hooks/useCurrentCompany";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
 import { toast } from "@/hooks/use-toast";
 import { AddTenderDialog } from "./AddTenderDialog";
 
@@ -69,7 +67,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
   const navigate = useNavigate();
   const { user } = useAuth();
   const { company } = useCurrentCompany();
-  const { tenders, loading, lastUpdate, refetch } = useBoampTenders();
+  const { tenders, loading, refetch } = useBoampTenders();
   const [selectedTender, setSelectedTender] = useState<BoampTender | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [visibleCount, setVisibleCount] = useState(5);
@@ -105,16 +103,18 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
     }
   };
 
-  const isNew = (h: number) => h < 48;
+  
 
   return (
     <>
       <div className="p-4 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold mb-1 text-primary">Opportunités</h1>
+            <h1 className="text-xl font-bold mb-1 text-primary">
+              Bonjour{company?.contact_name ? ` ${company.contact_name}` : ""}
+            </h1>
             <p className="text-sm text-muted-foreground">
-              Données BOAMP en temps réel
+              Voici les récentes opportunités recommandées pour votre entreprise
             </p>
           </div>
           <Button
@@ -129,11 +129,6 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
           </Button>
         </div>
 
-        {lastUpdate && (
-          <div className="text-xs text-muted-foreground">
-            Mis à jour {formatDistanceToNow(new Date(lastUpdate), { addSuffix: true, locale: fr })}
-          </div>
-        )}
 
         {loading ? (
           <div className="space-y-4">
@@ -240,13 +235,8 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                     <h3 className="font-semibold text-sm flex-1 leading-tight text-foreground">
                       {tender.title}
                     </h3>
-                    {isNew(tender.hoursAgo) && (
-                      <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-secondary/20 text-secondary shrink-0">
-                        <Zap className="w-3 h-3" />
-                        il y a {tender.hoursAgo}h
-                      </span>
-                    )}
                   </div>
+
 
                   {tender.summary && (
                     <p className="text-xs text-muted-foreground leading-relaxed">

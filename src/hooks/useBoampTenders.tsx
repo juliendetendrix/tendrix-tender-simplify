@@ -24,24 +24,78 @@ interface CompanyForMatching {
   zone: string | null
 }
 
-// Compatibility v1: returns null when we don't have enough data to score
+// Map sector keywords to BOAMP "famille" categories
+const SECTOR_TO_FAMILLE: Record<string, string[]> = {
+  travaux: ["maçonnerie", "maconnerie", "btp", "construction", "bâtiment", "batiment", "travaux", "rénovation", "renovation", "gros œuvre", "second œuvre", "voirie"],
+  services: ["service", "conseil", "informatique", "it ", "digital", "nettoyage", "maintenance", "formation"],
+  fournitures: ["fourniture", "matériel", "materiel", "équipement", "equipement", "mobilier"],
+};
+
+function inferFamille(sector: string | null | undefined): string | null {
+  if (!sector) return null;
+  const s = sector.toLowerCase();
+  for (const [famille, keywords] of Object.entries(SECTOR_TO_FAMILLE)) {
+    if (keywords.some((k) => s.includes(k))) return famille;
+  }
+  return null;
+}
+
+// French department code → region/department names for fuzzy location matching
+const DEPT_NAMES: Record<string, string[]> = {
+  "13": ["bouches-du-rhône", "bouches du rhone", "marseille", "aix", "paca", "provence"],
+  "75": ["paris", "île-de-france", "ile-de-france", "idf"],
+  "69": ["rhône", "rhone", "lyon", "auvergne-rhône-alpes"],
+  "33": ["gironde", "bordeaux", "nouvelle-aquitaine"],
+  "31": ["haute-garonne", "toulouse", "occitanie"],
+  "06": ["alpes-maritimes", "nice", "cannes", "paca"],
+  "59": ["nord", "lille", "hauts-de-france"],
+  "44": ["loire-atlantique", "nantes", "pays de la loire"],
+  "67": ["bas-rhin", "strasbourg", "grand est"],
+  "34": ["hérault", "herault", "montpellier", "occitanie"],
+};
+
+function zoneTokens(zone: string | null | undefined): string[] {
+  if (!zone) return [];
+  const z = zone.toLowerCase().trim();
+  const tokens = new Set<string>([z]);
+  // Add department-based aliases (e.g. "13" → bouches-du-rhône, marseille…)
+  const deptMatch = z.match(/\b(\d{2,3})\b/);
+  if (deptMatch && DEPT_NAMES[deptMatch[1]]) {
+    DEPT_NAMES[deptMatch[1]].forEach((n) => tokens.add(n));
+  }
+  // Add reverse: if zone is a city/region name, find its dept code
+  for (const [code, names] of Object.entries(DEPT_NAMES)) {
+    if (names.some((n) => z.includes(n))) {
+      tokens.add(code);
+      names.forEach((n) => tokens.add(n));
+    }
+  }
+  return Array.from(tokens).filter((t) => t.length >= 2);
+}
+
+// Compatibility v2: sector via famille synonyms, zone via department codes + aliases
 function calculateCompatibility(t: Omit<BoampTender, 'compatibility'>, company: CompanyForMatching | null): number | null {
   if (!company) return null
   let score = 0
   let weight = 0
 
   // Sector / famille (40%)
+  const targetFamille = inferFamille(company.sector);
   if (company.sector && t.famille) {
     weight += 40
-    if (t.famille.toLowerCase().includes(company.sector.toLowerCase().slice(0, 4))) score += 40
-    else score += 10
+    const tf = t.famille.toLowerCase();
+    if (targetFamille && tf.includes(targetFamille)) score += 40
+    else if (tf.includes(company.sector.toLowerCase().slice(0, 4))) score += 30
+    else score += 8
   }
 
-  // Geo zone (40%)
+  // Geo zone (40%) — match by tokens (dept codes + city/region names)
   if (company.zone && t.location) {
     weight += 40
-    if (t.location.toLowerCase().includes(company.zone.toLowerCase().slice(0, 4))) score += 40
-    else score += 15
+    const loc = t.location.toLowerCase();
+    const tokens = zoneTokens(company.zone);
+    if (tokens.some((tok) => loc.includes(tok))) score += 40
+    else score += 10
   }
 
   // Budget (20%) — bracket within 50k–1M
@@ -58,6 +112,7 @@ function calculateCompatibility(t: Omit<BoampTender, 'compatibility'>, company: 
   if (weight === 0) return null
   return Math.min(100, Math.round((score / weight) * 100))
 }
+
 
 export const useBoampTenders = () => {
   const { company } = useCurrentCompany()
@@ -78,7 +133,7 @@ export const useBoampTenders = () => {
       .select('*')
       .order('date_publication', { ascending: false })
       .limit(40)
-    return (data ?? []).map((t: any): BoampTender => {
+    const items = (data ?? []).map((t: any): BoampTender => {
       const base = {
         id: t.id,
         title: t.title,
@@ -96,7 +151,13 @@ export const useBoampTenders = () => {
       }
       return { ...base, compatibility: calculateCompatibility(base, company) }
     })
+    // When we have company data, sort by compatibility desc so the best matches come first
+    if (company) {
+      items.sort((a, b) => (b.compatibility ?? 0) - (a.compatibility ?? 0))
+    }
+    return items
   }
+
 
   const fetchTenders = async () => {
     try {
