@@ -55,15 +55,15 @@ export function MonCompte() {
     loadCA();
   }, [company?.assigned_charge_affaires]);
 
-  const demoProfile = {
-    companyName: "Maçonnerie Dubois & Fils",
-    contactName: "Jean Dubois",
-    role: "Gérant",
-    email: "jean.dubois@maconnerie-dubois.fr",
-    phone: "06 24 58 91 37",
-    address: "12 rue des Artisans, 78000 Versailles",
-    sector: "BTP – Maçonnerie générale",
-    siren: "812 345 678",
+  const NOT_SET = "Non renseigné";
+  const profile = {
+    companyName: company?.name || NOT_SET,
+    contactName: company?.contact_name || NOT_SET,
+    email: user?.email || NOT_SET,
+    phone: company?.contact_phone || NOT_SET,
+    address: company?.zone || NOT_SET,
+    sector: company?.sector || NOT_SET,
+    siren: company?.siren || NOT_SET,
   };
 
   const documents = [
@@ -111,7 +111,7 @@ export function MonCompte() {
               <Building2 className="w-4 h-4 text-muted-foreground" />
               <div className="flex-1">
                 <div className="text-xs text-muted-foreground">Entreprise</div>
-                <div className="text-sm font-medium">{demoProfile.companyName}</div>
+                <div className="text-sm font-medium">{profile.companyName}</div>
               </div>
             </div>
 
@@ -120,7 +120,7 @@ export function MonCompte() {
               <div className="flex-1">
                 <div className="text-xs text-muted-foreground">Référent contact</div>
                 <div className="text-sm font-medium">
-                  {demoProfile.contactName} — {demoProfile.role}
+                  {profile.contactName}
                 </div>
               </div>
             </div>
@@ -129,7 +129,7 @@ export function MonCompte() {
               <Phone className="w-4 h-4 text-muted-foreground" />
               <div className="flex-1">
                 <div className="text-xs text-muted-foreground">Téléphone</div>
-                <div className="text-sm font-medium">{demoProfile.phone}</div>
+                <div className="text-sm font-medium">{profile.phone}</div>
               </div>
             </div>
 
@@ -137,7 +137,7 @@ export function MonCompte() {
               <Mail className="w-4 h-4 text-muted-foreground" />
               <div className="flex-1">
                 <div className="text-xs text-muted-foreground">Email</div>
-                <div className="text-sm font-medium break-all">{demoProfile.email}</div>
+                <div className="text-sm font-medium break-all">{profile.email}</div>
               </div>
             </div>
 
@@ -145,7 +145,7 @@ export function MonCompte() {
               <MapPin className="w-4 h-4 text-muted-foreground" />
               <div className="flex-1">
                 <div className="text-xs text-muted-foreground">Adresse</div>
-                <div className="text-sm font-medium">{demoProfile.address}</div>
+                <div className="text-sm font-medium">{profile.address}</div>
               </div>
             </div>
 
@@ -153,7 +153,7 @@ export function MonCompte() {
               <FileText className="w-4 h-4 text-muted-foreground" />
               <div className="flex-1">
                 <div className="text-xs text-muted-foreground">Secteur</div>
-                <div className="text-sm font-medium">{demoProfile.sector}</div>
+                <div className="text-sm font-medium">{profile.sector}</div>
               </div>
             </div>
 
@@ -161,7 +161,7 @@ export function MonCompte() {
               <FileText className="w-4 h-4 text-muted-foreground" />
               <div className="flex-1">
                 <div className="text-xs text-muted-foreground">SIREN</div>
-                <div className="text-sm font-medium">{demoProfile.siren}</div>
+                <div className="text-sm font-medium">{profile.siren}</div>
               </div>
             </div>
           </div>
