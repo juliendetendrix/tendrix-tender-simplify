@@ -203,6 +203,31 @@ export const PMEQuestionnaire: React.FC = () => {
 
       if (error) throw error;
 
+      // Sync to companies table if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: existing } = await supabase
+          .from('companies')
+          .select('id')
+          .eq('owner_user_id', user.id)
+          .maybeSingle();
+
+        const companyPayload: any = {
+          name: formData.company_name,
+          sector: formData.sector,
+          zone: formData.city_department || null,
+          contact_name: formData.contact_name || null,
+          contact_phone: null,
+          onboarding_completed: true,
+        };
+
+        if (existing) {
+          await supabase.from('companies').update(companyPayload).eq('id', existing.id);
+        } else {
+          await supabase.from('companies').insert([{ ...companyPayload, owner_user_id: user.id }]);
+        }
+      }
+
       // Track analytics
       if (typeof window !== 'undefined' && (window as any).gtag) {
         (window as any).gtag('event', 'questionnaire_submitted', {
