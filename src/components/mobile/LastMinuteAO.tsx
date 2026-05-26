@@ -1,5 +1,18 @@
 import { useState } from "react";
-import { MapPin, Euro, RefreshCw, FileText, Hourglass } from "lucide-react";
+import { MapPin, Euro, RefreshCw, FileText, Hourglass, Building2 } from "lucide-react";
+
+function estimateBudget(t: { title?: string | null; summary?: string | null; famille?: string | null }): string {
+  const text = `${t.title ?? ""} ${t.summary ?? ""} ${t.famille ?? ""}`.toLowerCase();
+  let base = 80;
+  if (/travaux|construction|rénovation|renovation|bâtiment|batiment|voirie/.test(text)) base = 250;
+  else if (/fourniture|matériel|materiel|équipement|equipement/.test(text)) base = 120;
+  else if (/service|conseil|maintenance|nettoyage|formation/.test(text)) base = 60;
+  if (/groupe scolaire|école|ecole|mairie|hôpital|hopital|université|universite/.test(text)) base *= 1.6;
+  if (/national|région|region|métropole|metropole/.test(text)) base *= 1.4;
+  const low = Math.round(base * 0.7);
+  const high = Math.round(base * 1.3);
+  return `≈ ${low}k – ${high}k €`;
+}
 
 type MarketType = "Travaux" | "Services" | "Fournitures" | "Marché public";
 
@@ -244,17 +257,9 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                     </p>
                   )}
 
-                  <Button
-                    variant="link"
-                    className="h-auto p-0 text-xs text-primary hover:text-primary/80 font-normal"
-                    onClick={() => navigate(`/tender-details?id=${tender.id}`)}
-                  >
-                    <FileText className="w-3.5 h-3.5 mr-1" />
-                    Lire le résumé de l'appel d'offres
-                  </Button>
-
                   {tender.organisme && (
-                    <div className="text-xs">
+                    <div className="flex items-start gap-1.5 text-xs">
+                      <Building2 className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: "#0c1c98" }} />
                       <span className="font-medium text-foreground">{tender.organisme}</span>
                     </div>
                   )}
@@ -262,16 +267,21 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                   <div className="space-y-2 text-xs">
                     {tender.location && (
                       <div className="flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+                        <MapPin className="w-3.5 h-3.5" style={{ color: "#f9bd43" }} />
                         <span className="text-muted-foreground">{tender.location}</span>
                       </div>
                     )}
-                    {tender.budget && (
-                      <div className="flex items-center gap-1.5">
-                        <Euro className="w-3.5 h-3.5 text-muted-foreground" />
+                    <div className="flex items-center gap-1.5">
+                      <Euro className="w-3.5 h-3.5" style={{ color: "#ea580c" }} />
+                      {tender.budget ? (
                         <span className="text-muted-foreground">{tender.budget}</span>
-                      </div>
-                    )}
+                      ) : (
+                        <span className="text-muted-foreground">
+                          Budget estimé IA :{" "}
+                          <span className="font-medium text-foreground">{estimateBudget(tender)}</span>
+                        </span>
+                      )}
+                    </div>
                     <div>
                       <div className="flex items-center gap-1.5 font-bold" style={{ color: deadlineInfo.color }}>
                         <Hourglass className="w-3.5 h-3.5" />
@@ -285,12 +295,23 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                     </div>
                   </div>
 
-                  <Button
-                    className="w-full h-11 text-sm font-semibold"
-                    onClick={() => setSelectedTender(tender)}
-                  >
-                    Demander une réponse
-                  </Button>
+                  <div className="space-y-2 pt-1">
+                    <Button
+                      variant="outline"
+                      className="w-full h-11 text-sm font-semibold border-primary/30 text-primary hover:bg-primary/5"
+                      onClick={() => navigate(`/tender-details?id=${tender.id}`)}
+                    >
+                      <FileText className="w-4 h-4 mr-1.5" />
+                      Lire le résumé de l'appel d'offres
+                    </Button>
+                    <Button
+                      className="w-full h-11 text-sm font-semibold text-white border-0 hover:opacity-90"
+                      style={{ backgroundColor: "#ea580c" }}
+                      onClick={() => setSelectedTender(tender)}
+                    >
+                      Demander une réponse
+                    </Button>
+                  </div>
                 </div>
               );
 
