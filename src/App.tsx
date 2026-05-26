@@ -12,7 +12,6 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import NearbyTenders from "./pages/NearbyTenders";
-import WinningDeck from "./pages/WinningDeck";
 import TopManagers from "./pages/TopManagers";
 import BetaOffer from "./pages/BetaOffer";
 import QuestionnairePME from "./pages/QuestionnairePME";
