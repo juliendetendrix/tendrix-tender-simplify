@@ -133,7 +133,7 @@ export const useBoampTenders = () => {
       .select('*')
       .order('date_publication', { ascending: false })
       .limit(40)
-    return (data ?? []).map((t: any): BoampTender => {
+    const items = (data ?? []).map((t: any): BoampTender => {
       const base = {
         id: t.id,
         title: t.title,
@@ -151,7 +151,13 @@ export const useBoampTenders = () => {
       }
       return { ...base, compatibility: calculateCompatibility(base, company) }
     })
+    // When we have company data, sort by compatibility desc so the best matches come first
+    if (company) {
+      items.sort((a, b) => (b.compatibility ?? 0) - (a.compatibility ?? 0))
+    }
+    return items
   }
+
 
   const fetchTenders = async () => {
     try {
