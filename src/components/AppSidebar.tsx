@@ -12,13 +12,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-const menuItems = [
-  { title: "Dashboard", url: "/dashboard", icon: Home },
-]
-
 export function AppSidebar() {
   const location = useLocation()
   const currentPath = location.pathname
+
+  const menuItems = [
+    { title: isMobileDevice() ? "App" : "Dashboard", url: isMobileDevice() ? "/app" : "/dashboard", icon: Home },
+  ]
 
   const isActive = (path: string) => currentPath === path
 

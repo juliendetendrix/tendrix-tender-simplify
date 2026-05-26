@@ -40,6 +40,13 @@ const Dashboard = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Redirect mobile users to /app
+  useEffect(() => {
+    if (isMobileDevice() && roles.includes("entreprise")) {
+      navigate("/app", { replace: true });
+    }
+  }, [roles, navigate]);
+
   const isBetaMode = () => {
     return localStorage.getItem('tendrix_beta_mode') === 'true';
   };

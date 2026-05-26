@@ -238,9 +238,9 @@ const BetaQuestionnaire = ({ isOpen, onClose }: BetaQuestionnaireProps) => {
       // Clear saved draft
       localStorage.removeItem('beta_questionnaire_draft');
       
-      // Redirect to dashboard instead of beta offer page
+      // Redirect to app on mobile, dashboard on desktop
       handleClose();
-      navigate('/dashboard');
+      navigate(isMobileDevice() ? '/app' : '/dashboard');
     } catch (error) {
       console.error('Error submitting form:', error);
       toast({
