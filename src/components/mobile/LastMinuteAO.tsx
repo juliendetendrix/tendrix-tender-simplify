@@ -67,7 +67,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
   const navigate = useNavigate();
   const { user } = useAuth();
   const { company } = useCurrentCompany();
-  const { tenders, loading, lastUpdate, refetch } = useBoampTenders();
+  const { tenders, loading, refetch } = useBoampTenders();
   const [selectedTender, setSelectedTender] = useState<BoampTender | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [visibleCount, setVisibleCount] = useState(5);
