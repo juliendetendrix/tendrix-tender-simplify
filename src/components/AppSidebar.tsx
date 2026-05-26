@@ -1,4 +1,4 @@
-import { Home, User, MapPin, TrendingUp } from "lucide-react"
+import { Home } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import logoMain from '@/assets/tendrix-logo-main.png'
 
@@ -13,9 +13,6 @@ import {
 
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
-  { title: "Mon Profil", url: "/profile", icon: User },
-  { title: "Appel d'offres à proximité", url: "/nearby-tenders", icon: MapPin },
-  { title: "Top Chargés d'affaires", url: "/top-managers", icon: TrendingUp },
 ]
 
 export function AppSidebar() {

@@ -10,9 +10,6 @@ import { RequireAuth } from "@/components/RequireAuth";
 import GlobalBetaQuestionnaire from "@/components/GlobalBetaQuestionnaire";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
-import NearbyTenders from "./pages/NearbyTenders";
-import TopManagers from "./pages/TopManagers";
 import BetaOffer from "./pages/BetaOffer";
 import QuestionnairePME from "./pages/QuestionnairePME";
 import TenderDetails from "./pages/TenderDetails";
@@ -38,9 +35,6 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/nearby-tenders" element={<NearbyTenders />} />
-              <Route path="/top-managers" element={<TopManagers />} />
               <Route path="/beta-offer" element={<BetaOffer />} />
               <Route path="/questionnaire-pme" element={<QuestionnairePME />} />
               <Route path="/tender-details" element={<TenderDetails />} />
