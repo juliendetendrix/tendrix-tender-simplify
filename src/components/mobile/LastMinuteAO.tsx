@@ -240,7 +240,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                     </span>
                     <span
                       className="text-[11px] font-bold px-3 py-1 text-white"
-                      style={{ borderRadius: 20, backgroundColor: "#0c1c98" }}
+                      style={{ borderRadius: 20, backgroundColor: "#f9bd43" }}
                     >
                       {score}% compatible
                     </span>
@@ -253,11 +253,6 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                   </div>
 
 
-                  {tender.summary && (
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {tender.summary.length > 100 ? `${tender.summary.slice(0, 100)}…` : tender.summary}
-                    </p>
-                  )}
 
                   {tender.organisme && (
                     <div className="flex items-start gap-1.5 text-xs">
