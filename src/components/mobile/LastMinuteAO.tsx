@@ -1,5 +1,43 @@
 import { useState } from "react";
-import { MapPin, Calendar, Euro, Zap, RefreshCw, FileText, HelpCircle, Sparkles } from "lucide-react";
+import { MapPin, Euro, Zap, RefreshCw, FileText, Hourglass } from "lucide-react";
+
+type MarketType = "Travaux" | "Services" | "Fournitures" | "Marché public";
+
+function getMarketType(text: string | null | undefined): MarketType {
+  const t = (text ?? "").toLowerCase();
+  if (/fourniture/.test(t)) return "Fournitures";
+  if (/travaux|construction|rénovation|renovation|maçonnerie|maconnerie/.test(t)) return "Travaux";
+  if (/service/.test(t)) return "Services";
+  return "Marché public";
+}
+
+function getDeadlineInfo(deadline: string | null) {
+  if (!deadline) {
+    return { label: "Date non précisée", message: null as string | null, color: "#9ca3af" };
+  }
+  const d = new Date(deadline);
+  if (isNaN(d.getTime())) {
+    return { label: "Date non précisée", message: null, color: "#9ca3af" };
+  }
+  const diffMs = d.getTime() - Date.now();
+  if (diffMs <= 0) {
+    return { label: "Clôturé", message: "Cet appel d'offres est terminé.", color: "#9ca3af" };
+  }
+  const hours = Math.floor(diffMs / 3_600_000);
+  if (hours < 24) {
+    return { label: `Plus que ${hours} h`, message: "Vous pouvez encore tenter, mais dépêchez-vous !", color: "#ea580c" };
+  }
+  const days = Math.floor(diffMs / 86_400_000);
+  if (days < 30) {
+    return { label: `Plus que ${days} j`, message: "Vous êtes encore dans les temps.", color: "#16a34a" };
+  }
+  const months = Math.floor(days / 30);
+  return {
+    label: months <= 1 ? "Plus qu'un mois" : `Plus que ${months} mois`,
+    message: "Vous êtes encore dans les temps.",
+    color: "#16a34a",
+  };
+}
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -175,17 +213,35 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                   </div>
                 );
               }
+              const marketType = getMarketType(`${tender.title} ${tender.summary ?? ""} ${tender.famille ?? ""}`);
+              const deadlineInfo = getDeadlineInfo(tender.deadline);
+              const score = tender.compatibility ?? 100;
               items.push(
                 <div
                   key={tender.id}
                   className="bg-card border border-border rounded-lg p-4 space-y-3 shadow-sm"
                 >
+                  <div className="flex items-center justify-between gap-2">
+                    <span
+                      className="text-[11px] font-bold px-3 py-1"
+                      style={{ borderRadius: 20, backgroundColor: "#eef0ff", color: "#0c1c98" }}
+                    >
+                      {marketType}
+                    </span>
+                    <span
+                      className="text-[11px] font-bold px-3 py-1 text-white"
+                      style={{ borderRadius: 20, backgroundColor: "#0c1c98" }}
+                    >
+                      {score}% compatible
+                    </span>
+                  </div>
+
                   <div className="flex items-start gap-2">
                     <h3 className="font-semibold text-sm flex-1 leading-tight text-foreground">
                       {tender.title}
                     </h3>
                     {isNew(tender.hoursAgo) && (
-                      <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-secondary/20 text-secondary shrink-0">
+                      <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-secondary/20 text-secondary shrink-0">
                         <Zap className="w-3 h-3" />
                         il y a {tender.hoursAgo}h
                       </span>
@@ -213,7 +269,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                     </div>
                   )}
 
-                  <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="space-y-2 text-xs">
                     {tender.location && (
                       <div className="flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
@@ -226,18 +282,15 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                         <span className="text-muted-foreground">{tender.budget}</span>
                       </div>
                     )}
-                    <div className="flex items-center gap-1.5 col-span-2">
-                      <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                      {tender.deadline ? (
-                        <span className="text-muted-foreground">Date limite : {tender.deadline}</span>
-                      ) : (
-                        <button
-                          onClick={() => navigate(`/tender-details?id=${tender.id}`)}
-                          className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
-                        >
-                          Date limite
-                          <HelpCircle className="w-3.5 h-3.5" />
-                        </button>
+                    <div>
+                      <div className="flex items-center gap-1.5 font-bold" style={{ color: deadlineInfo.color }}>
+                        <Hourglass className="w-3.5 h-3.5" />
+                        <span>{deadlineInfo.label}</span>
+                      </div>
+                      {deadlineInfo.message && (
+                        <div className="text-[11px] mt-0.5 ml-5" style={{ color: deadlineInfo.color }}>
+                          {deadlineInfo.message}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -250,6 +303,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                   </Button>
                 </div>
               );
+
               return items;
             })}
             {visibleCount < tenders.length && (
