@@ -1,5 +1,6 @@
 import { Linkedin, Mail, Phone, Instagram, Facebook, Smartphone } from 'lucide-react';
 import logo from '@/assets/tendrix-logo.png';
+import { isMobileDevice } from '@/lib/device';
 
 const Footer = () => {
   return (

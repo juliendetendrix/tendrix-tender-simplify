@@ -1,6 +1,7 @@
 import { Home } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import logoMain from '@/assets/tendrix-logo-main.png'
+import { isMobileDevice } from "@/lib/device"
 
 import {
   Sidebar,
