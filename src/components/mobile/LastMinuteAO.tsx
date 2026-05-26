@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Euro, Zap, RefreshCw, FileText, Hourglass } from "lucide-react";
+import { MapPin, Euro, RefreshCw, FileText, Hourglass } from "lucide-react";
 
 type MarketType = "Travaux" | "Services" | "Fournitures" | "Marché public";
 
