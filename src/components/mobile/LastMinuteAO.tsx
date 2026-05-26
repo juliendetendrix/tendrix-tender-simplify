@@ -1,5 +1,18 @@
 import { useState } from "react";
-import { MapPin, Euro, RefreshCw, FileText, Hourglass } from "lucide-react";
+import { MapPin, Euro, RefreshCw, FileText, Hourglass, Building2 } from "lucide-react";
+
+function estimateBudget(t: { title?: string | null; summary?: string | null; famille?: string | null }): string {
+  const text = `${t.title ?? ""} ${t.summary ?? ""} ${t.famille ?? ""}`.toLowerCase();
+  let base = 80;
+  if (/travaux|construction|rénovation|renovation|bâtiment|batiment|voirie/.test(text)) base = 250;
+  else if (/fourniture|matériel|materiel|équipement|equipement/.test(text)) base = 120;
+  else if (/service|conseil|maintenance|nettoyage|formation/.test(text)) base = 60;
+  if (/groupe scolaire|école|ecole|mairie|hôpital|hopital|université|universite/.test(text)) base *= 1.6;
+  if (/national|région|region|métropole|metropole/.test(text)) base *= 1.4;
+  const low = Math.round(base * 0.7);
+  const high = Math.round(base * 1.3);
+  return `≈ ${low}k – ${high}k €`;
+}
 
 type MarketType = "Travaux" | "Services" | "Fournitures" | "Marché public";
 
