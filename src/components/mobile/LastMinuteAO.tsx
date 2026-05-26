@@ -237,13 +237,8 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                     <h3 className="font-semibold text-sm flex-1 leading-tight text-foreground">
                       {tender.title}
                     </h3>
-                    {isNew(tender.hoursAgo) && (
-                      <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-secondary/20 text-secondary shrink-0">
-                        <Zap className="w-3 h-3" />
-                        il y a {tender.hoursAgo}h
-                      </span>
-                    )}
                   </div>
+
 
                   {tender.summary && (
                     <p className="text-xs text-muted-foreground leading-relaxed">
