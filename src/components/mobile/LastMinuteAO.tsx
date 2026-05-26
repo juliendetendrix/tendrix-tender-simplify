@@ -38,17 +38,17 @@ function getDeadlineInfo(deadline: string | null) {
   }
   const hours = Math.floor(diffMs / 3_600_000);
   if (hours < 24) {
-    return { label: `Plus que ${hours} h`, message: "Vous pouvez encore tenter, mais dépêchez-vous !", color: "#ea580c" };
+    return { label: `Plus que ${hours} h`, message: "Vous pouvez encore tenter, mais dépêchez-vous !", color: "#f9bd43" };
   }
   const days = Math.floor(diffMs / 86_400_000);
   if (days < 30) {
-    return { label: `Plus que ${days} j`, message: "Vous êtes encore dans les temps.", color: "#16a34a" };
+    return { label: `Plus que ${days} j`, message: "Vous êtes encore dans les temps.", color: "#0c1c98" };
   }
   const months = Math.floor(days / 30);
   return {
     label: months <= 1 ? "Plus qu'un mois" : `Plus que ${months} mois`,
     message: "Vous êtes encore dans les temps.",
-    color: "#16a34a",
+    color: "#0c1c98",
   };
 }
 import { useNavigate } from "react-router-dom";
@@ -272,7 +272,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                       </div>
                     )}
                     <div className="flex items-center gap-1.5">
-                      <Euro className="w-3.5 h-3.5" style={{ color: "#ea580c" }} />
+                      <Euro className="w-3.5 h-3.5" style={{ color: "#f9bd43" }} />
                       {tender.budget ? (
                         <span className="text-muted-foreground">{tender.budget}</span>
                       ) : (
@@ -305,8 +305,8 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                       Lire le résumé de l'appel d'offres
                     </Button>
                     <Button
-                      className="w-full h-11 text-sm font-semibold text-white border-0 hover:opacity-90"
-                      style={{ backgroundColor: "#ea580c" }}
+                      className="w-full h-11 text-sm font-semibold text-[#0c1c98] border-0 hover:opacity-90"
+                      style={{ backgroundColor: "#f9bd43" }}
                       onClick={() => setSelectedTender(tender)}
                     >
                       Demander une réponse
