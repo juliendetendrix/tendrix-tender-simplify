@@ -4,7 +4,7 @@ import SocialProofStrip from '@/components/SocialProofStrip';
 import PainPoint from '@/components/PainPoint';
 import HowItWorks from '@/components/HowItWorks';
 import AppScreenshots from '@/components/AppScreenshots';
-import ImportFeature from '@/components/ImportFeature';
+import Testimonials from '@/components/Testimonials';
 import CreditPhilosophy from '@/components/CreditPhilosophy';
 import Pricing from '@/components/Pricing';
 import FinalCTA from '@/components/FinalCTA';
@@ -15,31 +15,31 @@ const Index = () => {
     <div className="min-h-screen">
       <Header />
       <main>
-        {/* 1. Hero — proposition de valeur + CTA questionnaire */}
+        {/* 1. Hero — proposition de valeur + CTA */}
         <Hero />
 
-        {/* 2. Chiffres clés — preuves sociales */}
+        {/* 2. Chiffres clés */}
         <SocialProofStrip />
 
-        {/* 3. Import d'un AO précis via le bouton "+" */}
-        <ImportFeature />
-
-        {/* 3. Trois piliers — Détection / Analyse / Réponse */}
+        {/* 3. Le problème — 3 obstacles des artisans */}
         <PainPoint />
 
         {/* 4. Comment ça marche — 3 étapes */}
         <HowItWorks />
 
-        {/* 5. Screenshots produit */}
+        {/* 5. Fonctionnalités produit */}
         <AppScreenshots />
 
-        {/* 6. Philosophie crédit vs abonnement */}
+        {/* 6. Témoignages */}
+        <Testimonials />
+
+        {/* 7. Philosophie crédit vs abonnement */}
         <CreditPhilosophy />
 
-        {/* 7. Tarifs */}
+        {/* 8. Tarifs */}
         <Pricing />
 
-        {/* 8. CTA de fermeture */}
+        {/* 9. CTA de fermeture */}
         <FinalCTA />
       </main>
       <Footer />
