@@ -83,12 +83,14 @@ export function OnboardingQuestionnaire() {
     setDirection("right");
     setAnimKey((k) => k + 1);
     setStep((s) => Math.min(s + 1, TOTAL));
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const prev = () => {
     setDirection("left");
     setAnimKey((k) => k + 1);
     setStep((s) => Math.max(s - 1, 1));
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleContactNext = async () => {

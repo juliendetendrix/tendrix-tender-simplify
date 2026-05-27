@@ -62,7 +62,6 @@ export default function MobileApp() {
       <ChargeAffairesWelcome
         isOpen={welcomeOpen}
         onClose={handleWelcomeClose}
-        onContact={handleContactCA}
         ca={ca}
         caInitials={caInitials}
       />
