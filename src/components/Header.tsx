@@ -35,11 +35,11 @@ const Header = () => {
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
               >
-                <img src="/logo-tendrix-blue.svg" alt="Tendrix" className="h-8 w-auto" />
+                <img src="/logo-tendrix-bicolor.svg" alt="Tendrix" className="h-8 w-auto" />
               </button>
             ) : (
               <Link to="/" className="cursor-pointer hover:opacity-80 transition-opacity duration-200">
-                <img src="/logo-tendrix-blue.svg" alt="Tendrix" className="h-8 w-auto" />
+                <img src="/logo-tendrix-bicolor.svg" alt="Tendrix" className="h-8 w-auto" />
               </Link>
             )}
           </div>

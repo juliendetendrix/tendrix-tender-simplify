@@ -54,16 +54,59 @@ const DEPT_NAMES: Record<string, string[]> = {
   "34": ["hérault", "herault", "montpellier", "occitanie"],
 };
 
+const DEPT_LABELS: Record<string, string> = {
+  "01": "Ain", "02": "Aisne", "03": "Allier", "04": "Alpes-de-Haute-Provence",
+  "05": "Hautes-Alpes", "06": "Alpes-Maritimes", "07": "Ardèche", "08": "Ardennes",
+  "09": "Ariège", "10": "Aube", "11": "Aude", "12": "Aveyron", "13": "Bouches-du-Rhône",
+  "14": "Calvados", "15": "Cantal", "16": "Charente", "17": "Charente-Maritime",
+  "18": "Cher", "19": "Corrèze", "21": "Côte-d'Or", "22": "Côtes-d'Armor",
+  "23": "Creuse", "24": "Dordogne", "25": "Doubs", "26": "Drôme", "27": "Eure",
+  "28": "Eure-et-Loir", "29": "Finistère", "30": "Gard", "31": "Haute-Garonne",
+  "32": "Gers", "33": "Gironde", "34": "Hérault", "35": "Ille-et-Vilaine",
+  "36": "Indre", "37": "Indre-et-Loire", "38": "Isère", "39": "Jura", "40": "Landes",
+  "41": "Loir-et-Cher", "42": "Loire", "43": "Haute-Loire", "44": "Loire-Atlantique",
+  "45": "Loiret", "46": "Lot", "47": "Lot-et-Garonne", "48": "Lozère",
+  "49": "Maine-et-Loire", "50": "Manche", "51": "Marne", "52": "Haute-Marne",
+  "53": "Mayenne", "54": "Meurthe-et-Moselle", "55": "Meuse", "56": "Morbihan",
+  "57": "Moselle", "58": "Nièvre", "59": "Nord", "60": "Oise", "61": "Orne",
+  "62": "Pas-de-Calais", "63": "Puy-de-Dôme", "64": "Pyrénées-Atlantiques",
+  "65": "Hautes-Pyrénées", "66": "Pyrénées-Orientales", "67": "Bas-Rhin",
+  "68": "Haut-Rhin", "69": "Rhône", "70": "Haute-Saône", "71": "Saône-et-Loire",
+  "72": "Sarthe", "73": "Savoie", "74": "Haute-Savoie", "75": "Paris",
+  "76": "Seine-Maritime", "77": "Seine-et-Marne", "78": "Yvelines", "79": "Deux-Sèvres",
+  "80": "Somme", "81": "Tarn", "82": "Tarn-et-Garonne", "83": "Var", "84": "Vaucluse",
+  "85": "Vendée", "86": "Vienne", "87": "Haute-Vienne", "88": "Vosges", "89": "Yonne",
+  "90": "Territoire de Belfort", "91": "Essonne", "92": "Hauts-de-Seine",
+  "93": "Seine-Saint-Denis", "94": "Val-de-Marne", "95": "Val-d'Oise",
+}
+
+function formatLocation(deptArr: any): string | null {
+  if (!deptArr) return null
+  const list: string[] = Array.isArray(deptArr) ? deptArr : [String(deptArr)]
+  const cleaned = list.map(String).filter(Boolean)
+  if (!cleaned.length) return null
+  const code = cleaned[0]
+  const label = DEPT_LABELS[code]
+  return label ? `${label} (${code})` : `Département ${code}`
+}
+
+function buildTitle(objet: any): string {
+  const raw = objet ? String(objet).trim() : null
+  if (!raw) return "Appel d'offres"
+  if (raw === raw.toUpperCase()) {
+    return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase()
+  }
+  return raw
+}
+
 function zoneTokens(zone: string | null | undefined): string[] {
   if (!zone) return [];
   const z = zone.toLowerCase().trim();
   const tokens = new Set<string>([z]);
-  // Add department-based aliases (e.g. "13" → bouches-du-rhône, marseille…)
   const deptMatch = z.match(/\b(\d{2,3})\b/);
   if (deptMatch && DEPT_NAMES[deptMatch[1]]) {
     DEPT_NAMES[deptMatch[1]].forEach((n) => tokens.add(n));
   }
-  // Add reverse: if zone is a city/region name, find its dept code
   for (const [code, names] of Object.entries(DEPT_NAMES)) {
     if (names.some((n) => z.includes(n))) {
       tokens.add(code);
@@ -113,6 +156,59 @@ function calculateCompatibility(t: Omit<BoampTender, 'compatibility'>, company: 
   return Math.min(100, Math.round((score / weight) * 100))
 }
 
+// ── Direct BOAMP API fetch (browser → OpenDataSoft, CORS-enabled) ────────────
+async function fetchBoampDirect(): Promise<BoampTender[]> {
+  const BOAMP_URL = 'https://boamp-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/boamp/records'
+  const params = new URLSearchParams({
+    limit: '100',
+    order_by: 'dateparution desc',
+    where: 'type_marche_facette = "Travaux" AND etat = "INITIAL"',
+  })
+  const resp = await fetch(`${BOAMP_URL}?${params}`, {
+    headers: { Accept: 'application/json' },
+  })
+  if (!resp.ok) throw new Error(`BOAMP API ${resp.status}`)
+  const data = await resp.json()
+  const results: any[] = data.results ?? []
+
+  return results.map((r): BoampTender => {
+    const id = String(r.id ?? r.idweb ?? Math.random().toString(36).slice(2))
+    const location = formatLocation(r.code_departement ?? r.code_departement_prestation)
+    const title = buildTitle(r.objet)
+
+    let famille: string | null = null
+    if (typeof r.type_marche_facette === 'string') famille = r.type_marche_facette
+    else if (Array.isArray(r.type_marche_facette) && r.type_marche_facette.length) famille = String(r.type_marche_facette[0])
+    else if (Array.isArray(r.descripteur_libelle) && r.descripteur_libelle.length) famille = String(r.descripteur_libelle[0])
+
+    const procedure = r.procedure_libelle ? String(r.procedure_libelle).trim() : null
+
+    let summary: string | null = null
+    if (Array.isArray(r.descripteur_libelle) && r.descripteur_libelle.length) {
+      summary = `Prestations : ${r.descripteur_libelle.slice(0, 4).join(', ')}.`
+    }
+
+    const datePublication = r.dateparution ? new Date(r.dateparution).toISOString() : new Date().toISOString()
+    const hoursAgo = Math.floor((Date.now() - new Date(datePublication).getTime()) / 3_600_000)
+
+    const base = {
+      id,
+      title,
+      summary,
+      organisme: r.nomacheteur ? String(r.nomacheteur).trim() : null,
+      location,
+      budget: null,
+      datePublication,
+      deadline: r.datelimitereponse || null,
+      famille,
+      procedure,
+      cpvCodes: Array.isArray(r.descripteur_code) ? r.descripteur_code.map(String) : [],
+      url: `https://www.boamp.fr/avis/detail/${r.idweb ?? id}`,
+      hoursAgo,
+    }
+    return { ...base, compatibility: null } // compatibility added later with company context
+  })
+}
 
 export const useBoampTenders = () => {
   const { company } = useCurrentCompany()
@@ -127,59 +223,68 @@ export const useBoampTenders = () => {
     return Math.floor((Date.now() - new Date(date).getTime()) / 3_600_000)
   }
 
-  const loadFromDb = async () => {
+  const withCompatibility = (items: BoampTender[]): BoampTender[] => {
+    const enriched = items.map((t) => ({ ...t, compatibility: calculateCompatibility(t, company) }))
+    if (company) enriched.sort((a, b) => (b.compatibility ?? 0) - (a.compatibility ?? 0))
+    return enriched
+  }
+
+  const loadFromDb = async (): Promise<BoampTender[]> => {
     const { data } = await supabase
       .from('tenders')
       .select('*')
       .order('date_publication', { ascending: false })
       .limit(40)
-    const items = (data ?? []).map((t: any): BoampTender => {
-      const base = {
-        id: t.id,
-        title: t.title,
-        summary: t.summary,
-        organisme: t.organisme,
-        location: t.location,
-        budget: t.budget,
-        datePublication: t.date_publication,
-        deadline: t.deadline,
-        famille: t.famille,
-        procedure: t.procedure,
-        cpvCodes: t.cpv_codes ?? [],
-        url: t.source_url,
-        hoursAgo: calcHoursAgo(t.date_publication),
-      }
-      return { ...base, compatibility: calculateCompatibility(base, company) }
-    })
-    // When we have company data, sort by compatibility desc so the best matches come first
-    if (company) {
-      items.sort((a, b) => (b.compatibility ?? 0) - (a.compatibility ?? 0))
-    }
-    return items
+    return (data ?? []).map((t: any): BoampTender => ({
+      id: t.id,
+      title: t.title,
+      summary: t.summary,
+      organisme: t.organisme,
+      location: t.location,
+      budget: t.budget,
+      datePublication: t.date_publication,
+      deadline: t.deadline,
+      famille: t.famille,
+      procedure: t.procedure,
+      cpvCodes: t.cpv_codes ?? [],
+      url: t.source_url,
+      hoursAgo: calcHoursAgo(t.date_publication),
+      compatibility: null,
+    }))
   }
-
 
   const fetchTenders = async () => {
     try {
       setLoading(true)
       setError(null)
 
-      // Trigger the edge function to refresh DB
+      // 1. Try edge function first (populates DB + returns data)
       const { error: fnErr } = await supabase.functions.invoke('fetch-boamp-tenders', { body: {} })
-      if (fnErr) console.warn('Edge invoke error:', fnErr)
+      if (fnErr) console.warn('Edge function not available, using direct BOAMP fetch:', fnErr.message)
 
-      const items = await loadFromDb()
-      setTenders(items)
+      // 2. Read from DB (populated by edge function if it succeeded)
+      let items = await loadFromDb()
+
+      // 3. If DB is still empty (edge function not deployed), fetch BOAMP directly
+      if (items.length === 0) {
+        console.log('DB empty — fetching BOAMP directly from browser')
+        setUsingFallback(true)
+        items = await fetchBoampDirect()
+      } else {
+        setUsingFallback(false)
+      }
+
+      setTenders(withCompatibility(items))
       setLastUpdate(new Date().toISOString())
-      setUsingFallback(false)
     } catch (err) {
       console.error('Error fetching tenders:', err)
       setError(err instanceof Error ? err.message : 'Erreur inconnue')
+      // Last-resort: try DB anyway
       try {
         const items = await loadFromDb()
-        setTenders(items)
+        setTenders(withCompatibility(items))
       } catch {
-        setUsingFallback(true)
+        // nothing left to try
       }
     } finally {
       setLoading(false)
