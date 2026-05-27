@@ -8,6 +8,7 @@ import { BetaQuestionnaireProvider } from "@/hooks/useBetaQuestionnaire";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RequireAuth } from "@/components/RequireAuth";
 import GlobalBetaQuestionnaire from "@/components/GlobalBetaQuestionnaire";
+import { Analytics } from "@vercel/analytics/react";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import BetaOffer from "./pages/BetaOffer";
@@ -31,6 +32,7 @@ const App = () => (
             <GlobalBetaQuestionnaire />
             <Toaster />
             <Sonner />
+            <Analytics />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
