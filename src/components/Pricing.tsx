@@ -1,68 +1,144 @@
 import { Check } from 'lucide-react';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
+import { useNavigate } from 'react-router-dom';
+
+const packs = [
+  {
+    name: 'Découverte',
+    credits: 3,
+    priceLabel: 'Gratuit',
+    perCredit: 'Pour commencer',
+    description: 'Testez la plateforme sans engagement.',
+    featured: false,
+    cta: 'Commencer gratuitement',
+    features: [
+      '3 dossiers de réponse complets',
+      'Résumé IA de chaque appel d\'offres',
+      'Filtrage par métier et zone',
+      'Score de compatibilité',
+    ],
+  },
+  {
+    name: 'Artisan',
+    credits: 10,
+    priceLabel: '79 €',
+    perCredit: '7,90 € par dossier',
+    description: 'Pour les artisans qui répondent régulièrement.',
+    featured: true,
+    cta: 'Choisir ce pack',
+    features: [
+      '10 dossiers de réponse complets',
+      'Résumé IA de chaque appel d\'offres',
+      'Filtrage par métier et zone',
+      'Score de compatibilité avancé',
+      'Crédits sans expiration',
+      'Support prioritaire',
+    ],
+  },
+  {
+    name: 'Pro',
+    credits: 25,
+    priceLabel: '149 €',
+    perCredit: '5,96 € par dossier',
+    description: 'Pour les entreprises très actives sur les marchés.',
+    featured: false,
+    cta: 'Choisir ce pack',
+    features: [
+      '25 dossiers de réponse complets',
+      'Résumé IA de chaque appel d\'offres',
+      'Filtrage par métier et zone',
+      'Score de compatibilité avancé',
+      'Crédits sans expiration',
+      'Support prioritaire',
+      'Accès anticipé aux nouvelles fonctions',
+    ],
+  },
+];
 
 const Pricing = () => {
-  const { ref: sectionRef, isVisible } = useScrollAnimation();
-  const { openQuestionnaire } = useBetaQuestionnaire();
-  
-  const trialFeatures = [
-    "Affectation d'un chargé d'affaires référent",
-    "3 rendez-vous avec nos experts pour préparer optimiser vos futures réponses lors de l'utilisation de l'application",
-    "15 jours d'accès à la plateforme",
-    "Création d'un modèle de réponse personnalisé (Tendrix Winning Deck)",
-    "Référencement de votre entreprise dans notre base"
-  ];
+  const { ref, isVisible } = useScrollAnimation();
+  const navigate = useNavigate();
 
   return (
-    <section ref={sectionRef} id="pricing" className="section-padding bg-gradient-hero">
+    <section ref={ref} id="tarifs" className="section-padding bg-background">
       <div className="container-max">
-        <div className={`text-center mb-16 transition-all duration-800 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
-          <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-6">
-            Offre Découverte de Tendrix
+        <div
+          className={`text-center mb-14 transition-all duration-700 ${
+            isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-6'
+          }`}
+        >
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
+            Des crédits, pas un abonnement.
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Rejoignez les premières PME qui découvrent Tendrix gratuitement
+          <p className="text-lg text-muted-foreground max-w-lg mx-auto">
+            Achetez des crédits quand vous en avez besoin. Ils n'expirent jamais.
           </p>
         </div>
 
-        <div className="flex justify-center">
-          <div className={`bg-white rounded-2xl p-8 shadow-soft hover:shadow-medium transition-all duration-300 border-2 border-primary scale-105 max-w-lg w-full relative ${
-            isVisible ? 'animate-scale-in' : 'opacity-0 scale-95'
-          }`}>
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-              <span className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold">
-                Accès limité
-              </span>
-            </div>
-            
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-foreground mb-2">
-                Découverte de Tendrix
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                Pour les premières PME qui souhaitent découvrir l'outil gratuitement
-              </p>
-              <p className="text-sm text-primary font-medium">Sur prise de rendez-vous</p>
-            </div>
-
-            <ul className="space-y-4 mb-8">
-              {trialFeatures.map((feature, featureIndex) => (
-                <li key={featureIndex} className="flex items-center">
-                  <Check className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
-                  <span className="text-muted-foreground">{feature}</span>
-                </li>
-              ))}
-            </ul>
-
-            <button
-              className="btn-primary w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300"
-              onClick={openQuestionnaire}
+        <div className="grid md:grid-cols-3 gap-6 items-stretch">
+          {packs.map((pack, i) => (
+            <div
+              key={i}
+              className={`rounded-xl p-8 flex flex-col relative transition-all duration-300 ${
+                pack.featured
+                  ? 'bg-primary text-white border-2 border-primary shadow-strong md:scale-105'
+                  : 'bg-white border border-border hover:shadow-medium'
+              }`}
             >
-              Commencer ma découverte
-            </button>
-          </div>
+              {pack.featured && (
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                  <span className="bg-secondary text-secondary-foreground px-4 py-1 rounded-full text-xs font-bold whitespace-nowrap">
+                    Le plus populaire
+                  </span>
+                </div>
+              )}
+
+              <div className="mb-6">
+                <p className={`text-sm font-medium mb-1 ${pack.featured ? 'text-white/60' : 'text-muted-foreground'}`}>
+                  {pack.credits} crédits
+                </p>
+                <h3 className={`text-xl font-bold mb-1 ${pack.featured ? 'text-white' : 'text-foreground'}`}>
+                  {pack.name}
+                </h3>
+                <p className={`text-sm mb-5 ${pack.featured ? 'text-white/65' : 'text-muted-foreground'}`}>
+                  {pack.description}
+                </p>
+                <div className={`text-4xl font-black mb-1 ${pack.featured ? 'text-white' : 'text-foreground'}`}>
+                  {pack.priceLabel}
+                </div>
+                <p className={`text-sm font-medium ${pack.featured ? 'text-secondary' : 'text-primary'}`}>
+                  {pack.perCredit}
+                </p>
+              </div>
+
+              <ul className="space-y-3 mb-8 flex-1">
+                {pack.features.map((feature, j) => (
+                  <li key={j} className="flex items-start gap-3">
+                    <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${pack.featured ? 'text-secondary' : 'text-primary'}`} />
+                    <span className={`text-sm ${pack.featured ? 'text-white/85' : 'text-muted-foreground'}`}>
+                      {feature}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <button
+                onClick={() => navigate('/questionnaire-pme')}
+                className={`w-full py-3 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                  pack.featured
+                    ? 'bg-secondary text-secondary-foreground hover:opacity-90'
+                    : 'btn-primary'
+                }`}
+              >
+                {pack.cta}
+              </button>
+            </div>
+          ))}
         </div>
+
+        <p className="text-center text-muted-foreground text-sm mt-8">
+          Paiement sécurisé · Les crédits n'ont pas de date d'expiration · Prix TTC
+        </p>
       </div>
     </section>
   );

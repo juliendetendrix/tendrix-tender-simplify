@@ -1,74 +1,103 @@
-import { useState } from "react";
-import { MessageCircle, LogOut, Plus } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Coins } from "lucide-react";
 import { LastMinuteAO } from "@/components/mobile/LastMinuteAO";
 import { MesDossiers } from "@/components/mobile/MesDossiers";
 import { MonCompte } from "@/components/mobile/MonCompte";
 import { DemoChat } from "@/components/mobile/DemoChat";
-import { MessagesInbox } from "@/components/mobile/MessagesInbox";
+import { MessagesInbox, CA_THREAD_ID } from "@/components/mobile/MessagesInbox";
 import { BottomNav } from "@/components/mobile/BottomNav";
-import { useAuth } from "@/hooks/useAuth";
+import { ChargeAffairesWelcome } from "@/components/mobile/ChargeAffairesWelcome";
+import { useCAProfile } from "@/hooks/useCAProfile";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
 
 type Tab = "opportunites" | "dossiers" | "compte";
 
+interface OpenedChat {
+  id: string;
+  title: string;
+  isCADirect?: boolean;
+}
+
 export default function MobileApp() {
-  const { signOut } = useAuth();
+  const { ca, initials: caInitials } = useCAProfile();
+
   const [activeTab, setActiveTab] = useState<Tab>("opportunites");
-  const [openedChat, setOpenedChat] = useState<{ id: string; title: string } | null>(null);
+  const [openedChat, setOpenedChat] = useState<OpenedChat | null>(null);
   const [messagesOpen, setMessagesOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
+
+  // TODO: charger depuis Supabase (table "credits" ou colonne sur la company)
+  const credits = 3;
+
+  useEffect(() => {
+    const seen = localStorage.getItem("tendrix_ca_welcome_seen");
+    if (!seen) {
+      const timer = setTimeout(() => setWelcomeOpen(true), 800);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handleWelcomeClose = () => {
+    localStorage.setItem("tendrix_ca_welcome_seen", "true");
+    setWelcomeOpen(false);
+  };
+
+  const handleContactCA = () => {
+    handleWelcomeClose();
+    setOpenedChat({ id: CA_THREAD_ID, title: ca.display_name, isCADirect: true });
+  };
 
   const handleRequestCreated = () => {
     setActiveTab("dossiers");
   };
 
+  const handleAdd = () => {
+    setActiveTab("opportunites");
+    setAddOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col max-w-[430px] mx-auto">
-      
-      <header className="sticky top-0 z-50 bg-white border-b border-border px-4 py-3 flex items-center justify-between">
-        <img src={tendrixLogo} alt="Tendrix" className="h-8" />
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              setActiveTab("opportunites");
-              setAddOpen(true);
-            }}
-            className="w-9 h-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors shadow-sm"
-            aria-label="Importer une opportunité"
-          >
-            <Plus className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => setMessagesOpen(true)}
-            className="p-2 hover:bg-muted rounded-full transition-colors relative"
-            aria-label="Messages"
-          >
-            <MessageCircle className="w-5 h-5 text-primary" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-secondary" />
-          </button>
-          <button
-            onClick={signOut}
-            className="p-2 hover:bg-muted rounded-full transition-colors"
-            aria-label="Déconnexion"
-          >
-            <LogOut className="w-5 h-5 text-primary" />
-          </button>
+      <ChargeAffairesWelcome
+        isOpen={welcomeOpen}
+        onClose={handleWelcomeClose}
+        onContact={handleContactCA}
+        ca={ca}
+        caInitials={caInitials}
+      />
+
+      <header className="sticky top-0 z-50 bg-white px-4 py-3 flex items-center justify-between shadow-[0_1px_0_0_#e5e7eb,0_2px_8px_0_rgba(12,28,152,0.06)]">
+        <img src={tendrixLogo} alt="Tendrix" className="h-7" />
+
+        {/* Compteur de crédits */}
+        <div className="flex items-center gap-2 bg-primary px-3.5 py-2 rounded-xl shadow-sm">
+          <Coins className="w-4 h-4 text-secondary" />
+          <span className="text-sm font-bold text-white leading-none">{credits}</span>
+          <span className="text-xs text-white/70 font-medium leading-none">
+            crédit{credits > 1 ? "s" : ""}
+          </span>
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto pb-20">
+      <main className="flex-1 overflow-y-auto pb-24">
         {openedChat ? (
           <DemoChat
             dossierTitle={openedChat.title}
             onBack={() => setOpenedChat(null)}
+            isCADirect={openedChat.isCADirect}
+            ca={ca}
+            caInitials={caInitials}
           />
         ) : messagesOpen ? (
           <MessagesInbox
             onBack={() => setMessagesOpen(false)}
-            onOpenChat={(id, title) => {
+            onOpenChat={(id, title, isCADirect) => {
               setMessagesOpen(false);
-              setOpenedChat({ id, title });
+              setOpenedChat({ id, title, isCADirect });
             }}
+            ca={ca}
+            caInitials={caInitials}
           />
         ) : (
           <>
@@ -84,13 +113,25 @@ export default function MobileApp() {
                 onOpenChat={(id, title) => setOpenedChat({ id, title })}
               />
             )}
-            {activeTab === "compte" && <MonCompte />}
+            {activeTab === "compte" && (
+              <MonCompte
+                onOpenCAChat={() =>
+                  setOpenedChat({ id: CA_THREAD_ID, title: ca.display_name, isCADirect: true })
+                }
+              />
+            )}
           </>
         )}
       </main>
 
       {!openedChat && !messagesOpen && (
-        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+        <BottomNav
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          onAdd={handleAdd}
+          onMessages={() => setMessagesOpen(true)}
+          hasUnreadMessages={true}
+        />
       )}
     </div>
   );

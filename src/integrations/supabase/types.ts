@@ -238,6 +238,31 @@ export type Database = {
         }
         Relationships: []
       }
+      rfp_interactions: {
+        Row: {
+          id: string
+          user_id: string
+          company_id: string | null
+          tender_id: string
+          action_type: 'view' | 'read_summary' | 'accept' | 'reject'
+          created_at: string
+          tender_metadata: Record<string, unknown>
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          company_id?: string | null
+          tender_id: string
+          action_type: 'view' | 'read_summary' | 'accept' | 'reject'
+          created_at?: string
+          tender_metadata?: Record<string, unknown>
+        }
+        Update: {
+          action_type?: 'view' | 'read_summary' | 'accept' | 'reject'
+          tender_metadata?: Record<string, unknown>
+        }
+        Relationships: []
+      }
       tender_requests: {
         Row: {
           amount_won: number | null

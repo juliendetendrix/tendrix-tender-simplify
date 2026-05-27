@@ -1,13 +1,21 @@
+/**
+ * MesDossiers
+ * Affiche les dossiers de réponse en cours pour l'utilisateur.
+ * — Les données de démo ont été supprimées : l'état initial est vide.
+ * — Les statistiques affichent 0 pour un nouvel utilisateur.
+ * — À terme, les dossiers seront chargés depuis Supabase.
+ */
 import { useState } from "react";
-import { MapPin, Calendar, Euro, MessageSquare } from "lucide-react";
+import { MapPin, Calendar, Euro, MessageSquare, FolderOpen } from "lucide-react";
+import { useCurrentCompany } from "@/hooks/useCurrentCompany";
 
-interface DemoDossier {
+interface Dossier {
   id: string;
   title: string;
   location: string;
   budget: string;
   deadline: string;
-  status: "en_cours" | "soumis" | "gagne";
+  status: "demande" | "en_cours" | "soumis" | "gagne" | "perdu";
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -26,42 +34,28 @@ const STATUS_COLOR: Record<string, string> = {
   perdu: "#94a3b8",
 };
 
-const DEMO_DOSSIERS: DemoDossier[] = [
-  {
-    id: "demo-1",
-    title: "Rénovation façade école primaire Jean Moulin",
-    location: "Versailles (78)",
-    budget: "85 000 €",
-    deadline: "15 juin 2026",
-    status: "en_cours",
-  },
-  {
-    id: "demo-2",
-    title: "Construction mur de soutènement parking municipal",
-    location: "Saint-Germain-en-Laye (78)",
-    budget: "42 000 €",
-    deadline: "28 mai 2026",
-    status: "soumis",
-  },
-  {
-    id: "demo-3",
-    title: "Réfection maçonnerie gymnase communal",
-    location: "Le Chesnay (78)",
-    budget: "126 500 €",
-    deadline: "10 mai 2026",
-    status: "gagne",
-  },
-];
-
 interface Props {
   onOpenChat: (id: string, title: string) => void;
 }
 
 export function MesDossiers({ onOpenChat }: Props) {
+  const { company } = useCurrentCompany();
   const [filter, setFilter] = useState<string>("all");
 
+  // TODO: Remplacer par un fetch Supabase (table "requests" filtrée par company_id)
+  const dossiers: Dossier[] = [];
+
+  // Calcul des statistiques depuis les dossiers réels
+  const stats = {
+    total: dossiers.length,
+    gagnes: dossiers.filter((d) => d.status === "gagne").length,
+    perdus: dossiers.filter((d) => d.status === "perdu").length,
+  };
+  const tauxReussite =
+    stats.total > 0 ? Math.round((stats.gagnes / stats.total) * 100) : 0;
+
   const filtered =
-    filter === "all" ? DEMO_DOSSIERS : DEMO_DOSSIERS.filter((r) => r.status === filter);
+    filter === "all" ? dossiers : dossiers.filter((d) => d.status === filter);
 
   return (
     <div className="p-4 space-y-4">
@@ -70,22 +64,26 @@ export function MesDossiers({ onOpenChat }: Props) {
         <p className="text-sm text-muted-foreground">Suivez vos demandes de réponse</p>
       </div>
 
+      {/* Bloc statistiques */}
       <div className="bg-white border border-border rounded-lg p-4 space-y-3">
         <div className="flex items-baseline justify-between gap-2">
           <h2 className="font-semibold text-sm">Statistiques</h2>
-          <span className="text-xs text-muted-foreground truncate">Maçonnerie Dubois & Fils</span>
+          {company?.name && (
+            <span className="text-xs text-muted-foreground truncate">{company.name}</span>
+          )}
         </div>
+
         <div className="grid grid-cols-3 gap-2">
           <div className="text-center p-2 rounded-md bg-primary/5">
-            <div className="text-2xl font-bold text-primary leading-none">15</div>
+            <div className="text-2xl font-bold text-primary leading-none">{stats.total}</div>
             <div className="text-[11px] text-muted-foreground mt-1 leading-tight">Dossiers déposés</div>
           </div>
           <div className="text-center p-2 rounded-md bg-emerald-50">
-            <div className="text-2xl font-bold text-emerald-600 leading-none">5</div>
+            <div className="text-2xl font-bold text-emerald-600 leading-none">{stats.gagnes}</div>
             <div className="text-[11px] text-muted-foreground mt-1 leading-tight">Remportés</div>
           </div>
           <div className="text-center p-2 rounded-md bg-slate-100">
-            <div className="text-2xl font-bold text-slate-500 leading-none">10</div>
+            <div className="text-2xl font-bold text-slate-500 leading-none">{stats.perdus}</div>
             <div className="text-[11px] text-muted-foreground mt-1 leading-tight">Refusés</div>
           </div>
         </div>
@@ -93,24 +91,18 @@ export function MesDossiers({ onOpenChat }: Props) {
         <div className="rounded-md bg-secondary/15 p-3">
           <div className="flex items-baseline justify-between mb-1.5">
             <span className="text-xs font-medium text-foreground">Taux de réussite</span>
-            <span className="text-lg font-bold text-secondary-foreground">33%</span>
+            <span className="text-lg font-bold text-secondary-foreground">{tauxReussite}%</span>
           </div>
           <div className="h-2 rounded-full bg-white overflow-hidden">
-            <div className="h-full bg-secondary rounded-full" style={{ width: "33%" }} />
+            <div
+              className="h-full bg-secondary rounded-full transition-all duration-500"
+              style={{ width: `${tauxReussite}%` }}
+            />
           </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 pt-1">
-          <button className="text-xs font-medium px-3 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
-            Voir nos formations
-          </button>
-          <button className="text-xs font-medium px-3 py-2 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors">
-            Top chargés d'affaires
-          </button>
         </div>
       </div>
 
-
+      {/* Filtres */}
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {[
           { v: "all", label: "Tous" },
@@ -124,7 +116,9 @@ export function MesDossiers({ onOpenChat }: Props) {
             key={f.v}
             onClick={() => setFilter(f.v)}
             className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-              filter === f.v ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+              filter === f.v
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground"
             }`}
           >
             {f.label}
@@ -132,9 +126,18 @@ export function MesDossiers({ onOpenChat }: Props) {
         ))}
       </div>
 
+      {/* Liste ou empty state */}
       {filtered.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground text-sm">
-          Aucun dossier dans cette catégorie
+        <div className="flex flex-col items-center justify-center py-16 text-center space-y-3">
+          <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center">
+            <FolderOpen className="w-6 h-6 text-muted-foreground" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-foreground">Aucun dossier pour l'instant</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Repérez une opportunité et demandez une réponse pour commencer.
+            </p>
+          </div>
         </div>
       ) : (
         <div className="space-y-3">

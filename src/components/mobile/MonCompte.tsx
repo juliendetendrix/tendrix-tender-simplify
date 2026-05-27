@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   User,
   Building2,
@@ -7,7 +7,6 @@ import {
   FileText,
   Bell,
   Upload,
-  Eye,
   Pencil,
   MapPin,
   GraduationCap,
@@ -17,43 +16,20 @@ import formationThumbnail from "@/assets/formation-thumbnail.jpg";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrentCompany } from "@/hooks/useCurrentCompany";
-import { supabase } from "@/integrations/supabase/client";
+import { useCAProfile } from "@/hooks/useCAProfile";
 
-interface CAProfile {
-  display_name: string;
-  email: string | null;
-  phone: string | null;
+interface Props {
+  onOpenCAChat?: () => void;
 }
 
-export function MonCompte() {
+export function MonCompte({ onOpenCAChat }: Props) {
   const { user } = useAuth();
   const { company, loading } = useCurrentCompany();
-  const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  const { ca, initials: caInitials } = useCAProfile();
   const [notifyNewAO, setNotifyNewAO] = useState(true);
   const [notifyUpdates, setNotifyUpdates] = useState(true);
-  const [ca, setCA] = useState<CAProfile | null>(null);
-
-  useEffect(() => {
-    const loadCA = async () => {
-      if (!company?.assigned_charge_affaires) return;
-      const { data } = await supabase
-        .from("charge_affaires_profiles")
-        .select("display_name, email, phone")
-        .eq("user_id", company.assigned_charge_affaires)
-        .maybeSingle();
-      setCA(data as any);
-    };
-    loadCA();
-  }, [company?.assigned_charge_affaires]);
 
   const NOT_SET = "Non renseigné";
   const profile = {
@@ -171,22 +147,36 @@ export function MonCompte() {
           <h2 className="font-semibold text-sm mb-1 text-primary-foreground/90">Mon chargé d'affaires</h2>
 
           <div className="flex items-start gap-3">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-white/20 backdrop-blur-sm font-semibold">
-              ML
+            <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-white/30">
+              <img
+                src={ca.photo_url}
+                alt={ca.display_name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                  const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                  if (fallback) fallback.style.display = "flex";
+                }}
+              />
+              <div className="w-full h-full bg-white/20 items-center justify-center font-semibold" style={{ display: "none" }}>
+                {caInitials}
+              </div>
             </div>
             <div className="flex-1">
-              <div className="font-semibold text-base">Marc Lefèvre</div>
+              <div className="font-semibold text-base">{ca.display_name}</div>
               <div className="text-xs text-primary-foreground/80">Chargé d'affaires référent</div>
-              <div className="flex items-center gap-1.5 mt-1.5 text-sm">
-                <Phone className="w-3.5 h-3.5" />
-                <span>06 78 45 12 90</span>
-              </div>
+              {ca.phone && (
+                <div className="flex items-center gap-1.5 mt-1.5 text-sm">
+                  <Phone className="w-3.5 h-3.5" />
+                  <span>{ca.phone}</span>
+                </div>
+              )}
             </div>
           </div>
 
           <Button
             className="w-full h-10 text-sm bg-white text-primary hover:bg-white/90"
-            onClick={() => setContactDialogOpen(true)}
+            onClick={onOpenCAChat}
           >
             <Mail className="w-4 h-4 mr-2" />
             Envoyer un message
@@ -288,34 +278,6 @@ export function MonCompte() {
         </section>
       </div>
 
-      <Dialog open={contactDialogOpen} onOpenChange={setContactDialogOpen}>
-        <DialogContent className="max-w-[340px] rounded-lg">
-          <DialogHeader>
-            <DialogTitle>Contacter Marc Lefèvre</DialogTitle>
-            <DialogDescription>
-              Choisissez votre moyen de contact préféré
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-2">
-            <Button
-              className="w-full justify-start gap-3"
-              variant="outline"
-              onClick={() => (window.location.href = "tel:0678451290")}
-            >
-              <Phone className="w-4 h-4" />
-              Appeler : 06 78 45 12 90
-            </Button>
-            <Button
-              className="w-full justify-start gap-3"
-              variant="outline"
-              onClick={() => (window.location.href = "mailto:marc.lefevre@tendrix.fr")}
-            >
-              <Mail className="w-4 h-4" />
-              Email : marc.lefevre@tendrix.fr
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

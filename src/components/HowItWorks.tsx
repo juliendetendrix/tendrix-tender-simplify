@@ -1,139 +1,94 @@
-import tenderResponseIllustration from '@/assets/tender-response-illustration.png';
-import franceNetworkMap from '@/assets/france-network-hybrid.png';
-import notificationIllustration from '@/assets/notification-illustration.png';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { useBetaQuestionnaire } from '@/hooks/useBetaQuestionnaire';
+import { useNavigate } from 'react-router-dom';
+import { UserCircle, BellRing, FileCheck } from 'lucide-react';
+
+const steps = [
+  {
+    number: '01',
+    icon: UserCircle,
+    tag: 'Votre profil',
+    title: 'Créez votre profil en 2 minutes',
+    description:
+      'Renseignez votre secteur d\'activité (électricien, plombier, maçon…), votre zone géographique et la taille des marchés qui vous intéressent. Tendrix calibre immédiatement ses recherches.',
+    details: ['Métier et codes CPV', 'Zone géographique', 'Budget cible'],
+  },
+  {
+    number: '02',
+    icon: BellRing,
+    tag: 'Détection & analyse',
+    title: 'Recevez les bons marchés, prêts à décider',
+    description:
+      'Chaque jour, notre IA scanne le BOAMP et les plateformes complémentaires. Chaque AO est résumé en quelques lignes avec un score de compatibilité. Vous décidez en 15 secondes.',
+    details: ['Résumé IA de chaque appel d\'offres', 'Score de compatibilité sur 100', 'Alerte dès qu\'un marché vous correspond'],
+  },
+  {
+    number: '03',
+    icon: FileCheck,
+    tag: 'Réponse & dépôt',
+    title: 'Postulez en un crédit, nos experts font le reste',
+    description:
+      'Vous avez trouvé le bon marché ? Déclenchez une réponse avec un crédit. Notre équipe d\'experts certifiés marchés publics rédige votre dossier complet. Vous validez, nous déposons.',
+    details: ['Mémoire technique rédigé par des experts', 'Pièces administratives vérifiées', 'Dépôt sur la plateforme acheteur'],
+  },
+];
 
 const HowItWorks = () => {
-  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
-  const { ref: block1Ref, isVisible: v1 } = useScrollAnimation();
-  const { ref: block2Ref, isVisible: v2 } = useScrollAnimation();
-  const { ref: block3Ref, isVisible: v3 } = useScrollAnimation();
-  const { ref: ctaRef, isVisible: vCta } = useScrollAnimation();
-  const { openQuestionnaire } = useBetaQuestionnaire();
+  const navigate = useNavigate();
+
   return (
-    <section id="how-it-works" className="section-padding bg-primary relative z-40 overflow-visible">
-      {/* Floating Title - positioned to straddle sections */}
-      <div ref={titleRef} className="absolute -top-8 left-0 right-0 z-30 flex justify-center">
-        <div className={`bg-white/95 backdrop-blur-md border border-border rounded-3xl px-8 py-4 shadow-medium mx-4 z-50 transition-all duration-800 ${
-          titleVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-4'
-        }`}>
-          <h2 className="text-xl lg:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-center">
-            Concentrez-vous sur votre métier
+    <section id="comment-ca-marche" className="section-padding bg-background">
+      <div className="container-max">
+        <div className="text-center mb-14">
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
+            Comment ça marche ?
           </h2>
+          <p className="text-lg text-muted-foreground max-w-lg mx-auto">
+            De votre profil au dépôt du dossier, Tendrix gère tout.
+          </p>
         </div>
-      </div>
 
-      <div className="container-max relative z-10 pt-12">{/* Reduced padding-top */}
+        {/* Steps */}
+        <div className="grid lg:grid-cols-3 gap-6 mb-14">
+          {steps.map((step, i) => {
+            const Icon = step.icon;
+            return (
+              <div key={i} className="relative bg-white border border-border rounded-2xl p-6 flex flex-col hover:shadow-medium transition-shadow duration-300">
+                {/* Numéro en filigrane */}
+                <span className="absolute top-4 right-5 text-6xl font-black text-muted/30 leading-none select-none pointer-events-none">
+                  {step.number}
+                </span>
 
-        {/* First Block: Respond to tenders under 4 hours */}
-        <div ref={block1Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-6 shadow-strong mb-6 transition-all duration-800 ${
-          v1 ? 'animate-slide-in-left' : 'opacity-0 -translate-x-16'
-        }`}>
-          <div className="grid lg:grid-cols-2 gap-6 items-center">
-            {/* Left Content */}
-            <div className="text-center lg:text-left order-1">
-              <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
-                Obtenez une réponse à vos appels d'offres en quelques heures
-              </h3>
-              <p className="text-base text-muted-foreground leading-relaxed">
-                Notre IA automatise les tâches administratives et génère la structure de votre réponse en quelques instants. Nos chargés d'affaires certifiés relisent et enrichissent le dossier avec des arguments de vente percutants. Enfin, nous ajoutons le Tendrix Winning Deck, un document exclusif et façonné sur-mesure, qui fait que vos dossiers se démarquent et sortent du lot.
-              </p>
-            </div>
+                {/* Tag */}
+                <div className="inline-flex items-center gap-2 mb-5">
+                  <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-widest text-primary/70">{step.tag}</span>
+                </div>
 
-            {/* Right Content - Software Image */}
-            <div className="relative order-2">
-              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
-                <img 
-                  src={tenderResponseIllustration} 
-                  alt="Interface de réponse aux appels d'offres avec progression en temps réel" 
-                  className="w-full h-full object-cover rounded-xl transform scale-110"
-                />
+                <h3 className="text-lg font-bold text-foreground mb-3 leading-snug">{step.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-5 flex-1">{step.description}</p>
+
+                <ul className="space-y-1.5">
+                  {step.details.map((d, j) => (
+                    <li key={j} className="flex items-start gap-2 text-sm">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0 mt-1.5" />
+                      <span className="text-foreground">{d}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              
-              {/* Floating elements for visual appeal */}
-              <div className="absolute -top-2 -right-2 w-4 h-4 bg-primary/40 rounded-lg blur-sm"></div>
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-accent/30 rounded-xl blur-sm"></div>
-            </div>
-          </div>
+            );
+          })}
         </div>
 
-        {/* Second Block: Network of certified business managers */}
-        <div ref={block2Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-6 shadow-strong mb-6 transition-all duration-800 ${
-          v2 ? 'animate-slide-in-right' : 'opacity-0 translate-x-16'
-        }`}>
-          <div className="grid lg:grid-cols-2 gap-6 items-center">
-            {/* Text Content - Mobile First */}
-            <div className="text-center lg:text-left order-1 lg:order-2">
-              <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
-                La force d'une solution hybride : IA + Experts
-              </h3>
-              <p className="text-base text-muted-foreground leading-relaxed">
-                Une réponse d'appel d'offres ne peut pas être laissée à l'IA seule. Chez Tendrix, l'automatisation assure la vitesse et la rigueur, mais c'est l'expertise humaine qui apporte la stratégie, l'adaptation et la force de persuasion. Cette alliance unique maximise vos chances de succès et garantit des dossiers aussi rapides que convaincants.
-              </p>
-            </div>
-
-            {/* Left Content - France Network Image */}
-            <div className="relative order-2 lg:order-1">
-              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
-                <img 
-                  src={franceNetworkMap} 
-                  alt="Carte de France avec réseau connecté et interface de contact montrant la couverture nationale des managers certifiés" 
-                  className="w-full h-full object-cover rounded-xl scale-110"
-                  style={{ objectPosition: 'center' }}
-                />
-              </div>
-              
-              {/* Floating elements for visual appeal */}
-              <div className="absolute -top-2 -left-2 w-4 h-4 bg-accent/40 rounded-lg blur-sm"></div>
-              <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-primary/30 rounded-xl blur-sm"></div>
-            </div>
-          </div>
-        </div>
-
-        {/* Third Block: Instant request triggering */}
-        <div ref={block3Ref} className={`bg-card/90 backdrop-blur border border-white/20 rounded-3xl p-6 shadow-strong mb-6 transition-all duration-800 ${
-          v3 ? 'animate-slide-in-left' : 'opacity-0 -translate-x-16'
-        }`}>
-          <div className="grid lg:grid-cols-2 gap-6 items-center">
-            {/* Left Content */}
-            <div className="text-center lg:text-left order-1">
-              <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4">
-                Une notification, une réponse
-              </h3>
-              <p className="text-base text-muted-foreground leading-relaxed">
-                Continuez votre travail en toute sérénité : dès qu'un AO pertinent pour votre entreprise apparaît, il est résumé, vous êtes notifié. Vous validez, nous gérons le reste.
-              </p>
-            </div>
-
-            {/* Right Content - Notification Image */}
-            <div className="relative order-2">
-              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-3 shadow-medium hover:scale-105 transition-transform duration-300 h-64 lg:h-80 flex items-center justify-center">
-                <img 
-                  src={notificationIllustration} 
-                  alt="Professionnel recevant une notification Tendrix sur une nouvelle opportunité d'appel d'offres pour la rénovation énergétique des bâtiments publics" 
-                  className="w-full h-full object-cover rounded-xl"
-                  style={{ objectPosition: '50% 15%' }}
-                />
-              </div>
-              
-              {/* Floating elements for visual appeal */}
-              <div className="absolute -top-2 -right-2 w-4 h-4 bg-primary/40 rounded-lg blur-sm"></div>
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-accent/30 rounded-xl blur-sm"></div>
-            </div>
-          </div>
-        </div>
-
-        {/* CTA Button */}
-        <div ref={ctaRef} className="text-center mt-12">
-          <button 
-            className={`btn-secondary text-lg px-8 py-4 transform transition duration-500 ${
-              vCta ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-            }`}
-            onClick={openQuestionnaire}
+        <div className="text-center">
+          <button
+            className="btn-primary px-8 py-3.5 text-base font-bold"
+            onClick={() => navigate('/questionnaire-pme')}
           >
-            Obtenir un rendez-vous
+            Commencer gratuitement →
           </button>
+          <p className="text-sm text-muted-foreground mt-3">Aucune carte bancaire requise.</p>
         </div>
       </div>
     </section>

@@ -245,18 +245,7 @@ export const PMEQuestionnaire: React.FC = () => {
 
       localStorage.removeItem('pme-questionnaire-draft');
       
-      // Redirect to app on mobile, dashboard on desktop for beta users
-      if (formData.beta_interest === 'Oui, je veux profiter d\'un essai gratuit') {
-        navigate(isMobileDevice() ? '/app' : '/dashboard');
-        return;
-      }
-      
-      setIsCompleted(true);
-      
-      toast({
-        title: "Questionnaire envoyé !",
-        description: "Merci pour vos réponses.",
-      });
+      navigate(isMobileDevice() ? '/app' : '/dashboard');
     } catch (error) {
       console.error('Error submitting questionnaire:', error);
       toast({

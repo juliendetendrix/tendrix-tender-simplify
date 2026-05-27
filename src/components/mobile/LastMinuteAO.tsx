@@ -71,6 +71,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
 import { AddTenderDialog } from "./AddTenderDialog";
+import { useTrackInteraction } from "@/hooks/useTrackInteraction";
 
 interface LastMinuteAOProps {
   onRequestCreated: () => void;
@@ -83,12 +84,21 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
   const { user } = useAuth();
   const { company } = useCurrentCompany();
   const { tenders, loading, refetch } = useBoampTenders();
+  const { trackInteraction } = useTrackInteraction();
   const [selectedTender, setSelectedTender] = useState<BoampTender | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [visibleCount, setVisibleCount] = useState(5);
+  // IDs des AO rejetés — masqués de la liste après "Refuser"
+  const [rejectedIds, setRejectedIds] = useState<Set<string>>(new Set());
+
+  const handleReject = (tender: BoampTender) => {
+    trackInteraction(tender, "reject");
+    setRejectedIds((prev) => new Set([...prev, tender.id]));
+  };
 
   const handleConfirm = async () => {
     if (!selectedTender) return;
+    trackInteraction(selectedTender, "accept");
     if (!company || !user) {
       toast({
         title: "Demande envoyée",
@@ -126,10 +136,12 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold mb-1 text-primary">
-              Bonjour{company?.contact_name ? ` ${company.contact_name}` : ""}
+              Bonjour{company?.contact_name ? ` ${company.contact_name.split(" ")[0]}` : ""} 👋
             </h1>
             <p className="text-sm text-muted-foreground">
-              Voici les récentes opportunités recommandées pour votre entreprise
+              {company?.name
+                ? `Opportunités recommandées pour ${company.name}`
+                : "Voici les récentes opportunités recommandées pour votre entreprise"}
             </p>
           </div>
           <Button
@@ -161,7 +173,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
           </div>
         ) : (
           <div className="space-y-4">
-            {tenders.slice(0, visibleCount).flatMap((tender, idx) => {
+            {tenders.filter((t) => !rejectedIds.has(t.id)).slice(0, visibleCount).flatMap((tender, idx) => {
               const items: JSX.Element[] = [];
               if (idx === 3) {
                 items.push(
@@ -180,7 +192,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
 
                     <div className="space-y-1">
                       {[
-                        { rank: 1, name: "Marc Lefèvre", rate: 78, photo: "https://i.pravatar.cc/64?img=12" },
+                        { rank: 1, name: "Julien Malherbe", rate: 78, photo: "https://i.pravatar.cc/64?img=12" },
                         { rank: 2, name: "Sophie Martin", rate: 72, photo: "https://i.pravatar.cc/64?img=47" },
                         { rank: 3, name: "Antoine Garnier", rate: 68, photo: null },
                         { rank: 4, name: "Claire Bernard", rate: 64, photo: "https://i.pravatar.cc/64?img=32" },
@@ -225,25 +237,34 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
               }
               const marketType = getMarketType(`${tender.title} ${tender.summary ?? ""} ${tender.famille ?? ""}`);
               const deadlineInfo = getDeadlineInfo(tender.deadline);
-              const score = tender.compatibility ?? 100;
+              const score = tender.compatibility;
               items.push(
                 <div
                   key={tender.id}
                   className="bg-card border border-border rounded-lg p-4 space-y-3 shadow-sm"
                 >
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
                     <span
-                      className="text-[11px] font-bold px-3 py-1"
+                      className="text-[11px] font-bold px-3 py-1 shrink-0"
                       style={{ borderRadius: 20, backgroundColor: "#eef0ff", color: "#0c1c98" }}
                     >
                       {marketType}
                     </span>
-                    <span
-                      className="text-[11px] font-bold px-3 py-1 text-white"
-                      style={{ borderRadius: 20, backgroundColor: "#f9bd43" }}
+                    {score !== null && (
+                      <span
+                        className="text-[11px] font-bold px-3 py-1 text-white shrink-0"
+                        style={{ borderRadius: 20, backgroundColor: "#f9bd43" }}
+                      >
+                        {score}% compatible
+                      </span>
+                    )}
+                    <button
+                      onClick={() => handleReject(tender)}
+                      aria-label="Ignorer cet appel d'offres"
+                      className="ml-auto w-6 h-6 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors shrink-0"
                     >
-                      {score}% compatible
-                    </span>
+                      <span className="text-base leading-none">×</span>
+                    </button>
                   </div>
 
                   <div className="flex items-start gap-2">
@@ -296,7 +317,10 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                     <Button
                       variant="outline"
                       className="w-full h-11 text-sm font-semibold border-primary/30 text-primary hover:bg-primary/5"
-                      onClick={() => navigate(`/tender-details?id=${tender.id}`)}
+                      onClick={() => {
+                        trackInteraction(tender, "read_summary");
+                        navigate(`/tender-details?id=${tender.id}`);
+                      }}
                     >
                       <FileText className="w-4 h-4 mr-1.5" />
                       Lire le résumé de l'appel d'offres
@@ -314,7 +338,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
 
               return items;
             })}
-            {visibleCount < tenders.length && (
+            {visibleCount < tenders.filter((t) => !rejectedIds.has(t.id)).length && (
               <Button
                 variant="outline"
                 className="w-full h-11 text-sm font-semibold border-primary/30 text-primary hover:bg-primary/5"
