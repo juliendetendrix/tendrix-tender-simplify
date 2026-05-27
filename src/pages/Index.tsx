@@ -4,6 +4,7 @@ import SocialProofStrip from '@/components/SocialProofStrip';
 import PainPoint from '@/components/PainPoint';
 import HowItWorks from '@/components/HowItWorks';
 import AppScreenshots from '@/components/AppScreenshots';
+import ImportFeature from '@/components/ImportFeature';
 import CreditPhilosophy from '@/components/CreditPhilosophy';
 import Pricing from '@/components/Pricing';
 import FinalCTA from '@/components/FinalCTA';
@@ -19,6 +20,9 @@ const Index = () => {
 
         {/* 2. Chiffres clés — preuves sociales */}
         <SocialProofStrip />
+
+        {/* 3. Import d'un AO précis via le bouton "+" */}
+        <ImportFeature />
 
         {/* 3. Trois piliers — Détection / Analyse / Réponse */}
         <PainPoint />

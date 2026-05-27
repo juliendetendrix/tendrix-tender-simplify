@@ -17,12 +17,6 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           {/* Left: texte */}
           <div className="text-center lg:text-left max-w-xl mx-auto lg:mx-0 pt-8 pb-10 lg:py-16">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-primary/8 border border-primary/15 rounded-full px-4 py-1.5 mb-6">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0" />
-              <span className="text-xs font-semibold text-primary">Disponible maintenant — 3 crédits offerts</span>
-            </div>
-
             {/* Headline */}
             <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-5 leading-tight">
               Les grands groupes ont une équipe dédiée aux marchés publics.{' '}
@@ -31,9 +25,9 @@ const Hero = () => {
 
             {/* Sous-titre */}
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              IA + expertise humaine pour trouver les appels d'offres faits pour vous, les analyser en{' '}
-              <strong className="text-foreground">15 secondes</strong>{' '}
-              et préparer vos dossiers de réponse. Payez uniquement quand vous postulez.
+              Recevez les marchés qui vous correspondent, décidez en{' '}
+              <strong className="text-foreground">15 secondes</strong>
+              {' '}et obtenez votre dossier de réponse clé en main.
             </p>
 
             {/* CTAs */}

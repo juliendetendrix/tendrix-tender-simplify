@@ -1,5 +1,5 @@
 const stats = [
-  { value: '350 000+', label: 'appels d\'offres publiés par an' },
+  { value: '350 000+', label: 'marchés publics français centralisés sur la plateforme' },
   { value: '15 sec', label: 'pour décider si un marché vous correspond' },
   { value: '< 24h', label: 'pour recevoir votre dossier de réponse' },
   { value: '0 €', label: 'd\'abonnement pour commencer' },
