@@ -106,6 +106,11 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
   // IDs des AO rejetés — masqués de la liste après "Refuser"
   const [rejectedIds, setRejectedIds] = useState<Set<string>>(new Set());
 
+  // AO encore proposables : ni rejetés, ni déjà passés en analyse (ils basculent dans "Mes dossiers")
+  const visibleTenders = tenders.filter(
+    (t) => !rejectedIds.has(t.id) && !analysesByTender[t.id],
+  );
+
   const handleReject = (tender: BoampTender) => {
     trackInteraction(tender, "reject");
     setRejectedIds((prev) => new Set([...prev, tender.id]));
@@ -210,7 +215,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
           </div>
         ) : (
           <div className="space-y-4">
-            {tenders.filter((t) => !rejectedIds.has(t.id)).slice(0, visibleCount).flatMap((tender, idx) => {
+            {visibleTenders.slice(0, visibleCount).flatMap((tender, idx) => {
               const items: JSX.Element[] = [];
               if (idx === 3) {
                 items.push(
@@ -413,7 +418,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
 
               return items;
             })}
-            {visibleCount < tenders.filter((t) => !rejectedIds.has(t.id)).length && (
+            {visibleCount < visibleTenders.length && (
               <Button
                 variant="outline"
                 className="w-full h-11 text-sm font-semibold border-primary/30 text-primary hover:bg-primary/5"

@@ -25,7 +25,7 @@ export function ChargeAffairesWelcome({
         <div className="bg-primary px-6 pt-8 pb-6 text-center">
           {/* Message principal — mis en valeur */}
           <h2 className="text-white text-lg font-extrabold leading-snug mb-5">
-            Un chargé d'affaires vous est dédié 🎯
+            Nous vous avons assigné un chargé d'affaires référent 🎯
           </h2>
 
           {/* Photo / initiales */}
@@ -51,7 +51,7 @@ export function ChargeAffairesWelcome({
 
           {/* Nom — discret */}
           <p className="text-white/90 text-sm font-medium">{ca.display_name}</p>
-          <p className="text-white/50 text-[11px] uppercase tracking-wider mb-3">Chargé d'affaires référent</p>
+          <p className="text-white/60 text-xs mb-3">Votre chargé d'affaires référent</p>
 
           {/* Téléphone sous la photo */}
           {ca.phone && (

@@ -153,6 +153,14 @@ export function MesDossiers({ onOpenChat }: Props) {
           {filtered.map((r) => {
             const verdict = r.analysisVerdict ? VERDICT_UI[r.analysisVerdict] : null;
             const analysisInProgress = r.analysisStatus && IN_PROGRESS.includes(r.analysisStatus);
+            const verdictReady = r.analysisStatus === "completed" && r.analysisId;
+            // Verdict prêt → fiche analyse. Analyse en cours → page résumé de l'AO
+            // (qui affiche "Analyse en cours…"). Sinon → ouverture du chat.
+            const openDossier = () => {
+              if (verdictReady) navigate(`/analysis?id=${r.analysisId}`);
+              else if (analysisInProgress) navigate(`/tender-details?id=${r.tender_id}`);
+              else onOpenChat(r.id, r.title);
+            };
             return (
               <div
                 key={r.id}
@@ -160,11 +168,7 @@ export function MesDossiers({ onOpenChat }: Props) {
               >
                 <button
                   type="button"
-                  onClick={() =>
-                    r.analysisId
-                      ? navigate(`/analysis?id=${r.analysisId}`)
-                      : onOpenChat(r.id, r.title)
-                  }
+                  onClick={openDossier}
                   className="w-full text-left space-y-2 hover:opacity-90 transition-opacity"
                 >
                 <div className="flex items-start justify-between gap-2">
@@ -203,7 +207,7 @@ export function MesDossiers({ onOpenChat }: Props) {
                 {analysisInProgress && (
                   <button
                     type="button"
-                    onClick={() => r.analysisId && navigate(`/analysis?id=${r.analysisId}`)}
+                    onClick={openDossier}
                     className="w-full flex items-center gap-1.5 text-xs font-semibold rounded-md px-2.5 py-1.5"
                     style={{ backgroundColor: "#eef0ff", color: "#0c1c98" }}>
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />

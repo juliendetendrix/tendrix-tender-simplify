@@ -46,7 +46,8 @@ export default function MobileApp() {
   useEffect(() => {
     if (!welcomeKey) return;
     if (!localStorage.getItem(welcomeKey)) {
-      const timer = setTimeout(() => setWelcomeOpen(true), 800);
+      // On laisse l'utilisateur découvrir l'app ~10 s avant d'afficher la popup
+      const timer = setTimeout(() => setWelcomeOpen(true), 10000);
       return () => clearTimeout(timer);
     }
   }, [welcomeKey]);
