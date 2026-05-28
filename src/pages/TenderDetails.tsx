@@ -1,10 +1,21 @@
-import { ArrowLeft, MapPin, Calendar, Euro, TrendingUp, ExternalLink, Building2, FileText, Package, Check } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Euro, TrendingUp, ExternalLink, Building2, FileText, Package, Check, Sparkles, Loader2, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useCurrentCompany } from "@/hooks/useCurrentCompany";
+import { useTenderAnalyses } from "@/hooks/useTenderAnalyses";
 import {
   Collapsible,
   CollapsibleContent,
@@ -26,7 +37,12 @@ const TenderDetails = () => {
   const tenderId = searchParams.get("id");
   const { ref: contentRef, isVisible } = useScrollAnimation();
   const { tenders, loading: tendersLoading } = useBoampTenders();
-  
+  const { company, refetch: refetchCompany } = useCurrentCompany();
+  const { analysesByTender, refetch: refetchAnalyses } = useTenderAnalyses(company?.id);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [launching, setLaunching] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+
   const demoTender = tenderId === "reco-demo" ? {
     id: "reco-demo",
     title: "Rénovation énergétique du groupe scolaire Jean Jaurès",
@@ -110,6 +126,66 @@ const TenderDetails = () => {
     } catch {
       return deadline;
     }
+  };
+
+  const analysis = analysesByTender[tender.id];
+  const inProgress = analysis && ["pending", "scraping", "analyzing", "manual_intervention_required"].includes(analysis.status);
+
+  // Lance l'analyse complète : déduit 1 crédit, crée l'analyse + le dossier,
+  // notifie le chargé d'affaires (message en base via la RPC, email via la fonction).
+  const handleLaunchAnalysis = async () => {
+    if (!company) {
+      setConfirmOpen(false);
+      toast({
+        title: "Profil incomplet",
+        description: "Terminez la création de votre entreprise pour lancer une analyse.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setLaunching(true);
+    const { data: analysisId, error } = await supabase.rpc("spend_credit_and_start_analysis", {
+      _company_id: company.id,
+      _tender_id: tender.id,
+      _title: tender.title,
+      _organisme: tender.organisme,
+      _location: tender.location,
+      _budget: tender.budget,
+      _deadline: tender.deadline || null,
+      _date_publication: tender.datePublication,
+      _famille: tender.famille,
+      _procedure: tender.procedure,
+      _cpv_codes: tender.cpvCodes,
+      _source_url: tender.url,
+      _buyer_profile_url: tender.url,
+      _selected_lots: selectedLots.map((n) => `Lot ${n}`),
+    });
+    setLaunching(false);
+    setConfirmOpen(false);
+
+    if (error) {
+      const msg = error.message?.includes("insufficient_credits")
+        ? "Vous n'avez plus de crédits disponibles. Rechargez pour lancer une analyse."
+        : error.message?.includes("forbidden")
+        ? "Action non autorisée pour ce compte."
+        : "Impossible de lancer l'analyse pour le moment. Réessayez.";
+      toast({ title: "Analyse non lancée", description: msg, variant: "destructive" });
+      return;
+    }
+
+    // En arrière-plan (best-effort, ne bloque jamais l'UX) :
+    //  - resolve-dce : lien plateforme + référence (instantané, utile au CA)
+    //  - start-scrape : tente le téléchargement automatique du DCE (Trigger.dev)
+    //  - notify-ca : email au chargé d'affaires
+    if (analysisId) {
+      supabase.functions.invoke("resolve-dce", { body: { analysis_id: analysisId } }).catch(() => {});
+      supabase.functions.invoke("start-scrape", { body: { analysis_id: analysisId } }).catch(() => {});
+      supabase.functions.invoke("notify-ca", { body: { analysis_id: analysisId } }).catch(() => {});
+    }
+
+    refetchAnalyses();
+    refetchCompany();
+    setSuccessOpen(true);
   };
 
   return (
@@ -384,21 +460,143 @@ const TenderDetails = () => {
         })()}
       </main>
 
-      {/* Sticky CTA Button */}
+      {/* Sticky CTA Buttons */}
       <div className="fixed bottom-0 left-0 right-0 bg-card border-t p-4 shadow-lg z-10">
-        <div className="max-w-lg mx-auto">
+        <div className="max-w-lg mx-auto space-y-2.5">
+          {/* Analyse complète : bouton / en cours / verdict */}
+          {!analysis && (
+            <Button
+              size="lg"
+              className="w-full text-white font-bold text-base py-6 rounded-xl shadow-md hover:opacity-90 transition-all border-0"
+              style={{ backgroundColor: "#0c1c98" }}
+              onClick={() => setConfirmOpen(true)}
+            >
+              <Sparkles className="w-5 h-5 mr-2" />
+              Lancer l'analyse complète
+              <span className="ml-2 text-xs font-bold bg-white/20 px-2 py-0.5 rounded-full">
+                💡 1 crédit
+              </span>
+            </Button>
+          )}
+
+          {inProgress && (
+            <div
+              className="w-full flex items-center justify-center gap-2 rounded-xl py-5 text-base font-bold border"
+              style={{ backgroundColor: "#eef0ff", color: "#0c1c98", borderColor: "#c7ccff" }}
+            >
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Analyse en cours…
+            </div>
+          )}
+
+          {analysis && analysis.status === "completed" && (() => {
+            const V: Record<string, { label: string; bg: string; color: string; Icon: typeof CheckCircle2 }> = {
+              go:              { label: "GO",               bg: "#dcfce7", color: "#16a34a", Icon: CheckCircle2 },
+              go_with_reserve: { label: "GO AVEC RÉSERVE",  bg: "#fef3c7", color: "#b45309", Icon: AlertTriangle },
+              no_go:           { label: "NO GO",            bg: "#fee2e2", color: "#dc2626", Icon: XCircle },
+            };
+            const v = V[analysis.verdict ?? "go_with_reserve"];
+            const Icon = v.Icon;
+            return (
+              <button
+                onClick={() => navigate(`/analysis?id=${analysis.id}`)}
+                className="w-full flex items-center justify-center gap-2 rounded-xl py-5 text-base font-bold hover:opacity-90 transition-opacity"
+                style={{ backgroundColor: v.bg, color: v.color }}
+              >
+                <Icon className="w-5 h-5" />
+                {v.label} · Voir la fiche analyse
+              </button>
+            );
+          })()}
+
+          {analysis && analysis.status === "failed" && (
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full font-bold text-base py-6 rounded-xl border-destructive/40 text-destructive hover:bg-destructive/5"
+              onClick={() => setConfirmOpen(true)}
+            >
+              Analyse échouée — relancer (1 crédit)
+            </Button>
+          )}
+
           <Button
             size="lg"
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base py-6 rounded-xl shadow-md hover:shadow-lg transition-all"
-            onClick={() => {
-              // Navigate back and trigger the request flow
-              navigate(-1);
-            }}
+            variant="outline"
+            className="w-full font-bold text-base py-6 rounded-xl border-secondary/50 text-foreground hover:bg-secondary/10"
+            onClick={() => navigate(-1)}
           >
             Demander une réponse
           </Button>
         </div>
       </div>
+
+      {/* Confirmation de l'analyse complète (action payante = 1 crédit) */}
+      <Dialog open={confirmOpen} onOpenChange={() => !launching && setConfirmOpen(false)}>
+        <DialogContent className="max-w-[340px] rounded-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5" style={{ color: "#0c1c98" }} />
+              Lancer l'analyse complète ?
+            </DialogTitle>
+            <DialogDescription>
+              Nous récupérons le dossier de consultation (DCE) et l'analysons avec l'IA pour
+              vous donner un verdict <strong>GO / NO GO</strong>, vos points forts et les
+              informations manquantes. Votre chargé d'affaires est prévenu.
+              <span className="block mt-2 font-medium text-foreground">
+                Cette analyse utilise <strong>1 crédit</strong>
+                {typeof company?.credits === "number" ? ` (solde : ${company.credits})` : ""}.
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setConfirmOpen(false)}
+              className="flex-1"
+              disabled={launching}
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={handleLaunchAnalysis}
+              className="flex-1 text-white border-0"
+              style={{ backgroundColor: "#0c1c98" }}
+              disabled={launching}
+            >
+              {launching ? <Loader2 className="w-4 h-4 animate-spin" /> : "Lancer (1 crédit)"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Popup de succès : analyse lancée → on dirige vers Mes dossiers */}
+      <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
+        <DialogContent className="max-w-[340px] rounded-lg text-center">
+          <DialogHeader>
+            <div className="mx-auto mb-2 w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: "#dcfce7" }}>
+              <CheckCircle2 className="w-7 h-7" style={{ color: "#16a34a" }} />
+            </div>
+            <DialogTitle className="text-center">Analyse lancée 🚀</DialogTitle>
+            <DialogDescription className="text-center">
+              Nous récupérons et analysons le dossier. <strong>Vous serez notifié dès que l'analyse
+              sera terminée.</strong> Vous pouvez continuer à naviguer pendant ce temps.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button
+              className="w-full text-white border-0"
+              style={{ backgroundColor: "#0c1c98" }}
+              onClick={() => navigate("/app?tab=dossiers")}
+            >
+              Voir mes dossiers
+            </Button>
+            <Button variant="ghost" className="w-full" onClick={() => setSuccessOpen(false)}>
+              Continuer à explorer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

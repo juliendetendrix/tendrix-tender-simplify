@@ -2,7 +2,6 @@
  * useCAProfile
  * Fournit le profil du chargé d'affaires assigné à la société connectée.
  * Si aucun CA n'est assigné en base, on retourne le CA par défaut (Julien Malherbe).
- * À terme : ajouter un champ `photo_url` dans charge_affaires_profiles.
  */
 import { useState, useEffect } from "react";
 import { useCurrentCompany } from "./useCurrentCompany";
@@ -12,7 +11,6 @@ export interface CAProfile {
   display_name: string;
   email: string | null;
   phone: string | null;
-  /** URL de la photo (dossier public/ de Vite) */
   photo_url: string;
 }
 
@@ -31,7 +29,6 @@ export function useCAProfile() {
 
   useEffect(() => {
     if (!company?.assigned_charge_affaires) {
-      // Pas de CA assigné → on garde le défaut
       setCA(DEFAULT_CA);
       return;
     }
@@ -39,21 +36,21 @@ export function useCAProfile() {
     setLoading(true);
     supabase
       .from("charge_affaires_profiles")
-      .select("display_name, email, phone")
+      .select("display_name, email, phone, photo_url")
       .eq("user_id", company.assigned_charge_affaires)
       .maybeSingle()
       .then(({ data }) => {
-        setCA(
-          data
-            ? {
-                display_name: data.display_name,
-                email: data.email,
-                phone: data.phone,
-                // TODO: utiliser data.photo_url quand le champ sera ajouté en DB
-                photo_url: "/julien-malherbe.jpg",
-              }
-            : DEFAULT_CA
-        );
+        if (data) {
+          setCA({
+            display_name: data.display_name,
+            email: data.email ?? null,
+            phone: data.phone ?? null,
+            // Utilise la photo stockée en DB si dispo, sinon fallback local
+            photo_url: (data as any).photo_url ?? DEFAULT_CA.photo_url,
+          });
+        } else {
+          setCA(DEFAULT_CA);
+        }
         setLoading(false);
       });
   }, [company?.assigned_charge_affaires]);

@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Outils locaux / CLI
+.claude/
+supabase/.temp/
+.trigger/

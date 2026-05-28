@@ -57,7 +57,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/charge-affaires" className="inline-flex items-center gap-1.5 text-background/80 hover:text-background transition-colors">
+                <a href="/login-ca" className="inline-flex items-center gap-1.5 text-background/80 hover:text-background transition-colors">
                   Espace chargé d'affaires
                 </a>
               </li>

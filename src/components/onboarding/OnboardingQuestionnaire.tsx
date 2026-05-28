@@ -187,17 +187,13 @@ export function OnboardingQuestionnaire() {
 
         {/* Row : retour + étape + compteur */}
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
-          {step > 1 ? (
-            <button
-              onClick={prev}
-              className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/8 transition-all -ml-1"
-              aria-label="Retour"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-          ) : (
-            <div className="w-8 flex-shrink-0" />
-          )}
+          <button
+            onClick={step > 1 ? prev : () => navigate("/")}
+            className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/8 transition-all -ml-1"
+            aria-label={step > 1 ? "Retour" : "Accueil"}
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
 
           {/* Step dots */}
           <div className="flex-1 flex items-center justify-center gap-1.5">

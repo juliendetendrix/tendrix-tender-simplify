@@ -1,10 +1,11 @@
-import { Phone } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import type { CAProfile } from "@/hooks/useCAProfile";
 
 interface ChargeAffairesWelcomeProps {
   isOpen: boolean;
   onClose: () => void;
+  onContactCA?: () => void;
   ca: CAProfile;
   caInitials: string;
 }
@@ -12,6 +13,7 @@ interface ChargeAffairesWelcomeProps {
 export function ChargeAffairesWelcome({
   isOpen,
   onClose,
+  onContactCA,
   ca,
   caInitials,
 }: ChargeAffairesWelcomeProps) {
@@ -21,16 +23,17 @@ export function ChargeAffairesWelcome({
 
         {/* Header bleu */}
         <div className="bg-primary px-6 pt-8 pb-6 text-center">
-          <p className="text-white/60 text-[11px] uppercase tracking-widest font-semibold mb-5">
-            Nous vous avons assigné un chargé d'affaires
-          </p>
+          {/* Message principal — mis en valeur */}
+          <h2 className="text-white text-lg font-extrabold leading-snug mb-5">
+            Un chargé d'affaires vous est dédié 🎯
+          </h2>
 
           {/* Photo / initiales */}
-          <div className="relative inline-block mb-4">
+          <div className="relative inline-block mb-3">
             <img
               src={ca.photo_url}
               alt={ca.display_name}
-              className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-medium"
+              className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-medium"
               onError={(e) => {
                 e.currentTarget.style.display = "none";
                 const fallback = e.currentTarget.nextElementSibling as HTMLElement;
@@ -38,37 +41,24 @@ export function ChargeAffairesWelcome({
               }}
             />
             <div
-              className="w-24 h-24 rounded-full bg-white/20 border-4 border-white shadow-medium items-center justify-center"
+              className="w-20 h-20 rounded-full bg-white/20 border-4 border-white shadow-medium items-center justify-center"
               style={{ display: "none" }}
             >
-              <span className="text-white text-2xl font-bold">{caInitials}</span>
+              <span className="text-white text-xl font-bold">{caInitials}</span>
             </div>
             <span className="absolute bottom-1 right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-primary" />
           </div>
 
-          <p className="text-white/70 text-xs uppercase tracking-widest font-semibold mb-1">
-            Votre chargé d'affaires référent
-          </p>
-          <h2 className="text-white text-xl font-bold">{ca.display_name}</h2>
-
-          {/* Téléphone */}
-          {ca.phone && (
-            <a
-              href={`tel:${ca.phone}`}
-              className="inline-flex items-center gap-1.5 mt-2 text-white/80 hover:text-white text-sm font-medium transition-colors"
-            >
-              <Phone className="w-3.5 h-3.5" />
-              {ca.phone}
-            </a>
-          )}
+          {/* Nom — discret */}
+          <p className="text-white/90 text-sm font-medium">{ca.display_name}</p>
+          <p className="text-white/50 text-[11px] uppercase tracking-wider">Chargé d'affaires référent</p>
         </div>
 
         {/* Corps */}
-        <div className="px-6 py-5 bg-white space-y-4">
+        <div className="px-6 py-5 bg-white space-y-3">
           <p className="text-foreground text-sm leading-relaxed text-center">
-            <strong>{ca.display_name}</strong> sera votre interlocuteur privilégié sur Tendrix.
-            Il est la personne avec qui vous communiquerez pour vos réponses et celui qui
-            se chargera de peaufiner vos dossiers pour maximiser vos chances de succès.
+            C'est votre interlocuteur dédié : il peaufine vos dossiers de réponse et vous
+            accompagne pour maximiser vos chances de remporter vos marchés.
           </p>
 
           <button
@@ -78,6 +68,17 @@ export function ChargeAffairesWelcome({
           >
             OK ! J'explore l'application
           </button>
+
+          {/* Bouton discret : faire comprendre qu'on peut lui parler */}
+          {onContactCA && (
+            <button
+              onClick={onContactCA}
+              className="w-full flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-primary transition-colors py-1"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              Envoyer un message à {ca.display_name.split(" ")[0]}
+            </button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

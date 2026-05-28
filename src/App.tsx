@@ -13,9 +13,12 @@ import Dashboard from "./pages/Dashboard";
 import BetaOffer from "./pages/BetaOffer";
 import QuestionnairePME from "./pages/QuestionnairePME";
 import TenderDetails from "./pages/TenderDetails";
+import AnalysisDetail from "./pages/AnalysisDetail";
 import MobileApp from "./pages/MobileApp";
 import MentionsLegales from "./pages/MentionsLegales";
 import Login from "./pages/Login";
+import LoginCA from "./pages/LoginCA";
+import InscriptionCA from "./pages/InscriptionCA";
 import AdminDashboard from "./pages/AdminDashboard";
 import ChargeAffaires from "./pages/ChargeAffaires";
 import NotFound from "./pages/NotFound";
@@ -38,6 +41,7 @@ const App = () => (
               <Route path="/beta-offer" element={<BetaOffer />} />
               <Route path="/questionnaire-pme" element={<QuestionnairePME />} />
               <Route path="/tender-details" element={<TenderDetails />} />
+              <Route path="/analysis" element={<AnalysisDetail />} />
               <Route
                 path="/app"
                 element={
@@ -62,6 +66,8 @@ const App = () => (
                   </RequireAuth>
                 }
               />
+              <Route path="/login-ca" element={<LoginCA />} />
+              <Route path="/inscription-ca" element={<InscriptionCA />} />
               <Route path="/mentions-legales" element={<MentionsLegales />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

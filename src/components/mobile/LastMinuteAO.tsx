@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { MapPin, Euro, RefreshCw, FileText, Hourglass, Building2 } from "lucide-react";
+import {
+  MapPin, Euro, RefreshCw, FileText, Hourglass, Building2,
+  Loader2, CheckCircle2, AlertTriangle, XCircle,
+} from "lucide-react";
 
 function estimateBudget(t: { title?: string | null; summary?: string | null; famille?: string | null }): string {
   const text = `${t.title ?? ""} ${t.summary ?? ""} ${t.famille ?? ""}`.toLowerCase();
@@ -66,6 +69,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { useBoampTenders, type BoampTender } from "@/hooks/useBoampTenders";
 import { useCurrentCompany } from "@/hooks/useCurrentCompany";
+import { useTenderAnalyses, type TenderAnalysisLite } from "@/hooks/useTenderAnalyses";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -79,11 +83,22 @@ interface LastMinuteAOProps {
   onAddOpenChange: (open: boolean) => void;
 }
 
+// Présentation visuelle du verdict de l'IA
+const VERDICT_UI: Record<string, { label: string; bg: string; color: string; Icon: typeof CheckCircle2 }> = {
+  go:              { label: "GO",               bg: "#dcfce7", color: "#16a34a", Icon: CheckCircle2 },
+  go_with_reserve: { label: "GO AVEC RÉSERVE",  bg: "#fef3c7", color: "#b45309", Icon: AlertTriangle },
+  no_go:           { label: "NO GO",            bg: "#fee2e2", color: "#dc2626", Icon: XCircle },
+};
+
+// Statuts considérés comme "analyse en cours" (du point de vue de l'artisan)
+const IN_PROGRESS_STATUSES = ["pending", "scraping", "analyzing", "manual_intervention_required"];
+
 export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: LastMinuteAOProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { company } = useCurrentCompany();
   const { tenders, loading, refetch } = useBoampTenders();
+  const { analysesByTender } = useTenderAnalyses(company?.id);
   const { trackInteraction } = useTrackInteraction();
   const [selectedTender, setSelectedTender] = useState<BoampTender | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -260,6 +275,7 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
               const marketType = getMarketType(`${tender.title} ${tender.summary ?? ""} ${tender.famille ?? ""}`);
               const deadlineInfo = getDeadlineInfo(tender.deadline);
               const score = tender.compatibility;
+              const analysis: TenderAnalysisLite | undefined = analysesByTender[tender.id];
               items.push(
                 <div
                   key={tender.id}
@@ -336,6 +352,43 @@ export function LastMinuteAO({ onRequestCreated, addOpen, onAddOpenChange }: Las
                   </div>
 
                   <div className="space-y-2 pt-1">
+                    {/* ── État de l'analyse (le lancement se fait sur la page résumé) ── */}
+                    {analysis && IN_PROGRESS_STATUSES.includes(analysis.status) && (
+                      <div
+                        className="w-full h-11 flex items-center justify-center gap-2 rounded-md text-sm font-semibold border"
+                        style={{ backgroundColor: "#eef0ff", color: "#0c1c98", borderColor: "#c7ccff" }}
+                      >
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Analyse en cours…
+                      </div>
+                    )}
+
+                    {analysis && analysis.status === "completed" && (() => {
+                      const v = VERDICT_UI[analysis.verdict ?? "go_with_reserve"];
+                      const Icon = v.Icon;
+                      return (
+                        <button
+                          onClick={() => navigate(`/analysis?id=${analysis.id}`)}
+                          className="w-full h-11 flex items-center justify-center gap-2 rounded-md text-sm font-bold hover:opacity-90 transition-opacity"
+                          style={{ backgroundColor: v.bg, color: v.color }}
+                        >
+                          <Icon className="w-4 h-4" />
+                          {v.label} · Voir la fiche analyse
+                        </button>
+                      );
+                    })()}
+
+                    {analysis && analysis.status === "failed" && (
+                      <Button
+                        variant="outline"
+                        className="w-full h-11 text-sm font-semibold border-destructive/40 text-destructive hover:bg-destructive/5"
+                        onClick={() => navigate(`/tender-details?id=${tender.id}`)}
+                      >
+                        <RefreshCw className="w-4 h-4 mr-1.5" />
+                        Analyse échouée — relancer
+                      </Button>
+                    )}
+
                     <Button
                       variant="outline"
                       className="w-full h-11 text-sm font-semibold border-primary/30 text-primary hover:bg-primary/5"

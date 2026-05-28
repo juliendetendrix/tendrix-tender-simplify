@@ -265,11 +265,21 @@ export const useBoampTenders = () => {
       // 2. Read from DB (populated by edge function if it succeeded)
       let items = await loadFromDb()
 
-      // 3. If DB is still empty (edge function not deployed), fetch BOAMP directly
-      if (items.length === 0) {
-        console.log('DB empty — fetching BOAMP directly from browser')
+      // 3. Si la base ne contient pas assez d'AO (edge function KO ou base
+      //    quasi vide), on complète avec un fetch BOAMP direct (CORS-enabled)
+      //    et on fusionne sans doublon. Garantit une liste fournie.
+      if (items.length < 10) {
+        console.log(`DB n'a que ${items.length} AO — complément via BOAMP direct`)
         setUsingFallback(true)
-        items = await fetchBoampDirect()
+        try {
+          const direct = await fetchBoampDirect()
+          const map = new Map<string, BoampTender>()
+          for (const t of direct) map.set(t.id, t)
+          for (const t of items) if (!map.has(t.id)) map.set(t.id, t)
+          items = Array.from(map.values())
+        } catch (e) {
+          console.warn('Fetch BOAMP direct échoué:', e)
+        }
       } else {
         setUsingFallback(false)
       }

@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { CAAnalysisPanel } from "@/components/ca/CAAnalysisPanel";
 
 interface Message {
   id: string;
@@ -27,9 +28,10 @@ interface DossierData {
 interface Props {
   requestId: string;
   onBack: () => void;
+  canManageAnalysis?: boolean;
 }
 
-export function DossierDetail({ requestId, onBack }: Props) {
+export function DossierDetail({ requestId, onBack, canManageAnalysis = false }: Props) {
   const { user } = useAuth();
   const [dossier, setDossier] = useState<DossierData | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -115,6 +117,8 @@ export function DossierDetail({ requestId, onBack }: Props) {
           )}
         </div>
       </div>
+
+      {canManageAnalysis && <CAAnalysisPanel requestId={requestId} />}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 space-y-3 bg-muted/30">
         {loading ? (

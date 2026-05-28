@@ -14,6 +14,7 @@ export interface Company {
   contact_phone: string | null;
   assigned_charge_affaires: string | null;
   onboarding_completed: boolean;
+  credits: number | null;
 }
 
 export function useCurrentCompany() {

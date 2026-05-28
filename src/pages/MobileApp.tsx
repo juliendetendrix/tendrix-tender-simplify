@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Coins } from "lucide-react";
 import { LastMinuteAO } from "@/components/mobile/LastMinuteAO";
 import { MesDossiers } from "@/components/mobile/MesDossiers";
@@ -8,6 +9,8 @@ import { MessagesInbox, CA_THREAD_ID } from "@/components/mobile/MessagesInbox";
 import { BottomNav } from "@/components/mobile/BottomNav";
 import { ChargeAffairesWelcome } from "@/components/mobile/ChargeAffairesWelcome";
 import { useCAProfile } from "@/hooks/useCAProfile";
+import { useCredits } from "@/hooks/useCredits";
+import { useAuth } from "@/hooks/useAuth";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
 
 type Tab = "opportunites" | "dossiers" | "compte";
@@ -20,26 +23,36 @@ interface OpenedChat {
 
 export default function MobileApp() {
   const { ca, initials: caInitials } = useCAProfile();
+  const { user } = useAuth();
+  const [searchParams] = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState<Tab>("opportunites");
+  // Permet d'arriver directement sur un onglet via /app?tab=dossiers
+  const initialTab = (["opportunites", "dossiers", "compte"].includes(searchParams.get("tab") ?? "")
+    ? (searchParams.get("tab") as Tab)
+    : "opportunites");
+  const [activeTab, setActiveTab] = useState<Tab>(initialTab);
   const [openedChat, setOpenedChat] = useState<OpenedChat | null>(null);
   const [messagesOpen, setMessagesOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
 
-  // TODO: charger depuis Supabase (table "credits" ou colonne sur la company)
-  const credits = 3;
+  // Solde réel de crédits, mis à jour en direct (Realtime)
+  const { credits: liveCredits } = useCredits();
+  const credits = liveCredits ?? 0;
 
+  // Popup d'accueil : affichée une fois PAR COMPTE (clé liée à l'utilisateur),
+  // pour que chaque nouvel inscrit la voie, même dans le même navigateur.
+  const welcomeKey = user ? `tendrix_ca_welcome_seen_${user.id}` : null;
   useEffect(() => {
-    const seen = localStorage.getItem("tendrix_ca_welcome_seen");
-    if (!seen) {
+    if (!welcomeKey) return;
+    if (!localStorage.getItem(welcomeKey)) {
       const timer = setTimeout(() => setWelcomeOpen(true), 800);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [welcomeKey]);
 
   const handleWelcomeClose = () => {
-    localStorage.setItem("tendrix_ca_welcome_seen", "true");
+    if (welcomeKey) localStorage.setItem(welcomeKey, "true");
     setWelcomeOpen(false);
   };
 
@@ -62,6 +75,7 @@ export default function MobileApp() {
       <ChargeAffairesWelcome
         isOpen={welcomeOpen}
         onClose={handleWelcomeClose}
+        onContactCA={handleContactCA}
         ca={ca}
         caInitials={caInitials}
       />
