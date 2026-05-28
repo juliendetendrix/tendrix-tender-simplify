@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
@@ -12,111 +12,111 @@ serve(async (req) => {
 
   try {
     const { tender } = await req.json();
-    
-    if (!tender || typeof tender !== 'object') {
+
+    if (!tender || typeof tender !== "object") {
       return new Response(
-        JSON.stringify({ error: "Invalid request", summary: null }),
+        JSON.stringify({ error: "Requête invalide", summary: null }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      console.error("LOVABLE_API_KEY is not configured");
+    const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
+    if (!ANTHROPIC_API_KEY) {
+      console.error("ANTHROPIC_API_KEY manquante");
       return new Response(
-        JSON.stringify({ error: "Service unavailable", summary: null }),
+        JSON.stringify({ error: "Service indisponible", summary: null }),
         { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Build a detailed prompt for the AI
-    const prompt = `Tu es un expert en marchés publics français. Génère un résumé clair et accessible d'un appel d'offres pour une PME.
+    // Construire le prompt à partir des données BOAMP disponibles
+    const lines = [
+      `Titre : ${tender.title}`,
+      tender.organisme ? `Organisme : ${tender.organisme}` : null,
+      tender.location  ? `Lieu : ${tender.location}`       : null,
+      tender.famille   ? `Famille : ${tender.famille}`     : null,
+      tender.procedure ? `Procédure : ${tender.procedure}` : null,
+      tender.deadline  ? `Date limite : ${tender.deadline}` : null,
+      tender.summary   ? `Descripteurs : ${tender.summary}` : null,
+      tender.cpvCodes?.length ? `Codes CPV : ${tender.cpvCodes.join(", ")}` : null,
+    ].filter(Boolean).join("\n");
 
-Données de l'appel d'offres :
-- Titre : ${tender.title}
-- Organisme : ${tender.organisme}
-- Lieu d'exécution : ${tender.location}
-- Budget : ${tender.budget}
-- Date limite : ${tender.deadline}
-${tender.summary ? `- Description : ${tender.summary}` : ""}
-${tender.famille ? `- Famille : ${tender.famille}` : ""}
-${tender.procedure ? `- Procédure : ${tender.procedure}` : ""}
+    const userMessage = `Voici les informations d'un appel d'offres public :\n\n${lines}\n\nRédige un résumé clair en 3 à 4 phrases pour un artisan du BTP. Explique ce qui est attendu, où, et pourquoi c'est pertinent. Langage simple, pas de jargon juridique, pas de puces, pas de titre.`;
 
-Consignes :
-- Rédige un résumé de 3 à 5 phrases maximum
-- Utilise un langage simple, sans jargon juridique
-- Explique clairement :
-  • Ce qui est attendu (type de travaux/services/fournitures)
-  • Où cela se déroule
-  • L'échelle ou le volume principal (si mentionné)
-  • Les contraintes importantes (durée, maintenance, etc.)
-- Pas de références d'articles, pas de formules administratives
-- Format : texte simple, pas de puces
-
-Résumé :`;
-
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "system",
-            content: "Tu es un expert en marchés publics qui rédige des résumés clairs et accessibles pour les PME.",
-          },
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-        temperature: 0.7,
-        max_tokens: 300,
+        model: "claude-haiku-4-5",
+        max_tokens: 350,
+        system:
+          "Tu es un expert en marchés publics français qui aide les artisans et TPE du BTP à comprendre rapidement les appels d'offres. Tu rédiges des résumés courts, concrets et accessibles.",
+        messages: [{ role: "user", content: userMessage }],
       }),
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
+      const body = await response.text().catch(() => "");
+      console.error("Anthropic API erreur :", response.status, body);
+
+      if (response.status === 401) {
         return new Response(
-          JSON.stringify({ error: "Rate limit exceeded, please try again later.", summary: null }),
+          JSON.stringify({ error: "Clé API invalide", summary: null }),
+          { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      if (response.status === 529 || response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: "Trop de requêtes, réessayez dans quelques secondes.", summary: null }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Service temporarily unavailable.", summary: null }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      console.error("AI gateway error:", response.status, await response.text());
       return new Response(
-        JSON.stringify({ error: "An error occurred processing your request", summary: null }),
+        JSON.stringify({ error: "Erreur lors de la génération du résumé", summary: null }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     const data = await response.json();
-    const summary = data.choices?.[0]?.message?.content?.trim();
+    const summary = data.content?.[0]?.text?.trim();
 
     if (!summary) {
-      console.error("No summary generated from AI response");
+      console.error("Anthropic n'a retourné aucun texte :", JSON.stringify(data));
       return new Response(
-        JSON.stringify({ error: "Failed to generate summary", summary: null }),
+        JSON.stringify({ error: "Résumé vide", summary: null }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // Persister le résumé dans la table tenders si on a un id valide
+    // (best-effort — n'échoue pas si ça plante)
+    try {
+      const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2.45.0");
+      const supabase = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+      );
+      await supabase
+        .from("tenders")
+        .update({ summary })
+        .eq("id", tender.id);
+    } catch (e) {
+      console.warn("Impossible de persister le résumé :", e);
     }
 
     return new Response(
       JSON.stringify({ summary }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
+
   } catch (error) {
-    console.error("Error in generate-tender-summary function:", error);
+    console.error("Erreur inattendue :", error);
     return new Response(
-      JSON.stringify({ error: "An error occurred processing your request", summary: null }),
+      JSON.stringify({ error: "Erreur interne", summary: null }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
