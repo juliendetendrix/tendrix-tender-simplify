@@ -58,6 +58,7 @@ const TenderDetails = () => {
     url: null,
     hoursAgo: 48,
     compatibility: 92,
+    raw: null,
   } : null;
 
   const tender = demoTender ?? tenders.find(t => t.id === tenderId);
@@ -158,6 +159,7 @@ const TenderDetails = () => {
       _cpv_codes: tender.cpvCodes,
       _source_url: tender.url,
       _buyer_profile_url: tender.url,
+      _raw: tender.raw ?? {},
       _selected_lots: selectedLots.map((n) => `Lot ${n}`),
     });
     setLaunching(false);

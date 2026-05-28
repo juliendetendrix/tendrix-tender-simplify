@@ -17,6 +17,8 @@ export interface BoampTender {
   url: string | null
   hoursAgo: number
   compatibility: number | null
+  /** Record BOAMP brut (contient `donnees` → URL profil acheteur). Sert au robot DCE. */
+  raw: any
 }
 
 interface CompanyForMatching {
@@ -205,6 +207,7 @@ async function fetchBoampDirect(): Promise<BoampTender[]> {
       cpvCodes: Array.isArray(r.descripteur_code) ? r.descripteur_code.map(String) : [],
       url: `https://www.boamp.fr/avis/detail/${r.idweb ?? id}`,
       hoursAgo,
+      raw: r, // record BOAMP complet (donnees inclus) → résolution du lien DCE
     }
     return { ...base, compatibility: null } // compatibility added later with company context
   })
@@ -250,6 +253,7 @@ export const useBoampTenders = () => {
       url: t.source_url,
       hoursAgo: calcHoursAgo(t.date_publication),
       compatibility: null,
+      raw: t.raw ?? null,
     }))
   }
 

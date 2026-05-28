@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft, FileText, Download, Loader2, CheckCircle2, AlertTriangle, XCircle,
-  Sparkles, ThumbsUp, HelpCircle, Building2, MapPin, Calendar,
+  Sparkles, ThumbsUp, HelpCircle, Building2, MapPin, Calendar, ExternalLink, Link2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,9 @@ interface AnalysisRow {
   verdict: string | null;
   report: AnalysisReport | null;
   selected_lots: string[] | null;
+  buyer_profile_url: string | null;
+  platform: string | null;
+  consultation_ref: string | null;
   tenders: { title: string; organisme: string | null; location: string | null; deadline: string | null } | null;
   tender_documents: TenderDoc[] | null;
 }
@@ -83,6 +86,7 @@ const AnalysisDetail = () => {
       .from("tender_analyses")
       .select(`
         id, status, verdict, report, selected_lots,
+        buyer_profile_url, platform, consultation_ref,
         tenders ( title, organisme, location, deadline ),
         tender_documents ( id, file_name, doc_type, storage_path, mime_type, size_bytes, source )
       `)
@@ -258,7 +262,32 @@ const AnalysisDetail = () => {
           </TabsContent>
 
           {/* — Documents — */}
-          <TabsContent value="documents" className="pt-4">
+          <TabsContent value="documents" className="pt-4 space-y-4">
+            {/* Profil acheteur détecté par le robot */}
+            {analysis.buyer_profile_url && (
+              <div className="rounded-lg border p-3 bg-primary/5 border-primary/20">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-primary mb-1.5">
+                  <Link2 className="w-3.5 h-3.5" />
+                  Profil acheteur détecté
+                </div>
+                {analysis.platform && (
+                  <p className="text-[11px] text-muted-foreground mb-1">
+                    Plateforme : <span className="font-medium">{analysis.platform}</span>
+                    {analysis.consultation_ref ? ` · réf. ${analysis.consultation_ref}` : ""}
+                  </p>
+                )}
+                <a
+                  href={analysis.buyer_profile_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline break-all"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                  {analysis.buyer_profile_url}
+                </a>
+              </div>
+            )}
+
             {docs.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">
                 Les documents seront disponibles une fois récupérés par votre chargé d'affaires.
