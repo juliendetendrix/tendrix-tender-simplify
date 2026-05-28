@@ -11,11 +11,23 @@ import {
   MapPin,
   GraduationCap,
   Play,
+  Loader2,
 } from "lucide-react";
 import formationThumbnail from "@/assets/formation-thumbnail.jpg";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrentCompany } from "@/hooks/useCurrentCompany";
 import { useCAProfile } from "@/hooks/useCAProfile";
@@ -26,10 +38,58 @@ interface Props {
 
 export function MonCompte({ onOpenCAChat }: Props) {
   const { user } = useAuth();
-  const { company, loading } = useCurrentCompany();
+  const { company, loading, refetch } = useCurrentCompany();
   const { ca, initials: caInitials } = useCAProfile();
   const [notifyNewAO, setNotifyNewAO] = useState(true);
   const [notifyUpdates, setNotifyUpdates] = useState(true);
+
+  // Édition du profil entreprise
+  const [editOpen, setEditOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    contact_name: "",
+    contact_phone: "",
+    zone: "",
+    sector: "",
+    siren: "",
+  });
+
+  const openEdit = () => {
+    setForm({
+      name: company?.name ?? "",
+      contact_name: company?.contact_name ?? "",
+      contact_phone: company?.contact_phone ?? "",
+      zone: company?.zone ?? "",
+      sector: company?.sector ?? "",
+      siren: company?.siren ?? "",
+    });
+    setEditOpen(true);
+  };
+
+  const saveProfile = async () => {
+    if (!company?.id) return;
+    setSaving(true);
+    const { error } = await supabase
+      .from("companies")
+      .update({
+        name: form.name.trim() || null,
+        contact_name: form.contact_name.trim() || null,
+        contact_phone: form.contact_phone.trim() || null,
+        zone: form.zone.trim() || null,
+        sector: form.sector.trim() || null,
+        siren: form.siren.trim() || null,
+      })
+      .eq("id", company.id);
+    setSaving(false);
+    if (error) {
+      toast({ title: "Échec de l'enregistrement", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Profil mis à jour ✅" });
+    setEditOpen(false);
+    refetch();
+  };
 
   const NOT_SET = "Non renseigné";
   const profile = {
@@ -74,6 +134,7 @@ export function MonCompte({ onOpenCAChat }: Props) {
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-semibold text-sm">Mon profil</h2>
             <button
+              onClick={openEdit}
               className="flex items-center gap-1 text-xs font-medium text-primary hover:bg-muted px-2 py-1 rounded-md transition-colors"
               aria-label="Modifier le profil"
             >
@@ -278,6 +339,80 @@ export function MonCompte({ onOpenCAChat }: Props) {
         </section>
       </div>
 
+      {/* Édition du profil entreprise */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="max-w-[360px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Modifier mon profil</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3 py-1">
+            <div className="space-y-1.5">
+              <Label htmlFor="c-name">Entreprise</Label>
+              <Input
+                id="c-name"
+                value={form.name}
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="c-contact">Référent contact</Label>
+              <Input
+                id="c-contact"
+                value={form.contact_name}
+                onChange={(e) => setForm((f) => ({ ...f, contact_name: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="c-phone">Téléphone</Label>
+              <Input
+                id="c-phone"
+                type="tel"
+                value={form.contact_phone}
+                onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="c-zone">Adresse / zone</Label>
+              <Input
+                id="c-zone"
+                value={form.zone}
+                onChange={(e) => setForm((f) => ({ ...f, zone: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="c-sector">Secteur</Label>
+              <Input
+                id="c-sector"
+                value={form.sector}
+                onChange={(e) => setForm((f) => ({ ...f, sector: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="c-siren">SIREN</Label>
+              <Input
+                id="c-siren"
+                value={form.siren}
+                onChange={(e) => setForm((f) => ({ ...f, siren: e.target.value }))}
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="flex-row gap-2 sm:justify-end">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => setEditOpen(false)}
+              disabled={saving}
+            >
+              Annuler
+            </Button>
+            <Button className="flex-1" onClick={saveProfile} disabled={saving}>
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Enregistrer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

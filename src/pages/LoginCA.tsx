@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/hooks/use-toast";
 import { ChevronLeft, Briefcase } from "lucide-react";
 
 const emailSchema = z.string().trim().email("Email invalide").max(255);
@@ -17,6 +16,7 @@ export default function LoginCA() {
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState<"magic" | "password">("magic");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (loading || !session) return;
@@ -32,19 +32,20 @@ export default function LoginCA() {
 
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     const parse = emailSchema.safeParse(email);
     if (!parse.success) {
-      toast({ title: "Email invalide", variant: "destructive" });
+      setError("Email invalide");
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.auth.signInWithOtp({
+    const { error: err } = await supabase.auth.signInWithOtp({
       email: parse.data,
       options: { emailRedirectTo: `${window.location.origin}/charge-affaires` },
     });
     setSubmitting(false);
-    if (error) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    if (err) {
+      setError(err.message);
     } else {
       toast({
         title: "Lien envoyé ✉️",
@@ -55,19 +56,24 @@ export default function LoginCA() {
 
   const handlePassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     const parse = emailSchema.safeParse(email);
     if (!parse.success) {
-      toast({ title: "Email invalide", variant: "destructive" });
+      setError("Email invalide");
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error: err } = await supabase.auth.signInWithPassword({
       email: parse.data,
       password,
     });
     setSubmitting(false);
-    if (error) {
-      toast({ title: "Connexion impossible", description: error.message, variant: "destructive" });
+    if (err) {
+      setError(
+        /invalid login credentials/i.test(err.message)
+          ? "Email ou mot de passe incorrect."
+          : err.message,
+      );
     }
   };
 
@@ -134,6 +140,12 @@ export default function LoginCA() {
               </p>
             </div>
 
+            {error && (
+              <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm font-medium text-red-700">
+                <span>{error}</span>
+              </div>
+            )}
+
             <form
               onSubmit={mode === "magic" ? handleMagicLink : handlePassword}
               className="space-y-4"
@@ -183,7 +195,10 @@ export default function LoginCA() {
               <button
                 type="button"
                 className="w-full text-xs text-muted-foreground hover:text-primary transition-colors"
-                onClick={() => setMode(mode === "magic" ? "password" : "magic")}
+                onClick={() => {
+                  setError(null);
+                  setMode(mode === "magic" ? "password" : "magic");
+                }}
               >
                 {mode === "magic"
                   ? "Utiliser un mot de passe à la place"

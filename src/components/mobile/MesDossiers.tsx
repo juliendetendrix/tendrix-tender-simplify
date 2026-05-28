@@ -53,7 +53,11 @@ export function MesDossiers({ onOpenChat }: Props) {
     stats.total > 0 ? Math.round((stats.gagnes / stats.total) * 100) : 0;
 
   const filtered =
-    filter === "all" ? dossiers : dossiers.filter((d) => d.status === filter);
+    filter === "all"
+      ? dossiers
+      : filter === "analyse"
+      ? dossiers.filter((d) => d.analysisStatus && IN_PROGRESS.includes(d.analysisStatus))
+      : dossiers.filter((d) => d.status === filter);
 
   return (
     <div className="p-4 space-y-4">
@@ -104,6 +108,7 @@ export function MesDossiers({ onOpenChat }: Props) {
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {[
           { v: "all", label: "Tous" },
+          { v: "analyse", label: "En cours d'analyse" },
           { v: "demande", label: "Demandés" },
           { v: "en_cours", label: "En cours" },
           { v: "soumis", label: "Soumis" },
@@ -153,6 +158,15 @@ export function MesDossiers({ onOpenChat }: Props) {
                 key={r.id}
                 className="w-full bg-card border border-border rounded-lg p-4 space-y-2"
               >
+                <button
+                  type="button"
+                  onClick={() =>
+                    r.analysisId
+                      ? navigate(`/analysis?id=${r.analysisId}`)
+                      : onOpenChat(r.id, r.title)
+                  }
+                  className="w-full text-left space-y-2 hover:opacity-90 transition-opacity"
+                >
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-semibold text-sm flex-1 leading-tight">{r.title}</h3>
                   <span
@@ -183,14 +197,18 @@ export function MesDossiers({ onOpenChat }: Props) {
                     </div>
                   )}
                 </div>
+                </button>
 
                 {/* État de l'analyse IA */}
                 {analysisInProgress && (
-                  <div className="flex items-center gap-1.5 text-xs font-semibold rounded-md px-2.5 py-1.5"
-                       style={{ backgroundColor: "#eef0ff", color: "#0c1c98" }}>
+                  <button
+                    type="button"
+                    onClick={() => r.analysisId && navigate(`/analysis?id=${r.analysisId}`)}
+                    className="w-full flex items-center gap-1.5 text-xs font-semibold rounded-md px-2.5 py-1.5"
+                    style={{ backgroundColor: "#eef0ff", color: "#0c1c98" }}>
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     Analyse en cours…
-                  </div>
+                  </button>
                 )}
                 {verdict && r.analysisStatus === "completed" && r.analysisId && (
                   <button
