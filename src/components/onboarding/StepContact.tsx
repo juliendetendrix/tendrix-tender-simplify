@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import type { OnboardingData } from "./OnboardingQuestionnaire";
 
 interface Props {
@@ -13,6 +14,7 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function StepContact({ data, update, onNext, saving }: Props) {
   const [attempted, setAttempted] = useState(false);
+  const navigate = useNavigate();
 
   const errors = {
     first_name: !data.first_name.trim() ? "Votre prénom est requis" : null,
@@ -139,6 +141,12 @@ export function StepContact({ data, update, onNext, saving }: Props) {
           ) : (
             <>Continuer <ArrowRight className="w-5 h-5" /></>
           )}
+        </button>
+        <button
+          onClick={() => navigate("/login")}
+          className="w-full h-12 rounded-2xl border-2 border-border bg-white text-sm font-semibold text-foreground hover:border-primary hover:text-primary transition-colors"
+        >
+          J'ai déjà un compte → Se connecter
         </button>
         <p className="text-center text-xs text-muted-foreground">
           Vos données sont protégées et ne seront jamais revendues.
