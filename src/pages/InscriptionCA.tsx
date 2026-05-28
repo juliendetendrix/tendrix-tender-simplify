@@ -64,6 +64,7 @@ export default function InscriptionCA() {
       await supabase.auth.signOut();
 
       // 1. Créer le compte Supabase Auth
+      let userId: string | undefined;
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: parse.data.email,
         password: parse.data.password,
@@ -72,25 +73,47 @@ export default function InscriptionCA() {
         },
       });
 
-      if (signUpError) throw signUpError;
-      const userId = authData.user?.id;
-      if (!userId) throw new Error("Identifiant utilisateur manquant");
-
-      // 2. S'assurer d'avoir une session active (sinon : confirmation email requise)
-      if (!authData.session) {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: parse.data.email,
-          password: parse.data.password,
-        });
-        if (signInError) {
-          toast({
-            title: "Compte créé ✅",
-            description: "Confirmez votre email, puis connectez-vous à l'espace chargé d'affaires.",
+      if (signUpError) {
+        // Compte déjà existant : on le récupère (connexion + attribution du rôle CA)
+        if (/registered|exists|déjà/i.test(signUpError.message)) {
+          const { data: si, error: siErr } = await supabase.auth.signInWithPassword({
+            email: parse.data.email,
+            password: parse.data.password,
           });
-          navigate("/login-ca");
-          return;
+          if (siErr) {
+            toast({
+              title: "Compte déjà existant",
+              description: "Ce compte existe déjà. Connecte-toi via « Se connecter » ou utilise un autre email.",
+              variant: "destructive",
+            });
+            navigate("/login-ca");
+            return;
+          }
+          userId = si.user?.id;
+        } else {
+          throw signUpError;
+        }
+      } else {
+        userId = authData.user?.id;
+        // Pas de session (confirmation email requise) → on tente la connexion directe
+        if (!authData.session) {
+          const { data: si, error: signInError } = await supabase.auth.signInWithPassword({
+            email: parse.data.email,
+            password: parse.data.password,
+          });
+          if (signInError) {
+            toast({
+              title: "Compte créé ✅",
+              description: "Confirmez votre email, puis connectez-vous à l'espace chargé d'affaires.",
+            });
+            navigate("/login-ca");
+            return;
+          }
+          userId = si.user?.id ?? userId;
         }
       }
+
+      if (!userId) throw new Error("Identifiant utilisateur manquant");
 
       // 3. Upload de la photo si fournie
       let photo_url: string | null = null;

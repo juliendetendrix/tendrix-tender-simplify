@@ -1,4 +1,4 @@
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Phone } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import type { CAProfile } from "@/hooks/useCAProfile";
 
@@ -51,7 +51,31 @@ export function ChargeAffairesWelcome({
 
           {/* Nom — discret */}
           <p className="text-white/90 text-sm font-medium">{ca.display_name}</p>
-          <p className="text-white/50 text-[11px] uppercase tracking-wider">Chargé d'affaires référent</p>
+          <p className="text-white/50 text-[11px] uppercase tracking-wider mb-3">Chargé d'affaires référent</p>
+
+          {/* Téléphone sous la photo */}
+          {ca.phone && (
+            <a
+              href={`tel:${ca.phone}`}
+              className="inline-flex items-center gap-1.5 text-white text-sm font-semibold"
+            >
+              <Phone className="w-3.5 h-3.5" />
+              {ca.phone}
+            </a>
+          )}
+
+          {/* Bouton discret : faire comprendre qu'on peut lui parler */}
+          {onContactCA && (
+            <div className="mt-2">
+              <button
+                onClick={onContactCA}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-white/70 hover:text-white transition-colors"
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                Envoyer un message
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Corps */}
@@ -68,17 +92,6 @@ export function ChargeAffairesWelcome({
           >
             OK ! J'explore l'application
           </button>
-
-          {/* Bouton discret : faire comprendre qu'on peut lui parler */}
-          {onContactCA && (
-            <button
-              onClick={onContactCA}
-              className="w-full flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-primary transition-colors py-1"
-            >
-              <MessageSquare className="w-3.5 h-3.5" />
-              Envoyer un message à {ca.display_name.split(" ")[0]}
-            </button>
-          )}
         </div>
       </DialogContent>
     </Dialog>
