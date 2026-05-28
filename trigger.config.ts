@@ -1,10 +1,9 @@
 import { defineConfig } from "@trigger.dev/sdk";
 import { playwright } from "@trigger.dev/build/extensions/playwright";
 
-// ⚠️ Remplace "proj_xxxxxxxx" par l'ID de projet affiché dans ton dashboard Trigger.dev
-// (Settings → Project ref). Voir le guide d'installation.
+// Projet Trigger.dev « tendrix-scraper » (organisation Tendrix).
 export default defineConfig({
-  project: "proj_REMPLACER",
+  project: "proj_lmdupwynjootrdfdwgyd",
   runtime: "node",
   logLevel: "info",
   maxDuration: 600, // 10 min max par exécution (scraping + download)
