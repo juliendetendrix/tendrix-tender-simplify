@@ -57,6 +57,11 @@ const Footer = () => {
                 </a>
               </li>
               <li>
+                <a href="/charge-affaires" className="inline-flex items-center gap-1.5 text-background/80 hover:text-background transition-colors">
+                  Espace chargé d'affaires
+                </a>
+              </li>
+              <li>
                 <a href="/mentions-legales" className="text-background/80 hover:text-background transition-colors">
                   Mentions légales
                 </a>
@@ -69,11 +74,11 @@ const Footer = () => {
             <h4 className="font-semibold mb-4 text-lg">Contactez-nous</h4>
             <div className="space-y-3">
               <a
-                href="mailto:contact@tendrix.com"
+                href="mailto:contact@tendrix.fr"
                 className="flex items-center text-background/80 hover:text-background transition-colors"
               >
                 <Mail className="h-4 w-4 mr-2" />
-                contact@tendrix.com
+                contact@tendrix.fr
               </a>
               
               <a
