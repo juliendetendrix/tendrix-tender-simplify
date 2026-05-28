@@ -3,11 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, defaultRouteForRole } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import tendrixLogo from "@/assets/tendrix-logo-blue.png";
+import { ChevronLeft } from "lucide-react";
 
 const emailSchema = z.string().trim().email("Email invalide").max(255);
 
@@ -42,7 +41,7 @@ export default function Login() {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
     } else {
       toast({
-        title: "Lien envoyé",
+        title: "Lien envoyé ✉️",
         description: "Consultez votre boîte mail pour vous connecter.",
       });
     }
@@ -67,65 +66,128 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="text-center space-y-3">
-          <img src={tendrixLogo} alt="Tendrix" className="h-10 mx-auto" />
-          <h1 className="text-xl font-bold text-primary">Connexion</h1>
-          <p className="text-sm text-muted-foreground">
-            Accédez à votre espace Tendrix
-          </p>
+    <div
+      className="min-h-screen flex flex-col p-4 relative overflow-hidden"
+      style={{
+        background: "linear-gradient(145deg, #0c1c98 0%, #0a1880 40%, #060e4f 100%)",
+      }}
+    >
+      {/* Blobs décoratifs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div
+          className="absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-20 blur-3xl"
+          style={{ backgroundColor: "#f9bd43" }}
+        />
+        <div
+          className="absolute -bottom-40 -left-24 w-80 h-80 rounded-full opacity-15 blur-3xl"
+          style={{ backgroundColor: "#4060e0" }}
+        />
+      </div>
+
+      {/* Bouton retour */}
+      <div className="relative z-10">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1.5 text-white/70 hover:text-white text-sm font-medium transition-colors py-2"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Retour
+        </button>
+      </div>
+
+      {/* Contenu centré */}
+      <div className="flex-1 flex flex-col items-center justify-center relative z-10">
+
+        {/* Logo blanc */}
+        <img
+          src="/logo-tendrix-white.svg"
+          alt="Tendrix"
+          className="h-9 mb-8"
+        />
+
+        {/* Carte */}
+        <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
+
+          {/* Bande jaune en haut */}
+          <div className="h-1.5 w-full" style={{ backgroundColor: "#f9bd43" }} />
+
+          <div className="p-7 space-y-6">
+            <div className="space-y-1">
+              <h1 className="text-xl font-bold text-foreground">Connexion</h1>
+              <p className="text-sm text-muted-foreground">
+                Accédez à votre espace Tendrix
+              </p>
+            </div>
+
+            <form
+              onSubmit={mode === "magic" ? handleMagicLink : handlePassword}
+              className="space-y-4"
+            >
+              <div className="space-y-1.5">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="vous@entreprise.fr"
+                  className="h-11 rounded-xl"
+                />
+              </div>
+
+              {mode === "password" && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="password">Mot de passe</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-11 rounded-xl"
+                  />
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full h-12 rounded-xl font-bold text-sm transition-all disabled:opacity-60 hover:opacity-90"
+                style={{ backgroundColor: "#0c1c98", color: "white" }}
+              >
+                {submitting
+                  ? "…"
+                  : mode === "magic"
+                  ? "Recevoir un lien de connexion"
+                  : "Se connecter"}
+              </button>
+
+              <button
+                type="button"
+                className="w-full text-xs text-muted-foreground hover:text-primary transition-colors"
+                onClick={() => setMode(mode === "magic" ? "password" : "magic")}
+              >
+                {mode === "magic"
+                  ? "Utiliser un mot de passe à la place"
+                  : "Recevoir un lien magique à la place"}
+              </button>
+            </form>
+          </div>
         </div>
 
-        <form
-          onSubmit={mode === "magic" ? handleMagicLink : handlePassword}
-          className="space-y-4 bg-white border border-border rounded-lg p-5"
-        >
-          <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="vous@entreprise.fr"
-            />
-          </div>
-
-          {mode === "password" && (
-            <div className="space-y-1.5">
-              <Label htmlFor="password">Mot de passe</Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          )}
-
-          <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting
-              ? "..."
-              : mode === "magic"
-              ? "Recevoir un lien magique"
-              : "Se connecter"}
-          </Button>
-
+        {/* Lien inscription */}
+        <p className="mt-6 text-sm text-white/60">
+          Pas encore de compte ?{" "}
           <button
-            type="button"
-            className="w-full text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => setMode(mode === "magic" ? "password" : "magic")}
+            onClick={() => navigate("/questionnaire-pme")}
+            className="text-white font-semibold hover:underline"
           >
-            {mode === "magic"
-              ? "Utiliser un mot de passe à la place"
-              : "Recevoir un lien magique à la place"}
+            Commencer gratuitement
           </button>
-        </form>
+        </p>
       </div>
     </div>
   );
