@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth, defaultRouteForRole } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/hooks/use-toast";
 import { ChevronLeft } from "lucide-react";
 
 const emailSchema = z.string().trim().email("Email invalide").max(255);
@@ -17,6 +16,8 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState<"magic" | "password">("magic");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && session && roles.length > 0) {
@@ -24,44 +25,52 @@ export default function Login() {
     }
   }, [session, roles, loading, navigate]);
 
+  const friendly = (msg: string) => {
+    if (/email logins are disabled/i.test(msg))
+      return "La connexion par email est désactivée côté Supabase. Réactivez le fournisseur « Email » dans Authentication → Providers.";
+    if (/invalid login credentials/i.test(msg)) return "Email ou mot de passe incorrect.";
+    return msg;
+  };
+
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setInfo(null);
     const parse = emailSchema.safeParse(email);
     if (!parse.success) {
-      toast({ title: "Email invalide", variant: "destructive" });
+      setError("Email invalide");
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.auth.signInWithOtp({
+    const { error: err } = await supabase.auth.signInWithOtp({
       email: parse.data,
       options: { emailRedirectTo: `${window.location.origin}/` },
     });
     setSubmitting(false);
-    if (error) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    if (err) {
+      setError(friendly(err.message));
     } else {
-      toast({
-        title: "Lien envoyé ✉️",
-        description: "Consultez votre boîte mail pour vous connecter.",
-      });
+      setInfo("Lien envoyé ✉️ — consultez votre boîte mail pour vous connecter.");
     }
   };
 
   const handlePassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setInfo(null);
     const parse = emailSchema.safeParse(email);
     if (!parse.success) {
-      toast({ title: "Email invalide", variant: "destructive" });
+      setError("Email invalide");
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error: err } = await supabase.auth.signInWithPassword({
       email: parse.data,
       password,
     });
     setSubmitting(false);
-    if (error) {
-      toast({ title: "Connexion impossible", description: error.message, variant: "destructive" });
+    if (err) {
+      setError(friendly(err.message));
     }
   };
 
@@ -119,6 +128,17 @@ export default function Login() {
               </p>
             </div>
 
+            {error && (
+              <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm font-medium text-red-700">
+                {error}
+              </div>
+            )}
+            {info && (
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm font-medium text-emerald-700">
+                {info}
+              </div>
+            )}
+
             <form
               onSubmit={mode === "magic" ? handleMagicLink : handlePassword}
               className="space-y-4"
@@ -168,7 +188,11 @@ export default function Login() {
               <button
                 type="button"
                 className="w-full text-xs text-muted-foreground hover:text-primary transition-colors"
-                onClick={() => setMode(mode === "magic" ? "password" : "magic")}
+                onClick={() => {
+                  setError(null);
+                  setInfo(null);
+                  setMode(mode === "magic" ? "password" : "magic");
+                }}
               >
                 {mode === "magic"
                   ? "Utiliser un mot de passe à la place"
