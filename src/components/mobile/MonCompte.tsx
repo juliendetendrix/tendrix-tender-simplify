@@ -12,6 +12,7 @@ import {
   GraduationCap,
   Play,
   Loader2,
+  LogOut,
 } from "lucide-react";
 import formationThumbnail from "@/assets/formation-thumbnail.jpg";
 import { Button } from "@/components/ui/button";
@@ -37,7 +38,7 @@ interface Props {
 }
 
 export function MonCompte({ onOpenCAChat }: Props) {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { company, loading, refetch } = useCurrentCompany();
   const { ca, initials: caInitials } = useCAProfile();
   const [notifyNewAO, setNotifyNewAO] = useState(true);
@@ -337,6 +338,14 @@ export function MonCompte({ onOpenCAChat }: Props) {
             </div>
           </div>
         </section>
+
+        <button
+          onClick={() => signOut("/login")}
+          className="w-full flex items-center justify-center gap-2 h-11 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:bg-muted/60 hover:text-foreground transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+          Déconnexion
+        </button>
       </div>
 
       {/* Édition du profil entreprise */}

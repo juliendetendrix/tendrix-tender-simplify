@@ -9,7 +9,7 @@ interface AuthContextValue {
   user: User | null;
   roles: AppRole[];
   loading: boolean;
-  signOut: () => Promise<void>;
+  signOut: (redirectTo?: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -54,10 +54,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signOut = async () => {
+  const signOut = async (redirectTo = "/") => {
     await supabase.auth.signOut();
     setSession(null);
     setRoles([]);
+    // Redirection dure vers la page de connexion : garantit la sortie même en
+    // mode démo (RequireAuth ne redirige pas quand DEMO_MODE est actif).
+    window.location.href = redirectTo;
   };
 
   return (

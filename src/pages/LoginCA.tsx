@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
 import { ChevronLeft, Briefcase } from "lucide-react";
 
 const emailSchema = z.string().trim().email("Email invalide").max(255);
@@ -50,6 +51,28 @@ export default function LoginCA() {
       toast({
         title: "Lien envoyé ✉️",
         description: "Consultez votre boîte mail pour vous connecter.",
+      });
+    }
+  };
+
+  const handleForgot = async () => {
+    setError(null);
+    const parse = emailSchema.safeParse(email);
+    if (!parse.success) {
+      setError("Saisissez d'abord votre email ci-dessus.");
+      return;
+    }
+    setSubmitting(true);
+    const { error: err } = await supabase.auth.resetPasswordForEmail(parse.data, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setSubmitting(false);
+    if (err) {
+      setError(err.message);
+    } else {
+      toast({
+        title: "Email envoyé ✉️",
+        description: "Cliquez sur le lien pour choisir un nouveau mot de passe.",
       });
     }
   };
@@ -176,6 +199,13 @@ export default function LoginCA() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="h-11 rounded-xl"
                   />
+                  <button
+                    type="button"
+                    onClick={handleForgot}
+                    className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Mot de passe oublié ?
+                  </button>
                 </div>
               )}
 

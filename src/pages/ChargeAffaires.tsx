@@ -131,7 +131,7 @@ export default function ChargeAffaires() {
             </div>
           </button>
           <button
-            onClick={signOut}
+            onClick={() => signOut("/login-ca")}
             className="w-full flex items-center gap-2 text-white/50 hover:text-white text-xs transition-colors py-1"
           >
             <LogOut className="w-4 h-4" />

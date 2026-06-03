@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Camera, Upload, Save } from "lucide-react";
+import { Camera, Upload, Save, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Profile {
   display_name: string;
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export function CAProfileEditor({ userId, onSaved }: Props) {
+  const { signOut } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profile, setProfile] = useState<Profile>({
     display_name: "", email: "", phone: "", specialties: [], photo_url: null,
@@ -250,6 +252,14 @@ export function CAProfileEditor({ userId, onSaved }: Props) {
           )}
         </button>
       </div>
+
+      <button
+        onClick={() => signOut("/login-ca")}
+        className="w-full mt-4 flex items-center justify-center gap-2 h-11 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:bg-muted/60 hover:text-foreground transition-colors"
+      >
+        <LogOut className="w-4 h-4" />
+        Déconnexion
+      </button>
     </div>
   );
 }

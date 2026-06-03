@@ -44,13 +44,33 @@ export default function Login() {
     setSubmitting(true);
     const { error: err } = await supabase.auth.signInWithOtp({
       email: parse.data,
-      options: { emailRedirectTo: `${window.location.origin}/` },
+      options: { emailRedirectTo: `${window.location.origin}/app` },
     });
     setSubmitting(false);
     if (err) {
       setError(friendly(err.message));
     } else {
       setInfo("Lien envoyé ✉️ — consultez votre boîte mail pour vous connecter.");
+    }
+  };
+
+  const handleForgot = async () => {
+    setError(null);
+    setInfo(null);
+    const parse = emailSchema.safeParse(email);
+    if (!parse.success) {
+      setError("Saisissez d'abord votre email ci-dessus.");
+      return;
+    }
+    setSubmitting(true);
+    const { error: err } = await supabase.auth.resetPasswordForEmail(parse.data, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setSubmitting(false);
+    if (err) {
+      setError(friendly(err.message));
+    } else {
+      setInfo("Email envoyé ✉️ — cliquez sur le lien pour choisir un nouveau mot de passe.");
     }
   };
 
@@ -169,6 +189,13 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="h-11 rounded-xl"
                   />
+                  <button
+                    type="button"
+                    onClick={handleForgot}
+                    className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Mot de passe oublié ?
+                  </button>
                 </div>
               )}
 
