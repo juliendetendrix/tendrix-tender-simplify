@@ -6,6 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ChevronLeft, KeyRound } from "lucide-react";
 
+// Capturé au tout premier chargement du module, AVANT que le client Supabase
+// ne nettoie le hash de l'URL. Permet de savoir si on est bien arrivé avec un
+// jeton de récupération (#access_token=…&type=recovery ou ?code=…) ou si le lien
+// porte déjà une erreur (lien expiré / déjà utilisé : #error=…).
+const RP_INITIAL_HASH = typeof window !== "undefined" ? window.location.hash : "";
+const RP_INITIAL_SEARCH = typeof window !== "undefined" ? window.location.search : "";
+const RP_HAS_RECOVERY_TOKEN =
+  /access_token/.test(RP_INITIAL_HASH) || /[?&]code=/.test(RP_INITIAL_SEARCH);
+const RP_HASH_ERROR = /error/.test(RP_INITIAL_HASH) || /[?&]error/.test(RP_INITIAL_SEARCH);
+
 export default function ResetPassword() {
   const navigate = useNavigate();
   const { session, roles, loading } = useAuth();
@@ -15,19 +25,38 @@ export default function ResetPassword() {
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
-  // Le client Supabase consomme automatiquement le token de récupération présent
-  // dans l'URL et ouvre une session temporaire. Si après chargement il n'y a
-  // toujours pas de session, c'est que le lien est invalide ou expiré.
+  // Le client Supabase consomme le token de récupération présent dans l'URL et
+  // ouvre une session temporaire, puis émet l'événement PASSWORD_RECOVERY. C'est
+  // le signal FIABLE que le lien est valide (plus fiable qu'attendre que notre
+  // contexte d'auth ait fini de charger le rôle de l'utilisateur).
+  const [recoveryReady, setRecoveryReady] = useState(false);
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") {
+        setRecoveryReady(true);
+      }
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  // On ne déclare « lien invalide » que dans les vrais cas :
+  //  - l'URL ne contenait aucun jeton de récupération, ou portait une erreur ;
+  //  - OU le jeton est là mais aucune session ne s'est ouverte après un délai
+  //    généreux (8 s) — l'établissement peut être lent sur mobile.
   const [noSession, setNoSession] = useState(false);
   useEffect(() => {
     if (loading) return;
-    if (!session) {
-      // Laisse une petite marge au cas où le hash n'est pas encore traité.
-      const t = setTimeout(() => setNoSession(true), 1500);
-      return () => clearTimeout(t);
+    if (session || recoveryReady) {
+      setNoSession(false);
+      return;
     }
-    setNoSession(false);
-  }, [session, loading]);
+    if (!RP_HAS_RECOVERY_TOKEN || RP_HASH_ERROR) {
+      setNoSession(true);
+      return;
+    }
+    const t = setTimeout(() => setNoSession(true), 8000);
+    return () => clearTimeout(t);
+  }, [session, recoveryReady, loading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
