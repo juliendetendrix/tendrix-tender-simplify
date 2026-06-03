@@ -29,6 +29,17 @@ serve(async (req) => {
   // Client "service" : peut tout faire (lecture documents, écriture résultat)
   const svc = createClient(SUPABASE_URL, SERVICE_KEY);
 
+  // Prévenir Julien par email qu'un DCE est à récupérer manuellement (best-effort).
+  const notifyManual = (id: string) =>
+    fetch(`${SUPABASE_URL}/functions/v1/notify-manual`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${SERVICE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ analysis_id: id }),
+    }).catch((e) => console.warn("notify-manual failed:", String(e)));
+
   let analysisId: string | null = null;
 
   try {
@@ -82,6 +93,7 @@ serve(async (req) => {
       await svc.from("tender_analyses")
         .update({ status: "manual_intervention_required", status_detail: "Aucun PDF à analyser" })
         .eq("id", analysisId);
+      await notifyManual(analysisId);
       return json({ error: "Aucun document PDF à analyser" }, 400);
     }
 
@@ -115,6 +127,7 @@ serve(async (req) => {
       await svc.from("tender_analyses")
         .update({ status: "manual_intervention_required", status_detail: "PDF illisibles ou trop volumineux" })
         .eq("id", analysisId);
+      await notifyManual(analysisId);
       return json({ error: "Documents illisibles" }, 400);
     }
 

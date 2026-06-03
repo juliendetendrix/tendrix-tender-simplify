@@ -10,16 +10,28 @@ export interface DceResolution {
   resolvable: boolean;
 }
 
+// L'ordre compte : on teste du plus spécifique au plus générique.
+// La famille « atexo » (moteur MPE d'Atexo) regroupe PLACE + de nombreux
+// portails régionaux/collectivités qui tournent sur le MÊME logiciel : même
+// parcours de retrait anonyme, mêmes sélecteurs → un seul adaptateur les couvre.
 const ENGINE_BY_DOMAIN: { match: RegExp; engine: string }[] = [
-  { match: /marches-publics\.gouv\.fr/i, engine: "place" },
+  // PLACE (État) : marches-publics.gouv.fr ET la variante sans tiret.
+  { match: /marches?-?publics\.gouv\.fr/i, engine: "place" },
+  // AWS / marches-publics.info & co. (captcha sur retrait anonyme → manuel).
+  { match: /aws-achat|aws-entreprises|agysoft|marageo|marches-publics\.info/i, engine: "aws-achat" },
   { match: /e-marchespublics\.com/i,     engine: "dematis" },
   { match: /marches-securises\.fr/i,     engine: "marches-securises" },
-  { match: /achatpublic\.com/i,          engine: "achatpublic" },
-  { match: /aws-achat|agysoft|marageo/i, engine: "aws-achat" },
-  { match: /local-?trust|atexo/i,        engine: "atexo" },
-  { match: /megalis\.bretagne/i,         engine: "megalis" },
-  { match: /maximilien\.fr/i,            engine: "maximilien" },
+  // achatpublic : .com et instances en marque blanche *.achatpublic.fr
+  { match: /achatpublic\.(com|fr)/i,     engine: "achatpublic" },
   { match: /xmarches/i,                  engine: "xmarches" },
+  // ── Famille Atexo (même moteur que PLACE) : portails régionaux connus ──
+  { match: /local-?trust|atexo/i,                       engine: "atexo" },
+  { match: /maximilien\.fr/i,                           engine: "atexo" }, // Île-de-France
+  { match: /megalis\.(bretagne|fr)/i,                   engine: "atexo" }, // Bretagne
+  { match: /ternum-bfc\.fr/i,                           engine: "atexo" }, // Bourgogne-Franche-Comté
+  { match: /alsacemarchespublics\.eu/i,                 engine: "atexo" }, // Grand Est / Alsace
+  { match: /marches\.grandlyon|marchespublics\.grandlyon/i, engine: "atexo" },
+  { match: /marches\.normandie|marchespublics\.normandie/i, engine: "atexo" },
 ];
 
 function detectEngine(url: string): string {
@@ -54,6 +66,23 @@ function deepFind(obj: unknown, keys: string[]): string | null {
   return null;
 }
 
+// AWS / marches-publics.info encode dans l'avis un lien de retrait portant
+// l'identifiant de consultation (IDM=…). On le préfère à l'URL de profil
+// générique (http://www.marches-publics.info), qui ne cible aucune consultation.
+function findAwsDeepLink(raw: unknown): string | null {
+  let text: string;
+  try { text = JSON.stringify(raw); } catch { return null; }
+  const re = /https?:\/\/[^\s"'<>\\]*(?:marches-publics\.info|aws-achat)[^\s"'<>\\]*IDM=\d+[^\s"'<>\\]*/gi;
+  const matches = text.match(re);
+  if (!matches) return null;
+  const decoded = matches.map((m) => m.replace(/&amp;/gi, "&"));
+  // Priorité aux pages qui mènent au retrait du DCE.
+  return (
+    decoded.find((u) => /fuseaction=(dce\.avertissement|dematEnt\.login)/i.test(u)) ??
+    decoded[0]
+  );
+}
+
 function normalizeUrl(u: string | null): string | null {
   if (!u) return null;
   let url = u.trim();
@@ -84,7 +113,15 @@ export function resolveDce(raw: unknown): DceResolution {
     if (m) urlRaw = m[0];
   }
 
-  const platformUrl = normalizeUrl(urlRaw);
+  let platformUrl = normalizeUrl(urlRaw);
+  const platform = platformUrl ? detectEngine(platformUrl) : null;
+
+  // AWS : remplacer l'URL profil générique par le lien profond (IDM=…) si présent.
+  if (platform === "aws-achat") {
+    const deep = findAwsDeepLink(raw);
+    if (deep) platformUrl = deep;
+  }
+
   const reference =
     deepFind(donnees, ["identifiantInterne"]) ??
     (typeof record.contractfolderid === "string" ? record.contractfolderid : null);
@@ -94,7 +131,7 @@ export function resolveDce(raw: unknown): DceResolution {
 
   return {
     platformUrl,
-    platform: platformUrl ? detectEngine(platformUrl) : null,
+    platform,
     reference,
     buyer,
     resolvable: !!platformUrl,

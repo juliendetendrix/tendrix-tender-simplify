@@ -74,88 +74,101 @@ serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
   )
 
+  // Transforme un enregistrement BOAMP brut en ligne `tenders`.
+  function mapRecord(r: any) {
+    const id = String(r.id ?? r.idweb ?? Math.random().toString(36).slice(2))
+    const organisme = nullIfEmpty(r.nomacheteur)
+    const location = formatLocation(r.code_departement ?? r.code_departement_prestation)
+    const title = buildTitle(r)
+
+    // Family / category — prefer the descriptor labels, then type_marche_facette
+    let famille: string | null = null
+    if (Array.isArray(r.type_marche_facette) && r.type_marche_facette.length) {
+      famille = String(r.type_marche_facette[0])
+    } else if (Array.isArray(r.descripteur_libelle) && r.descripteur_libelle.length) {
+      famille = String(r.descripteur_libelle[0])
+    }
+
+    const procedure = nullIfEmpty(r.procedure_libelle ?? r.type_procedure)
+
+    // Build a short summary from descriptor labels (since API has no summary field)
+    let summary: string | null = null
+    if (Array.isArray(r.descripteur_libelle) && r.descripteur_libelle.length) {
+      summary = `Prestations : ${r.descripteur_libelle.slice(0, 4).join(", ")}.`
+    }
+
+    const sourceUrl = `https://www.boamp.fr/avis/detail/${r.idweb ?? id}`
+
+    return {
+      id,
+      title,
+      summary,
+      organisme,
+      location,
+      budget: null, // BOAMP API does not expose montant
+      date_publication: r.dateparution
+        ? new Date(r.dateparution).toISOString()
+        : new Date().toISOString(),
+      deadline: r.datelimitereponse || null,
+      famille,
+      procedure,
+      cpv_codes: Array.isArray(r.descripteur_code) ? r.descripteur_code.map(String) : [],
+      source: 'boamp',
+      source_url: sourceUrl,
+      raw: r,
+    }
+  }
+
   try {
     const url = 'https://boamp-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/boamp/records'
     // Filter on real fields from the v2.1 schema (type_marche_facette is the clean enum)
     const where = `type_marche_facette = "Travaux" AND etat = "INITIAL"`
-    const params = new URLSearchParams({
-      limit: '100',
-      order_by: 'dateparution desc',
-      where,
-    })
-    const resp = await fetch(`${url}?${params}`, {
-      headers: { Accept: 'application/json', 'User-Agent': 'Tendrix-App/1.0' },
-    })
+    const PAGE = 100        // max par requête sur l'API v2.1
+    const MAX_PAGES = 5     // → jusqu'à 500 AO récents par rafraîchissement
 
     let tenders: any[] = []
     let apiError: string | null = null
 
-    if (resp.ok) {
+    // Pagination : on tire plusieurs pages pour montrer un MAXIMUM d'AO.
+    for (let page = 0; page < MAX_PAGES; page++) {
+      const params = new URLSearchParams({
+        limit: String(PAGE),
+        offset: String(page * PAGE),
+        order_by: 'dateparution desc',
+        where,
+      })
+      const resp = await fetch(`${url}?${params}`, {
+        headers: { Accept: 'application/json', 'User-Agent': 'Tendrix-App/1.0' },
+      })
+      if (!resp.ok) {
+        apiError = `BOAMP API ${resp.status}`
+        console.error('BOAMP API non-ok:', resp.status, await resp.text().catch(() => ''))
+        break
+      }
       const data = await resp.json()
       const results = data.results ?? []
-      console.log(`BOAMP API returned ${results.length} results (total_count=${data.total_count})`)
+      console.log(`BOAMP page ${page}: ${results.length} results (total_count=${data.total_count})`)
+      tenders.push(...results.map(mapRecord))
+      if (results.length < PAGE) break // dernière page atteinte
+    }
 
-      tenders = results.map((r: any) => {
-        const id = String(r.id ?? r.idweb ?? Math.random().toString(36).slice(2))
-        const organisme = nullIfEmpty(r.nomacheteur)
-        const location = formatLocation(r.code_departement ?? r.code_departement_prestation)
-        const title = buildTitle(r)
-
-        // Family / category — prefer the descriptor labels, then type_marche_facette
-        let famille: string | null = null
-        if (Array.isArray(r.type_marche_facette) && r.type_marche_facette.length) {
-          famille = String(r.type_marche_facette[0])
-        } else if (Array.isArray(r.descripteur_libelle) && r.descripteur_libelle.length) {
-          famille = String(r.descripteur_libelle[0])
-        }
-
-        const procedure = nullIfEmpty(r.procedure_libelle ?? r.type_procedure)
-
-        // Build a short summary from descriptor labels (since API has no summary field)
-        let summary: string | null = null
-        if (Array.isArray(r.descripteur_libelle) && r.descripteur_libelle.length) {
-          summary = `Prestations : ${r.descripteur_libelle.slice(0, 4).join(", ")}.`
-        }
-
-        const sourceUrl = `https://www.boamp.fr/avis/detail/${r.idweb ?? id}`
-
-        return {
-          id,
-          title,
-          summary,
-          organisme,
-          location,
-          budget: null, // BOAMP API does not expose montant
-          date_publication: r.dateparution
-            ? new Date(r.dateparution).toISOString()
-            : new Date().toISOString(),
-          deadline: r.datelimitereponse || null,
-          famille,
-          procedure,
-          cpv_codes: Array.isArray(r.descripteur_code) ? r.descripteur_code.map(String) : [],
-          source: 'boamp',
-          source_url: sourceUrl,
-          raw: r,
-        }
-      })
-
-      if (tenders.length) {
+    if (tenders.length) {
+      // Upsert par lots de 200 pour rester sous les limites.
+      for (let i = 0; i < tenders.length; i += 200) {
+        const batch = tenders.slice(i, i + 200)
         const { error: upsertErr } = await supabase
           .from('tenders')
-          .upsert(tenders, { onConflict: 'id' })
+          .upsert(batch, { onConflict: 'id' })
         if (upsertErr) console.error('Upsert error:', upsertErr)
-        else console.log(`Upserted ${tenders.length} tenders`)
       }
-    } else {
-      apiError = `BOAMP API ${resp.status}`
-      console.error('BOAMP API non-ok:', resp.status, await resp.text().catch(() => ''))
+      console.log(`Upserted ${tenders.length} tenders`)
     }
 
     const { data: dbTenders } = await supabase
       .from('tenders')
       .select('*')
       .order('date_publication', { ascending: false })
-      .limit(60)
+      .limit(200)
 
     const formatted = (dbTenders ?? []).map((t: any) => ({
       id: t.id,

@@ -2,6 +2,7 @@ import { task, logger } from "@trigger.dev/sdk";
 import { createClient } from "@supabase/supabase-js";
 import { resolveDce } from "./lib/dce-resolver";
 import { scrapePlace } from "./adapters/place";
+import { scrapeAws, CAPTCHA_MARKER } from "./adapters/aws";
 import type { DceFile } from "./adapters/types";
 
 const supabase = createClient(
@@ -25,6 +26,16 @@ async function markManual(analysisId: string, detail: string) {
     .from("tender_analyses")
     .update({ status: "manual_intervention_required", status_detail: detail })
     .eq("id", analysisId);
+
+  // Prévenir Julien par email qu'un DCE est à récupérer à la main (best-effort).
+  await fetch(`${process.env.SUPABASE_URL}/functions/v1/notify-manual`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ analysis_id: analysisId }),
+  }).catch((e) => logger.warn("notify-manual failed", { error: String(e) }));
 }
 
 /**
@@ -66,21 +77,33 @@ export const scrapeDce = task({
     // 2) Choisir l'adaptateur selon le moteur.
     //    PLACE (marches-publics.gouv.fr) : retrait anonyme SANS captcha → automatisable (validé).
     //    e-marchespublics & co. : retrait protégé par captcha → fallback humain.
+    const input = {
+      platformUrl: dce.platformUrl,
+      reference: dce.reference,
+      buyer: dce.buyer,
+      title: tender?.title ?? null,
+    };
+
     let files: DceFile[] = [];
     try {
-      if (dce.platform === "place") {
-        files = await scrapePlace({
-          platformUrl: dce.platformUrl,
-          reference: dce.reference,
-          buyer: dce.buyer,
-          title: tender?.title ?? null,
-        });
+      if (dce.platform === "place" || dce.platform === "atexo") {
+        // Même moteur Atexo (PLACE + portails régionaux) → adaptateur commun.
+        files = await scrapePlace(input);
+      } else if (dce.platform === "aws-achat") {
+        files = await scrapeAws(input);
       } else {
         await markManual(analysisId, `Plateforme non automatisée (captcha ou non supportée) : ${dce.platform}`);
         return { status: "manual" as const };
       }
     } catch (e) {
-      logger.error("scrape failed", { error: String(e) });
+      const msg = String(e);
+      // Captcha sur le chemin anonyme : non automatisable → reprise humaine explicite.
+      if (msg.includes(CAPTCHA_MARKER)) {
+        logger.warn("captcha detected, falling back to manual", { platform: dce.platform });
+        await markManual(analysisId, `Retrait protégé par captcha (${dce.platform}) — reprise manuelle`);
+        return { status: "manual" as const };
+      }
+      logger.error("scrape failed", { error: msg });
       await markManual(analysisId, "Téléchargement automatique échoué — reprise manuelle");
       return { status: "manual" as const };
     }
