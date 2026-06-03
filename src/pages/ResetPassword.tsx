@@ -16,6 +16,25 @@ const RP_HAS_RECOVERY_TOKEN =
   /access_token/.test(RP_INITIAL_HASH) || /[?&]code=/.test(RP_INITIAL_SEARCH);
 const RP_HASH_ERROR = /error/.test(RP_INITIAL_HASH) || /[?&]error/.test(RP_INITIAL_SEARCH);
 
+// Diagnostic NON sensible : on n'expose JAMAIS l'access_token, uniquement la
+// présence d'un jeton, le `type` du lien et le message d'erreur éventuel.
+// Permet d'identifier la cause exacte d'un « lien invalide » sans fuite de secret.
+const RP_DIAG = (() => {
+  const blob = (RP_INITIAL_HASH + "&" + RP_INITIAL_SEARCH).replace(/^#/, "");
+  const grab = (key: string) => {
+    const m = blob.match(new RegExp("[#?&]" + key + "=([^&]+)"));
+    return m ? decodeURIComponent(m[1].replace(/\+/g, " ")) : null;
+  };
+  const parts = [
+    `jeton:${RP_HAS_RECOVERY_TOKEN ? "oui" : "non"}`,
+    grab("type") ? `type:${grab("type")}` : null,
+    grab("error") ? `error:${grab("error")}` : null,
+    grab("error_code") ? `code:${grab("error_code")}` : null,
+    grab("error_description") ? `desc:${grab("error_description")}` : null,
+  ].filter(Boolean);
+  return parts.join(" · ");
+})();
+
 export default function ResetPassword() {
   const navigate = useNavigate();
   const { session, roles, loading } = useAuth();
@@ -138,6 +157,11 @@ export default function ResetPassword() {
                 <p className="text-sm text-muted-foreground">
                   Ce lien de réinitialisation n'est plus valable. Demandez-en un nouveau depuis la page de connexion.
                 </p>
+                {RP_DIAG && (
+                  <p className="text-[11px] font-mono break-all rounded-lg bg-muted px-2 py-1.5 text-muted-foreground/80">
+                    diag: {RP_DIAG}
+                  </p>
+                )}
                 <button
                   onClick={() => navigate("/login")}
                   className="w-full h-12 rounded-xl font-bold text-sm text-white hover:opacity-90"
