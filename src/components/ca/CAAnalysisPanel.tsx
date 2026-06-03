@@ -4,8 +4,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import {
-  Sparkles, Upload, FileText, Loader2, CheckCircle2, AlertTriangle, XCircle, Trash2, ExternalLink, Copy,
+  Sparkles, Upload, FileText, Loader2, CheckCircle2, AlertTriangle, XCircle, Trash2, ExternalLink, Copy, Package,
 } from "lucide-react";
+import { classifyDoc, classifyDce } from "@/lib/dce-classify";
 
 interface DocRow {
   id: string;
@@ -39,16 +40,7 @@ const STATUS_TEXT: Record<string, string> = {
   failed: "Échec — à relancer",
 };
 
-function guessDocType(name: string): string {
-  const n = name.toLowerCase();
-  if (n.includes("cctp")) return "CCTP";
-  if (n.includes("ccap")) return "CCAP";
-  if (n.includes("dpgf") || n.includes("bpu")) return "DPGF";
-  if (n.includes("dume")) return "DUME";
-  if (/acte.?d.?engagement|\bae\b/.test(n)) return "AE";
-  if (/reglement|règlement|\brc\b/.test(n)) return "RC";
-  return "autre";
-}
+const guessDocType = (name: string): string => classifyDoc(name).docType;
 
 interface Props {
   requestId: string;
@@ -214,6 +206,38 @@ export function CAAnalysisPanel({ requestId }: Props) {
           Aucun lien plateforme dans l'avis BOAMP — DCE à récupérer manuellement.
         </p>
       )}
+
+      {/* Aperçu du tri par lot (déterministe, avant même l'IA) */}
+      {docs.length > 0 && (() => {
+        const cls = classifyDce(docs.map((d) => d.file_name));
+        if (cls.groupes.length === 0) return null;
+        return (
+          <div className="rounded-md border bg-card px-2.5 py-2 space-y-1">
+            <span className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground uppercase">
+              <Package className="w-3.5 h-3.5" /> Lots détectés
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {cls.groupes.map((g) => (
+                <span
+                  key={g.lot}
+                  className="text-[11px] font-medium px-2 py-0.5 rounded-full"
+                  style={g.ouvert
+                    ? { backgroundColor: "#dcfce7", color: "#16a34a" }
+                    : { backgroundColor: "#f1f5f9", color: "#64748b" }}
+                  title={g.ouvert ? "Lot ouvert (DPGF présente)" : "CCTP présent mais pas de DPGF"}
+                >
+                  Lot {g.lot}{g.intitule ? ` · ${g.intitule}` : ""}{g.ouvert ? " ✓" : ""}
+                </span>
+              ))}
+            </div>
+            {cls.lotsOuverts.length > 0 && (
+              <p className="text-[10px] text-muted-foreground">
+                Ouverts à la candidature : {cls.lotsOuverts.map((l) => `Lot ${l}`).join(", ")}
+              </p>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Documents déposés */}
       {docs.length > 0 && (

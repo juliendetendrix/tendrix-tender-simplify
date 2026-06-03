@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { encodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { classifyDce, classifyDocType, TYPE_PRIORITY } from "../_shared/dce-classify.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -77,16 +78,40 @@ serve(async (req) => {
     const tender: any = analysis.tenders ?? {};
     const company: any = analysis.companies ?? {};
 
-    // ── 3. Récupérer les documents PDF du DCE ──
+    // ── 3. Récupérer les documents du DCE + les CLASSER (type, lot, lots ouverts) ──
     const { data: docs } = await svc
       .from("tender_documents")
-      .select("file_name, doc_type, storage_path, mime_type, size_bytes, extracted_text")
+      .select("id, file_name, doc_type, storage_path, mime_type, size_bytes, extracted_text")
       .eq("analysis_id", analysisId);
+
+    // Classification déterministe (sans IA) : type de chaque document + tri par
+    // lot + détection des lots ouverts (présence d'une DPGF/CDPGF à remplir).
+    const classification = classifyDce((docs ?? []).map((d) => d.file_name));
+    const typeByName = new Map(classification.docs.map((c) => [c.fileName, c.docType]));
+
+    // On rafraîchit le doc_type en base (le filename est plus fiable que la 1re
+    // estimation faite à l'upload) — best-effort, n'arrête pas l'analyse.
+    for (const d of docs ?? []) {
+      const t = typeByName.get(d.file_name);
+      if (t && t !== d.doc_type) {
+        await svc.from("tender_documents").update({ doc_type: t }).eq("id", d.id).then(
+          () => {}, () => {},
+        );
+      }
+    }
 
     const pdfDocs = (docs ?? []).filter(
       (d) => d.mime_type === "application/pdf" || d.file_name.toLowerCase().endsWith(".pdf"),
     );
     const otherDocs = (docs ?? []).filter((d) => !pdfDocs.includes(d));
+
+    // Priorité d'envoi à Claude : RC > CCAP > CCTP > DPGF > AE… (on garde les
+    // pièces les plus structurantes quand on dépasse MAX_PDFS).
+    pdfDocs.sort(
+      (a, b) =>
+        (TYPE_PRIORITY[classifyDocType(b.file_name)] ?? 0) -
+        (TYPE_PRIORITY[classifyDocType(a.file_name)] ?? 0),
+    );
 
     if (pdfDocs.length === 0) {
       // Pas de PDF lisible : on ne dépense pas l'IA pour rien.
@@ -140,6 +165,21 @@ serve(async (req) => {
       ? `\n\nDocuments NON lus directement (formats non pris en charge, à signaler comme à vérifier manuellement) : ${otherDocs.map((d) => d.file_name).join(", ")}.`
       : "";
 
+    // Structure des lots détectée par la classification déterministe. On la donne
+    // à l'IA comme point de départ FIABLE (un lot avec DPGF = ouvert à la candidature).
+    const lotsStruct = classification.groupes.map((g) => ({
+      numero: g.lot,
+      intitule_estime: g.intitule,
+      ouvert: g.ouvert,
+      documents: g.docs.map((d) => d.fileName),
+    }));
+    const lotsDetectTxt = lotsStruct.length
+      ? `\n\n## LOTS DÉTECTÉS DANS LE DCE (classification automatique)
+Un lot n'est OUVERT à la candidature que s'il possède une DPGF/CDPGF (cadre de prix à remplir). Les autres CCTP présents concernent des lots d'autres entreprises.
+${JSON.stringify(lotsStruct, null, 2)}
+Lots ouverts : ${classification.lotsOuverts.length ? classification.lotsOuverts.join(", ") : "aucun détecté automatiquement (vérifie dans les documents)"}.`
+      : "";
+
     const contextText = `## PROFIL DE L'ENTREPRISE QUI POSTULE
 Nom : ${company.name ?? "—"}
 Métier / secteur : ${company.sector ?? "—"}
@@ -152,10 +192,10 @@ Acheteur : ${tender.organisme ?? "—"}
 Lieu : ${tender.location ?? "—"}
 Date limite : ${tender.deadline ?? "—"}
 Procédure : ${tender.procedure ?? "—"}
-${lotsTxt}${otherTxt}
+${lotsTxt}${otherTxt}${lotsDetectTxt}
 
 ## TA MISSION
-Tu disposes ci-dessus du profil de l'entreprise et, en pièces jointes, des documents du marché (règlement de consultation, CCTP, CCAP...). Analyse si CETTE entreprise devrait répondre à CE marché.
+Tu disposes ci-dessus du profil de l'entreprise et, en pièces jointes, des documents du marché (règlement de consultation, CCTP, CCAP, DPGF...). Tu dois produire une FICHE D'ANALYSE claire et limpide pour un artisan, comme le ferait un conseiller en marchés publics.
 
 Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, au format exact :
 {
@@ -163,9 +203,30 @@ Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, au format exac
   "synthese": "une phrase qui résume la décision pour un artisan, langage simple",
   "points_forts": ["raison concrète pour laquelle l'entreprise est bien placée", "..."],
   "points_vigilance": ["risque ou exigence difficile à satisfaire", "..."],
-  "infos_manquantes": ["information dont l'entreprise a besoin avant de s'engager", "..."]
+  "infos_manquantes": ["information absente des documents dont l'entreprise a besoin avant de s'engager", "..."],
+  "prerequis": [
+    { "label": "Assurance décennale", "obligatoire": true, "detail": "Condition de conclusion du marché (cf. CCAP)" },
+    { "label": "Qualification Qualibat XXXX", "obligatoire": false, "detail": "Souhaitée mais non éliminatoire" }
+  ],
+  "dates_cles": [
+    { "label": "Date limite de remise des offres", "valeur": "JJ/MM/AAAA si présent, sinon 'non précisé'" },
+    { "label": "Délai d'exécution", "valeur": "ex. 13 mois" }
+  ],
+  "criteres_attribution": [
+    { "label": "Prix", "ponderation": "60%" },
+    { "label": "Valeur technique", "ponderation": "40%" }
+  ],
+  "lots": [
+    { "numero": "6", "intitule": "Serrurerie", "ouvert": true, "resume": "une phrase sur le contenu du lot et son adéquation au profil" }
+  ]
 }
-Règles : "go" si clairement adapté ; "no_go" si clairement hors de portée (métier, zone, capacité) ; "go_with_reserve" si adapté mais avec des conditions à lever. Reste factuel, base-toi sur les documents, ne devine pas de chiffres absents.`;
+
+Règles IMPORTANTES :
+- "verdict" : "go" si clairement adapté ; "no_go" si hors de portée (métier, zone, capacité) ; "go_with_reserve" si adapté mais avec conditions à lever.
+- "prerequis" : liste les pièces/qualifications/assurances exigées par le DCE (décennale, RC Pro, attestations fiscale/sociale, qualifications Qualibat/RGE, références, capacité financière…). "obligatoire": true si éliminatoire/condition de conclusion.
+- "dates_cles" et "criteres_attribution" : reprends UNIQUEMENT ce qui figure dans les documents (souvent dans le RC). Si l'information est absente, ne l'invente pas — mets "non précisé" ou laisse la liste vide.
+- "lots" : reprends les lots détectés ci-dessus. "ouvert": true seulement si le lot a une DPGF/CDPGF. Donne un intitulé propre et un résumé court par lot ouvert.
+- Reste factuel, base-toi sur les documents fournis, ne devine JAMAIS de chiffres absents (montants, surfaces, dates).`;
 
     // ── 7. Appeler Claude (PDF + contexte). Prefill "{" pour forcer le JSON. ──
     const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
@@ -177,7 +238,7 @@ Règles : "go" si clairement adapté ; "no_go" si clairement hors de portée (m�
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-5",
-        max_tokens: 1500,
+        max_tokens: 3000,
         system:
           "Tu es un expert en marchés publics français qui conseille les artisans et TPE du BTP. Tu rends des verdicts Go / No-Go honnêtes, prudents et factuels, fondés uniquement sur les documents fournis.",
         messages: [
@@ -213,20 +274,44 @@ Règles : "go" si clairement adapté ; "no_go" si clairement hors de portée (m�
       return json({ error: "Réponse IA non exploitable" }, 502);
     }
 
+    const arr = (v: unknown) => (Array.isArray(v) ? v : []);
+
+    // Fusion lots : on part de la détection déterministe (fiable pour "ouvert")
+    // et on enrichit avec l'intitulé + le résumé produits par l'IA.
+    const aiLots = new Map(
+      arr(parsed.lots).map((l: any) => [String(l?.numero ?? "").trim(), l]),
+    );
+    const mergedLots = classification.groupes.map((g) => {
+      const ai: any = aiLots.get(g.lot) ?? {};
+      return {
+        numero: g.lot,
+        intitule: ai.intitule || g.intitule || `Lot ${g.lot}`,
+        ouvert: g.ouvert, // signal déterministe prioritaire (présence DPGF)
+        resume: ai.resume ?? null,
+        documents: g.docs.map((d) => d.fileName),
+      };
+    });
+
     const report = {
       synthese: parsed.synthese ?? "",
-      points_forts: Array.isArray(parsed.points_forts) ? parsed.points_forts : [],
-      points_vigilance: Array.isArray(parsed.points_vigilance) ? parsed.points_vigilance : [],
-      infos_manquantes: Array.isArray(parsed.infos_manquantes) ? parsed.infos_manquantes : [],
+      points_forts: arr(parsed.points_forts),
+      points_vigilance: arr(parsed.points_vigilance),
+      infos_manquantes: arr(parsed.infos_manquantes),
+      prerequis: arr(parsed.prerequis),
+      dates_cles: arr(parsed.dates_cles),
+      criteres_attribution: arr(parsed.criteres_attribution),
+      lots: mergedLots,
+      lots_ouverts: classification.lotsOuverts,
       documents_non_lus: otherDocs.map((d) => d.file_name),
       documents_ignores: skipped,
     };
 
-    // ── 8. Écrire le résultat ──
+    // ── 8. Écrire le résultat (+ lots sur la ligne pour le sélecteur "Répondre") ──
     await svc.from("tender_analyses").update({
       status: "completed",
       verdict: parsed.verdict,
       report,
+      lots: mergedLots,
       completed_at: new Date().toISOString(),
       status_detail: null,
     }).eq("id", analysisId);

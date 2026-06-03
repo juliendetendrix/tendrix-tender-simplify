@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft, FileText, Download, Loader2, CheckCircle2, AlertTriangle, XCircle,
   Sparkles, ThumbsUp, HelpCircle, Building2, MapPin, Calendar, ExternalLink, Link2,
+  ListChecks, ShieldCheck, Package, Clock, Scale, Star,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -10,12 +11,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
+import { classifyDce, DOC_TYPE_LABEL, type DocType } from "@/lib/dce-classify";
+
+interface Prerequis { label: string; obligatoire?: boolean; detail?: string }
+interface DateCle { label: string; valeur: string }
+interface CritereAttribution { label: string; ponderation?: string }
+interface LotReport { numero: string; intitule?: string; ouvert?: boolean; resume?: string | null }
 
 interface AnalysisReport {
   synthese?: string;
   points_forts?: string[];
   points_vigilance?: string[];
   infos_manquantes?: string[];
+  prerequis?: Prerequis[];
+  dates_cles?: DateCle[];
+  criteres_attribution?: CritereAttribution[];
+  lots?: LotReport[];
+  lots_ouverts?: string[];
   documents_non_lus?: string[];
 }
 
@@ -35,6 +47,7 @@ interface AnalysisRow {
   verdict: string | null;
   report: AnalysisReport | null;
   selected_lots: string[] | null;
+  lots: LotReport[] | null;
   buyer_profile_url: string | null;
   platform: string | null;
   consultation_ref: string | null;
@@ -70,6 +83,57 @@ function Section({ title, items, Icon, color }: { title: string; items: string[]
   );
 }
 
+interface DocInfo { type: DocType; label: string; key: boolean }
+
+function DocRow({ doc, info, openDoc }: { doc: TenderDoc; info: DocInfo; openDoc: (d: TenderDoc) => void }) {
+  return (
+    <div className="flex items-center gap-3 px-4 py-3 bg-card">
+      {info.key ? (
+        <Star className="w-4 h-4 shrink-0" style={{ color: "#f9bd43", fill: "#f9bd43" }} />
+      ) : (
+        <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+      )}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-foreground truncate">{doc.file_name}</p>
+        <p className="text-[11px] text-muted-foreground">{info.label}</p>
+      </div>
+      <button
+        onClick={() => openDoc(doc)}
+        className="text-muted-foreground hover:text-primary transition-colors shrink-0"
+        aria-label={`Télécharger ${doc.file_name}`}
+      >
+        <Download className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
+function DocGroup({
+  title, docs, docByName, labelFor, openDoc, muted,
+}: {
+  title: string;
+  docs: string[];
+  docByName: Map<string, TenderDoc>;
+  labelFor: (name: string) => DocInfo;
+  openDoc: (d: TenderDoc) => void;
+  muted?: boolean;
+}) {
+  const rows = docs.map((name) => docByName.get(name)).filter(Boolean) as TenderDoc[];
+  if (rows.length === 0) return null;
+  return (
+    <div className="rounded-lg border overflow-hidden">
+      <div className={`px-3 py-2 border-b text-sm font-bold ${muted ? "bg-muted/40 text-muted-foreground" : "bg-secondary/10 text-foreground"}`}>
+        {title}
+      </div>
+      <div className="divide-y">
+        {rows.map((doc) => (
+          <DocRow key={doc.id} doc={doc} info={labelFor(doc.file_name)} openDoc={openDoc} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const AnalysisDetail = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -85,7 +149,7 @@ const AnalysisDetail = () => {
     const { data } = await supabase
       .from("tender_analyses")
       .select(`
-        id, status, verdict, report, selected_lots,
+        id, status, verdict, report, selected_lots, lots,
         buyer_profile_url, platform, consultation_ref,
         tenders ( title, organisme, location, deadline ),
         tender_documents ( id, file_name, doc_type, storage_path, mime_type, size_bytes, source )
@@ -169,6 +233,25 @@ const AnalysisDetail = () => {
   const inProgress = IN_PROGRESS.includes(analysis.status);
   const v = analysis.verdict ? VERDICT_UI[analysis.verdict] : null;
 
+  // Tri par lot des documents déposés (déterministe, dès l'upload — pas besoin
+  // d'attendre l'IA). Permet l'onglet "Documents" structuré comme le concurrent.
+  const cls = classifyDce(docs.map((d) => d.file_name));
+  const docByName = new Map(docs.map((d) => [d.file_name, d]));
+  const prerequis = report.prerequis ?? [];
+  const datesCles = (report.dates_cles ?? []).filter((d) => d.valeur && d.valeur !== "non précisé");
+  const criteres = report.criteres_attribution ?? [];
+  const lots = (analysis.lots ?? report.lots ?? []) as LotReport[];
+  const lotsOuverts = report.lots_ouverts ?? cls.lotsOuverts;
+  const hasPrerequis = prerequis.length > 0 || datesCles.length > 0 || criteres.length > 0;
+
+  // Onglet Documents : libellé court par fichier + mise en avant des pièces clés.
+  const KEY_TYPES: DocType[] = ["RC", "CCAP", "CCTP", "DPGF", "AE"];
+  const labelFor = (name: string): { type: DocType; label: string; key: boolean } => {
+    const c = cls.docs.find((d) => d.fileName === name);
+    const type = c?.docType ?? "AUTRE";
+    return { type, label: DOC_TYPE_LABEL[type], key: KEY_TYPES.includes(type) };
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {Header}
@@ -230,8 +313,9 @@ const AnalysisDetail = () => {
 
         {/* Onglets */}
         <Tabs defaultValue="analyse" className="w-full">
-          <TabsList className="w-full grid grid-cols-2">
+          <TabsList className="w-full grid grid-cols-3">
             <TabsTrigger value="analyse">L'analyse</TabsTrigger>
+            <TabsTrigger value="prerequis">Prérequis</TabsTrigger>
             <TabsTrigger value="documents">
               Documents{docs.length > 0 ? ` (${docs.length})` : ""}
             </TabsTrigger>
@@ -249,19 +333,125 @@ const AnalysisDetail = () => {
                 <Section title="Points forts" items={report.points_forts ?? []} Icon={ThumbsUp} color="#16a34a" />
                 <Section title="Points de vigilance" items={report.points_vigilance ?? []} Icon={AlertTriangle} color="#b45309" />
                 <Section title="Informations manquantes" items={report.infos_manquantes ?? []} Icon={HelpCircle} color="#0c1c98" />
+
+                {/* Lots du marché (tri + lots ouverts) */}
+                {lots.length > 0 && (
+                  <div className="space-y-2">
+                    <h3 className="flex items-center gap-2 text-sm font-bold" style={{ color: "#0c1c98" }}>
+                      <Package className="w-4 h-4" />
+                      Lots du marché
+                    </h3>
+                    <div className="space-y-2">
+                      {lots.map((lot) => (
+                        <div key={lot.numero} className="rounded-lg border p-3 bg-card">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-semibold text-foreground">
+                              Lot {lot.numero}{lot.intitule ? ` — ${lot.intitule}` : ""}
+                            </span>
+                            {lot.ouvert ? (
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#dcfce7", color: "#16a34a" }}>
+                                OUVERT
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                                autre lot
+                              </span>
+                            )}
+                          </div>
+                          {lot.resume && <p className="text-xs text-muted-foreground mt-1 leading-snug">{lot.resume}</p>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {report.documents_non_lus && report.documents_non_lus.length > 0 && (
                   <p className="text-xs text-muted-foreground border-t pt-3">
                     À vérifier manuellement (formats non lus par l'IA) : {report.documents_non_lus.join(", ")}
                   </p>
                 )}
-                {!report.points_forts?.length && !report.points_vigilance?.length && !report.infos_manquantes?.length && (
+                {!report.points_forts?.length && !report.points_vigilance?.length && !report.infos_manquantes?.length && !lots.length && (
                   <p className="text-sm text-muted-foreground text-center py-6">Aucun détail disponible.</p>
                 )}
               </>
             )}
           </TabsContent>
 
-          {/* — Documents — */}
+          {/* — Prérequis — */}
+          <TabsContent value="prerequis" className="space-y-5 pt-4">
+            {inProgress ? (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                Les prérequis (assurances, qualifications, dates, critères) apparaîtront ici une fois l'analyse terminée.
+              </p>
+            ) : !hasPrerequis ? (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                Aucun prérequis n'a pu être extrait des documents fournis.
+              </p>
+            ) : (
+              <>
+                {/* Dates clés */}
+                {datesCles.length > 0 && (
+                  <div className="space-y-2">
+                    <h3 className="flex items-center gap-2 text-sm font-bold" style={{ color: "#0c1c98" }}>
+                      <Clock className="w-4 h-4" /> Dates clés
+                    </h3>
+                    <div className="divide-y border rounded-lg overflow-hidden">
+                      {datesCles.map((d, i) => (
+                        <div key={i} className="flex items-center justify-between gap-3 px-3 py-2 bg-card text-sm">
+                          <span className="text-muted-foreground">{d.label}</span>
+                          <span className="font-semibold text-foreground text-right">{d.valeur}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Critères d'attribution */}
+                {criteres.length > 0 && (
+                  <div className="space-y-2">
+                    <h3 className="flex items-center gap-2 text-sm font-bold" style={{ color: "#0c1c98" }}>
+                      <Scale className="w-4 h-4" /> Critères d'attribution
+                    </h3>
+                    <div className="divide-y border rounded-lg overflow-hidden">
+                      {criteres.map((c, i) => (
+                        <div key={i} className="flex items-center justify-between gap-3 px-3 py-2 bg-card text-sm">
+                          <span className="text-foreground">{c.label}</span>
+                          {c.ponderation && <span className="font-semibold text-primary">{c.ponderation}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Pièces & qualifications exigées */}
+                {prerequis.length > 0 && (
+                  <div className="space-y-2">
+                    <h3 className="flex items-center gap-2 text-sm font-bold" style={{ color: "#0c1c98" }}>
+                      <ShieldCheck className="w-4 h-4" /> Pièces & qualifications exigées
+                    </h3>
+                    <ul className="space-y-2">
+                      {prerequis.map((p, i) => (
+                        <li key={i} className="rounded-lg border p-3 bg-card">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <ListChecks className="w-4 h-4 shrink-0" style={{ color: p.obligatoire ? "#dc2626" : "#16a34a" }} />
+                            <span className="text-sm font-semibold text-foreground">{p.label}</span>
+                            {p.obligatoire && (
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#fee2e2", color: "#dc2626" }}>
+                                OBLIGATOIRE
+                              </span>
+                            )}
+                          </div>
+                          {p.detail && <p className="text-xs text-muted-foreground mt-1 leading-snug pl-6">{p.detail}</p>}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </>
+            )}
+          </TabsContent>
+
+          {/* — Documents (triés par lot) — */}
           <TabsContent value="documents" className="pt-4 space-y-4">
             {/* Profil acheteur détecté par le robot */}
             {analysis.buyer_profile_url && (
@@ -293,25 +483,53 @@ const AnalysisDetail = () => {
                 Les documents seront disponibles une fois récupérés par votre chargé d'affaires.
               </p>
             ) : (
-              <div className="divide-y border rounded-lg overflow-hidden">
-                {docs.map((doc) => (
-                  <div key={doc.id} className="flex items-center gap-3 px-4 py-3 bg-card">
-                    <FileText className="w-4 h-4 text-primary shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{doc.file_name}</p>
-                      {doc.doc_type && (
-                        <p className="text-[11px] text-muted-foreground uppercase">{doc.doc_type}</p>
+              <div className="space-y-4">
+                {/* Pièces communes (administratif transverse) */}
+                {cls.commun.length > 0 && (
+                  <DocGroup title="Pièces administratives communes" docs={cls.commun.map((c) => c.fileName)}
+                    docByName={docByName} labelFor={labelFor} openDoc={openDoc} />
+                )}
+
+                {/* Un bloc par lot — lots ouverts en premier, badge OUVERT */}
+                {cls.groupes.map((g) => (
+                  <div key={g.lot} className="rounded-lg border overflow-hidden">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-secondary/10 border-b flex-wrap">
+                      <Package className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-bold text-foreground">
+                        Lot {g.lot}{g.intitule ? ` — ${g.intitule}` : ""}
+                      </span>
+                      {g.ouvert ? (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#dcfce7", color: "#16a34a" }}>
+                          OUVERT
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          autre lot
+                        </span>
                       )}
                     </div>
-                    <button
-                      onClick={() => openDoc(doc)}
-                      className="text-muted-foreground hover:text-primary transition-colors shrink-0"
-                      aria-label={`Télécharger ${doc.file_name}`}
-                    >
-                      <Download className="w-4 h-4" />
-                    </button>
+                    <div className="divide-y">
+                      {g.docs.map((c) => {
+                        const doc = docByName.get(c.fileName);
+                        if (!doc) return null;
+                        const info = labelFor(c.fileName);
+                        return <DocRow key={doc.id} doc={doc} info={info} openDoc={openDoc} />;
+                      })}
+                    </div>
                   </div>
                 ))}
+
+                {/* Études & contexte */}
+                {cls.etudes.length > 0 && (
+                  <DocGroup title="Études & contexte technique" docs={cls.etudes.map((c) => c.fileName)}
+                    docByName={docByName} labelFor={labelFor} openDoc={openDoc} muted />
+                )}
+
+                {/* Guides plateforme */}
+                {cls.guides.length > 0 && (
+                  <DocGroup title="Guides plateforme" docs={cls.guides.map((c) => c.fileName)}
+                    docByName={docByName} labelFor={labelFor} openDoc={openDoc} muted />
+                )}
               </div>
             )}
           </TabsContent>
