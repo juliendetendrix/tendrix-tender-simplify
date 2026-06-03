@@ -25,12 +25,22 @@ const RP_DIAG = (() => {
     const m = blob.match(new RegExp("[#?&]" + key + "=([^&]+)"));
     return m ? decodeURIComponent(m[1].replace(/\+/g, " ")) : null;
   };
+  // Liste les NOMS des paramètres présents (pas les valeurs) — non sensible.
+  const keys = Array.from(
+    new Set(
+      (blob.match(/(?:^|[#?&])([a-z_]+)=/gi) || []).map((m) =>
+        m.replace(/[#?&=]/g, ""),
+      ),
+    ),
+  ).filter((k) => k && k !== "access_token" && k !== "refresh_token");
   const parts = [
     `jeton:${RP_HAS_RECOVERY_TOKEN ? "oui" : "non"}`,
     grab("type") ? `type:${grab("type")}` : null,
+    `champs:[${keys.join(",")}]`,
+    `at:${/access_token=/.test(blob) ? "1" : "0"}`,
+    `rt:${/refresh_token=/.test(blob) ? "1" : "0"}`,
     grab("error") ? `error:${grab("error")}` : null,
-    grab("error_code") ? `code:${grab("error_code")}` : null,
-    grab("error_description") ? `desc:${grab("error_description")}` : null,
+    grab("error_code") ? `errcode:${grab("error_code")}` : null,
   ].filter(Boolean);
   return parts.join(" · ");
 })();
