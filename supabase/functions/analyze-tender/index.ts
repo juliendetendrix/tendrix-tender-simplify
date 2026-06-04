@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { encodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { classifyDce, classifyDocType, TYPE_PRIORITY } from "../_shared/dce-classify.ts";
+import { extractOfficeText } from "../_shared/office-extract.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,8 +10,12 @@ const corsHeaders = {
 };
 
 // Garde-fous pour rester sous les limites de l'API Claude (PDF natifs)
-const MAX_PDFS = 6;            // nombre max de PDF envoyés à Claude
+const MAX_PDFS = 5;               // nombre max de PDF envoyés à Claude
 const MAX_PDF_BYTES = 12_000_000; // ~12 Mo par PDF (on saute les plus gros)
+const MAX_TOTAL_PDF_BYTES = 18_000_000; // budget total PDF (évite les timeouts sur scans lourds)
+const MAX_OFFICE_CHARS = 60_000;  // plafond de texte Office injecté dans le prompt
+const CLAUDE_TIMEOUT_MS = 110_000; // coupe l'appel avant le kill plateforme (anti "analyzing" bloqué)
+const OFFICE_RE = /\.(docx|xlsx)$/i;
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -100,36 +105,32 @@ serve(async (req) => {
       }
     }
 
-    const pdfDocs = (docs ?? []).filter(
-      (d) => d.mime_type === "application/pdf" || d.file_name.toLowerCase().endsWith(".pdf"),
-    );
-    const otherDocs = (docs ?? []).filter((d) => !pdfDocs.includes(d));
+    const isPdf = (d: any) =>
+      d.mime_type === "application/pdf" || d.file_name.toLowerCase().endsWith(".pdf");
+    const pdfDocs = (docs ?? []).filter(isPdf);
+    // Pièces Office lisibles (CCTP, DPGF, RC… souvent en Word/Excel) : on en
+    // extrait le TEXTE pour le donner à Claude (qui ne lit nativement que les PDF).
+    const officeDocs = (docs ?? []).filter((d) => !isPdf(d) && OFFICE_RE.test(d.file_name));
+    // Le reste (.doc/.xls anciens, images…) : non lu → on le signalera.
+    const otherDocs = (docs ?? []).filter((d) => !isPdf(d) && !OFFICE_RE.test(d.file_name));
 
-    // Priorité d'envoi à Claude : RC > CCAP > CCTP > DPGF > AE… (on garde les
-    // pièces les plus structurantes quand on dépasse MAX_PDFS).
-    pdfDocs.sort(
-      (a, b) =>
-        (TYPE_PRIORITY[classifyDocType(b.file_name)] ?? 0) -
-        (TYPE_PRIORITY[classifyDocType(a.file_name)] ?? 0),
-    );
-
-    if (pdfDocs.length === 0) {
-      // Pas de PDF lisible : on ne dépense pas l'IA pour rien.
-      await svc.from("tender_analyses")
-        .update({ status: "manual_intervention_required", status_detail: "Aucun PDF à analyser" })
-        .eq("id", analysisId);
-      await notifyManual(analysisId);
-      return json({ error: "Aucun document PDF à analyser" }, 400);
-    }
+    // Priorité d'envoi : RC > CCAP > CCTP > DPGF > AE… (on garde les pièces les
+    // plus structurantes quand on dépasse les budgets).
+    const byPriority = (a: any, b: any) =>
+      (TYPE_PRIORITY[classifyDocType(b.file_name)] ?? 0) -
+      (TYPE_PRIORITY[classifyDocType(a.file_name)] ?? 0);
+    pdfDocs.sort(byPriority);
+    officeDocs.sort(byPriority);
 
     // ── 4. Passer en statut "analyzing" (le badge bouge en direct) ──
     await svc.from("tender_analyses")
       .update({ status: "analyzing", status_detail: null })
       .eq("id", analysisId);
 
-    // ── 5. Télécharger les PDF et les préparer pour Claude ──
+    // ── 5a. Télécharger les PDF et les préparer pour Claude (budgets anti-timeout) ──
     const documentBlocks: any[] = [];
     let usedPdfs = 0;
+    let totalPdfBytes = 0;
     const skipped: string[] = [];
     for (const d of pdfDocs) {
       if (usedPdfs >= MAX_PDFS) { skipped.push(d.file_name); continue; }
@@ -138,22 +139,45 @@ serve(async (req) => {
         .download(d.storage_path);
       if (dlErr || !blob) { skipped.push(d.file_name); continue; }
       const buf = new Uint8Array(await blob.arrayBuffer());
-      if (buf.byteLength > MAX_PDF_BYTES) { skipped.push(d.file_name); continue; }
+      if (buf.byteLength > MAX_PDF_BYTES || totalPdfBytes + buf.byteLength > MAX_TOTAL_PDF_BYTES) {
+        skipped.push(d.file_name);
+        continue;
+      }
       documentBlocks.push({
         type: "document",
         source: { type: "base64", media_type: "application/pdf", data: encodeBase64(buf) },
         title: d.file_name,
-        citations: { enabled: true },
       });
       usedPdfs++;
+      totalPdfBytes += buf.byteLength;
     }
 
-    if (documentBlocks.length === 0) {
+    // ── 5b. Extraire le TEXTE des pièces Office (CCTP.docx, DPGF.xlsx, RC.docx…) ──
+    const officeTexts: { name: string; type: string; text: string }[] = [];
+    let officeBudget = MAX_OFFICE_CHARS;
+    for (const d of officeDocs) {
+      if (officeBudget <= 0) { skipped.push(d.file_name); continue; }
+      // Gros .docx = surtout des images (ex. "photos.docx") : peu de texte utile,
+      // on évite un téléchargement coûteux et on le signale comme non lu.
+      if (d.size_bytes && d.size_bytes > 6_000_000) { otherDocs.push(d); continue; }
+      const { data: blob, error: dlErr } = await svc.storage
+        .from("tender-documents")
+        .download(d.storage_path);
+      if (dlErr || !blob) { skipped.push(d.file_name); continue; }
+      const buf = new Uint8Array(await blob.arrayBuffer());
+      const text = extractOfficeText(d.file_name, buf).slice(0, officeBudget);
+      if (text.trim().length === 0) { otherDocs.push(d); continue; } // illisible → signalé
+      officeTexts.push({ name: d.file_name, type: classifyDocType(d.file_name), text });
+      officeBudget -= text.length;
+    }
+
+    // Il faut AU MOINS une source lisible (PDF natif OU texte Office extrait).
+    if (documentBlocks.length === 0 && officeTexts.length === 0) {
       await svc.from("tender_analyses")
-        .update({ status: "manual_intervention_required", status_detail: "PDF illisibles ou trop volumineux" })
+        .update({ status: "manual_intervention_required", status_detail: "Aucun document lisible (PDF illisibles, Office vides ou formats non pris en charge)" })
         .eq("id", analysisId);
       await notifyManual(analysisId);
-      return json({ error: "Documents illisibles" }, 400);
+      return json({ error: "Aucun document lisible à analyser" }, 400);
     }
 
     // ── 6. Construire le contexte texte (entreprise + AO + lots) ──
@@ -163,6 +187,14 @@ serve(async (req) => {
 
     const otherTxt = otherDocs.length
       ? `\n\nDocuments NON lus directement (formats non pris en charge, à signaler comme à vérifier manuellement) : ${otherDocs.map((d) => d.file_name).join(", ")}.`
+      : "";
+
+    // Texte extrait des pièces Office (CCTP, DPGF, RC…) — source MAJEURE pour le tri.
+    const officeTxt = officeTexts.length
+      ? "\n\n## CONTENU DES PIÈCES WORD/EXCEL (texte extrait automatiquement)\n" +
+        officeTexts
+          .map((o) => `### ${o.name} [${o.type}]\n${o.text}`)
+          .join("\n\n")
       : "";
 
     // Structure des lots détectée par la classification déterministe. On la donne
@@ -192,10 +224,10 @@ Acheteur : ${tender.organisme ?? "—"}
 Lieu : ${tender.location ?? "—"}
 Date limite : ${tender.deadline ?? "—"}
 Procédure : ${tender.procedure ?? "—"}
-${lotsTxt}${otherTxt}${lotsDetectTxt}
+${lotsTxt}${otherTxt}${lotsDetectTxt}${officeTxt}
 
 ## TA MISSION
-Tu disposes ci-dessus du profil de l'entreprise et, en pièces jointes, des documents du marché (règlement de consultation, CCTP, CCAP, DPGF...). Tu dois produire une FICHE D'ANALYSE claire et limpide pour un artisan, comme le ferait un conseiller en marchés publics.
+Tu disposes ci-dessus du profil de l'entreprise, du contenu texte des pièces Word/Excel (le cas échéant), et en pièces jointes des PDF du marché (règlement de consultation, CCTP, CCAP, DPGF...). Tu dois produire une FICHE D'ANALYSE claire et limpide pour un artisan, comme le ferait un conseiller en marchés publics.
 
 Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, au format exact :
 {
@@ -229,29 +261,48 @@ Règles IMPORTANTES :
 - Reste factuel, base-toi sur les documents fournis, ne devine JAMAIS de chiffres absents (montants, surfaces, dates).`;
 
     // ── 7. Appeler Claude (PDF + contexte). Prefill "{" pour forcer le JSON. ──
-    const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-5",
-        max_tokens: 3000,
-        system:
-          "Tu es un expert en marchés publics français qui conseille les artisans et TPE du BTP. Tu rends des verdicts Go / No-Go honnêtes, prudents et factuels, fondés uniquement sur les documents fournis.",
-        messages: [
-          { role: "user", content: [...documentBlocks, { type: "text", text: contextText }] },
-          { role: "assistant", content: "{" },
-        ],
-      }),
-    });
+    // Timeout dur : si Claude tarde (PDF scannés lourds), on coupe AVANT que la
+    // plateforme ne tue la fonction → on écrit un statut "failed" propre + remboursement
+    // (plus jamais d'analyse coincée en "analyzing").
+    const ac = new AbortController();
+    const timer = setTimeout(() => ac.abort(), CLAUDE_TIMEOUT_MS);
+    let claudeRes: Response;
+    try {
+      claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        signal: ac.signal,
+        headers: {
+          "x-api-key": ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-5",
+          max_tokens: 3000,
+          system:
+            "Tu es un expert en marchés publics français qui conseille les artisans et TPE du BTP. Tu rends des verdicts Go / No-Go honnêtes, prudents et factuels, fondés uniquement sur les documents fournis.",
+          messages: [
+            { role: "user", content: [...documentBlocks, { type: "text", text: contextText }] },
+            { role: "assistant", content: "{" },
+          ],
+        }),
+      });
+    } catch (e) {
+      clearTimeout(timer);
+      const aborted = (e as Error)?.name === "AbortError";
+      console.error("Claude fetch échec:", String(e));
+      await failAndRefund(
+        svc, analysisId, analysis.company_id,
+        aborted ? "Analyse trop longue (documents volumineux) — réessayez" : "Moteur d'analyse injoignable",
+      );
+      return json({ error: aborted ? "Analyse trop longue" : "Moteur d'analyse injoignable" }, 504);
+    }
+    clearTimeout(timer);
 
     if (!claudeRes.ok) {
       const errBody = await claudeRes.text().catch(() => "");
       console.error("Claude erreur:", claudeRes.status, errBody);
-      await failAndRefund(svc, analysisId, analysis.company_id, "Erreur du moteur d'analyse");
+      await failAndRefund(svc, analysisId, analysis.company_id, `Erreur du moteur d'analyse (${claudeRes.status})`);
       return json({ error: "Erreur du moteur d'analyse" }, 502);
     }
 
@@ -302,6 +353,7 @@ Règles IMPORTANTES :
       criteres_attribution: arr(parsed.criteres_attribution),
       lots: mergedLots,
       lots_ouverts: classification.lotsOuverts,
+      documents_lus: [...documentBlocks.map((b: any) => b.title), ...officeTexts.map((o) => o.name)],
       documents_non_lus: otherDocs.map((d) => d.file_name),
       documents_ignores: skipped,
     };

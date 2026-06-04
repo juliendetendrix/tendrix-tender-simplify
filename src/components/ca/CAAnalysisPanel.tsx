@@ -298,7 +298,7 @@ export function CAAnalysisPanel({ requestId }: Props) {
         </Button>
       </div>
       <p className="text-[11px] text-muted-foreground">
-        L'IA lit les PDF (RC, CCTP, CCAP…). Les fichiers Excel (DPGF) ne sont pas encore lus automatiquement.
+        L'IA lit les PDF (RC, CCTP, CCAP…) ainsi que le texte des fichiers Word (.docx) et Excel (.xlsx). Les anciens formats .doc/.xls et les PDF scannés très lourds peuvent ne pas être lus.
       </p>
     </div>
   );
