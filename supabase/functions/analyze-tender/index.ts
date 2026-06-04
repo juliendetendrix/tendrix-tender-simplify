@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { encodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { classifyDce, classifyDocType, TYPE_PRIORITY } from "../_shared/dce-classify.ts";
 import { extractOfficeText } from "../_shared/office-extract.ts";
@@ -10,9 +9,8 @@ const corsHeaders = {
 };
 
 // Garde-fous pour rester sous les limites de l'API Claude (PDF natifs)
-const MAX_PDFS = 5;               // nombre max de PDF envoyés à Claude
-const MAX_PDF_BYTES = 12_000_000; // ~12 Mo par PDF (on saute les plus gros)
-const MAX_TOTAL_PDF_BYTES = 18_000_000; // budget total PDF (évite les timeouts sur scans lourds)
+const MAX_PDFS = 5;               // nombre max de PDF envoyés à Claude (via URL signée)
+const MAX_PDF_BYTES = 25_000_000; // ~25 Mo par PDF (Claude télécharge l'URL lui-même)
 const MAX_OFFICE_CHARS = 60_000;  // plafond de texte Office injecté dans le prompt
 const CLAUDE_TIMEOUT_MS = 110_000; // coupe l'appel avant le kill plateforme (anti "analyzing" bloqué)
 const OFFICE_RE = /\.(docx|xlsx)$/i;
@@ -127,29 +125,27 @@ serve(async (req) => {
       .update({ status: "analyzing", status_detail: null })
       .eq("id", analysisId);
 
-    // ── 5a. Télécharger les PDF et les préparer pour Claude (budgets anti-timeout) ──
+    // ── 5a. Préparer les PDF pour Claude via URL SIGNÉES ──
+    // IMPORTANT : on n'encode PLUS les PDF en base64 dans la fonction. Encoder de
+    // gros PDF scannés dépassait la limite CPU (~2 s) de l'Edge Function → kill
+    // "WORKER_LIMIT" (HTTP 546) non rattrapable, analyse figée sur "analyzing".
+    // Avec une URL signée, c'est Claude qui télécharge le PDF lui-même.
     const documentBlocks: any[] = [];
     let usedPdfs = 0;
-    let totalPdfBytes = 0;
     const skipped: string[] = [];
     for (const d of pdfDocs) {
       if (usedPdfs >= MAX_PDFS) { skipped.push(d.file_name); continue; }
-      const { data: blob, error: dlErr } = await svc.storage
+      if (d.size_bytes && d.size_bytes > MAX_PDF_BYTES) { skipped.push(d.file_name); continue; }
+      const { data: signed, error: sErr } = await svc.storage
         .from("tender-documents")
-        .download(d.storage_path);
-      if (dlErr || !blob) { skipped.push(d.file_name); continue; }
-      const buf = new Uint8Array(await blob.arrayBuffer());
-      if (buf.byteLength > MAX_PDF_BYTES || totalPdfBytes + buf.byteLength > MAX_TOTAL_PDF_BYTES) {
-        skipped.push(d.file_name);
-        continue;
-      }
+        .createSignedUrl(d.storage_path, 900); // 15 min, le temps de l'analyse
+      if (sErr || !signed?.signedUrl) { skipped.push(d.file_name); continue; }
       documentBlocks.push({
         type: "document",
-        source: { type: "base64", media_type: "application/pdf", data: encodeBase64(buf) },
+        source: { type: "url", url: signed.signedUrl },
         title: d.file_name,
       });
       usedPdfs++;
-      totalPdfBytes += buf.byteLength;
     }
 
     // ── 5b. Extraire le TEXTE des pièces Office (CCTP.docx, DPGF.xlsx, RC.docx…) ──
