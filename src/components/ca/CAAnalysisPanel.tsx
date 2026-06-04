@@ -139,11 +139,22 @@ export function CAAnalysisPanel({ requestId }: Props) {
     const { error } = await supabase.functions.invoke("analyze-tender", { body: { analysis_id: analysis.id } });
     setLaunching(false);
     if (error) {
-      toast({
-        title: "Analyse impossible",
-        description: "La fonction analyze-tender n'est peut-être pas déployée. Vérifiez le déploiement.",
-        variant: "destructive",
-      });
+      // On essaie de remonter la VRAIE raison renvoyée par la fonction
+      // (ex. "Aucun document PDF à analyser", "Erreur du moteur d'analyse"…)
+      // plutôt qu'un message générique trompeur.
+      let detail = "Erreur inattendue lors du lancement de l'analyse.";
+      try {
+        const ctx = (error as { context?: Response }).context;
+        if (ctx && typeof ctx.json === "function") {
+          const body = await ctx.clone().json().catch(() => null);
+          detail = body?.error || (await ctx.text().catch(() => "")) || detail;
+        } else if (error.message) {
+          detail = error.message;
+        }
+      } catch {
+        /* on garde le message par défaut */
+      }
+      toast({ title: "Analyse impossible", description: detail, variant: "destructive" });
       return;
     }
     toast({ title: "Analyse IA lancée 🚀", description: "Le verdict sera disponible dans quelques instants." });
