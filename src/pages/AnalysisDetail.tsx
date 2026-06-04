@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft, FileText, Download, Loader2, CheckCircle2, AlertTriangle, XCircle,
   Sparkles, Building2, MapPin, Calendar, ExternalLink, Link2,
-  ListChecks, ShieldCheck, Package, Star, AlertCircle, MapPinned, Timer, MessageSquare,
+  ListChecks, ShieldCheck, Package, Star, AlertCircle, MapPinned, Timer, MessageSquare, Coins,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -71,6 +71,10 @@ const VERDICT_UI: Record<string, { label: string; phrase: string; bg: string; co
 };
 
 const IN_PROGRESS = ["pending", "scraping", "analyzing", "manual_intervention_required"];
+
+// Coût (en crédits) pour répondre à un marché. Placeholder — à brancher sur le
+// modèle de tarification / paiement quand il sera défini.
+const RESPONSE_CREDIT_COST = 5;
 
 interface DocInfo { type: DocType; label: string; key: boolean }
 
@@ -562,10 +566,15 @@ const AnalysisDetail = () => {
           <div className="max-w-lg mx-auto px-4 py-3">
             <button
               onClick={() => navigate(`/app?chat=${analysis.request_id ?? ""}&title=${encodeURIComponent(tender?.title ?? "Votre dossier")}`)}
-              className="w-full h-12 rounded-xl font-bold text-sm text-white hover:opacity-90 transition-opacity"
+              className="w-full h-12 rounded-xl font-bold text-sm text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
               style={{ backgroundColor: "#0c1c98" }}
             >
               Répondre à ce marché
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold"
+                    style={{ backgroundColor: "rgba(249,189,67,0.25)", color: "#f9bd43" }}>
+                <Coins className="w-3.5 h-3.5" />
+                {RESPONSE_CREDIT_COST} crédits
+              </span>
             </button>
           </div>
         </div>

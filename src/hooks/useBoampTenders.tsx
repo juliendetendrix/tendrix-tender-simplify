@@ -26,20 +26,56 @@ interface CompanyForMatching {
   zone: string | null
 }
 
-// Map sector keywords to BOAMP "famille" categories
-const SECTOR_TO_FAMILLE: Record<string, string[]> = {
-  travaux: ["maçonnerie", "maconnerie", "btp", "construction", "bâtiment", "batiment", "travaux", "rénovation", "renovation", "gros œuvre", "second œuvre", "voirie"],
-  services: ["service", "conseil", "informatique", "it ", "digital", "nettoyage", "maintenance", "formation"],
-  fournitures: ["fourniture", "matériel", "materiel", "équipement", "equipement", "mobilier"],
-};
+// ── Dictionnaire de métiers du BTP ───────────────────────────────────────────
+// Chaque métier : `detect` = mots qui, présents dans le secteur saisi par
+// l'entreprise, activent ce métier ; `target` = mots à chercher dans l'AO
+// (objet + descripteurs) ; `cpv` = préfixes de codes CPV correspondants.
+interface Metier { detect: string[]; target: string[]; cpv: string[] }
+const METIERS: Metier[] = [
+  { detect: ["charpent", "ossature bois", "structure bois"], target: ["charpente", "ossature", "structure bois", "bois lamell", "lamellé-collé"], cpv: ["45261", "45422", "45223"] },
+  { detect: ["couvertur", "couvreur", "toitur", "zingu"], target: ["couverture", "toiture", "toit", "zinguerie", "bardage"], cpv: ["45261", "45260"] },
+  { detect: ["étanch", "etanch"], target: ["étanchéité", "etancheite", "imperméabilis"], cpv: ["45261", "45320"] },
+  { detect: ["maçon", "macon", "gros oeuvre", "gros œuvre", "béton", "beton"], target: ["maçonnerie", "maconnerie", "gros œuvre", "gros oeuvre", "béton", "beton", "enduit", "ravalement"], cpv: ["45262", "45223", "45443"] },
+  { detect: ["terrassement", "vrd", "voirie", "réseaux", "reseaux", "fondation", "génie civil", "genie civil"], target: ["terrassement", "vrd", "voirie", "réseaux", "reseaux", "assainissement", "fondation", "génie civil"], cpv: ["45112", "45111", "45233", "45232"] },
+  { detect: ["démolition", "demolition", "déconstruction", "deconstruction", "désamiantage", "desamiantage"], target: ["démolition", "demolition", "déconstruction", "deconstruction", "désamiantage", "curage"], cpv: ["45111", "45262660"] },
+  { detect: ["menuiser", "agencement", "fenêtre", "fenetre", "ébéniste", "ebeniste"], target: ["menuiserie", "menuiseries", "fenêtre", "fenetre", "porte", "agencement", "placard"], cpv: ["45421", "45420"] },
+  { detect: ["serrurer", "métaller", "metaller", "ferronner"], target: ["serrurerie", "métallerie", "metallerie", "ferronnerie", "garde-corps", "portail"], cpv: ["45421", "44316"] },
+  { detect: ["plâtr", "platr", "cloison", "plaquiste", "isolation", "doublage"], target: ["plâtrerie", "platrerie", "cloison", "doublage", "isolation", "faux plafond", "plafond"], cpv: ["45410", "45324", "45321"] },
+  { detect: ["peintur", "peintre", "revêtement", "revetement", "ravalement"], target: ["peinture", "revêtement", "revetement", "ravalement", "vitrerie"], cpv: ["45442", "45440", "45443"] },
+  { detect: ["carrel", "sol", "faïence", "faience", "parquet", "moquette"], target: ["carrelage", "faïence", "faience", "sol", "parquet", "revêtement de sol", "moquette"], cpv: ["45431", "45432", "45430"] },
+  { detect: ["électric", "electric", "courant", "cfo", "cfa", "domotique"], target: ["électricité", "electricite", "électrique", "courant fort", "courant faible", "éclairage", "domotique"], cpv: ["45311", "45315", "45316", "45310"] },
+  { detect: ["plomb", "sanitaire", "chauffage", "cvc", "clim", "ventilation", "génie climatique", "genie climatique", "cfm"], target: ["plomberie", "sanitaire", "chauffage", "ventilation", "climatisation", "cvc", "vmc", "chaufferie"], cpv: ["45330", "45331", "45332", "45333"] },
+  { detect: ["espace vert", "paysag", "élagage", "elagage", "jardin"], target: ["espaces verts", "paysager", "élagage", "elagage", "plantation", "engazonnement"], cpv: ["45112710", "77310", "77311"] },
+  { detect: ["ascenseur", "élévateur", "elevateur"], target: ["ascenseur", "monte-charge", "élévateur"], cpv: ["45313"] },
+];
 
-function inferFamille(sector: string | null | undefined): string | null {
-  if (!sector) return null;
+// Profil métier de l'entreprise : mots-clés et préfixes CPV à rechercher dans
+// les AO. `known=false` si le secteur ne correspond à aucun métier connu.
+function companyMetier(sector: string | null | undefined): { words: string[]; cpv: string[]; known: boolean } {
+  if (!sector) return { words: [], cpv: [], known: false };
   const s = sector.toLowerCase();
-  for (const [famille, keywords] of Object.entries(SECTOR_TO_FAMILLE)) {
-    if (keywords.some((k) => s.includes(k))) return famille;
+  const words = new Set<string>();
+  const cpv = new Set<string>();
+  for (const m of METIERS) {
+    if (m.detect.some((d) => s.includes(d))) {
+      m.target.forEach((w) => words.add(w));
+      m.cpv.forEach((c) => cpv.add(c));
+    }
   }
-  return null;
+  if (words.size > 0) return { words: [...words], cpv: [...cpv], known: true };
+  // Repli : on découpe le secteur en mots significatifs (>3 lettres).
+  const fallback = s.split(/[^a-zàâäéèêëïîôöùûüç]+/i).filter((w) => w.length > 3);
+  return { words: fallback, cpv: [], known: fallback.length > 0 };
+}
+
+// Force de correspondance métier d'un AO (0 = aucun lien, 1 = correspond).
+function metierStrength(t: Omit<BoampTender, 'compatibility'>, sector: string | null | undefined): number {
+  const profile = companyMetier(sector);
+  if (!profile.known) return -1; // pas de métier identifiable → on ne filtre pas
+  const hay = `${t.title ?? ""} ${t.famille ?? ""} ${t.summary ?? ""}`.toLowerCase();
+  if (profile.words.some((w) => hay.includes(w))) return 1;
+  if (profile.cpv.some((c) => (t.cpvCodes ?? []).some((code) => String(code).startsWith(c)))) return 1;
+  return 0;
 }
 
 // French department code → region/department names for fuzzy location matching
@@ -118,40 +154,28 @@ function zoneTokens(zone: string | null | undefined): string[] {
   return Array.from(tokens).filter((t) => t.length >= 2);
 }
 
-// Compatibility v2: sector via famille synonyms, zone via department codes + aliases
+// Compatibilité v3 : métier (60%) via dictionnaire BTP + CPV, zone (40%).
 function calculateCompatibility(t: Omit<BoampTender, 'compatibility'>, company: CompanyForMatching | null): number | null {
   if (!company) return null
   let score = 0
   let weight = 0
 
-  // Sector / famille (40%)
-  const targetFamille = inferFamille(company.sector);
-  if (company.sector && t.famille) {
-    weight += 40
-    const tf = t.famille.toLowerCase();
-    if (targetFamille && tf.includes(targetFamille)) score += 40
-    else if (tf.includes(company.sector.toLowerCase().slice(0, 4))) score += 30
-    else score += 8
+  // Métier (60%)
+  if (company.sector) {
+    weight += 60
+    const strength = metierStrength(t, company.sector)
+    if (strength === 1) score += 60
+    else if (strength === -1) score += 24 // secteur non identifiable : neutre
+    // strength === 0 (hors métier) : 0 point
   }
 
-  // Geo zone (40%) — match by tokens (dept codes + city/region names)
+  // Zone géographique (40%) — match par tokens (codes dépt + noms ville/région)
   if (company.zone && t.location) {
     weight += 40
     const loc = t.location.toLowerCase();
     const tokens = zoneTokens(company.zone);
     if (tokens.some((tok) => loc.includes(tok))) score += 40
-    else score += 10
-  }
-
-  // Budget (20%) — bracket within 50k–1M
-  if (t.budget) {
-    weight += 20
-    const m = t.budget.match(/(\d+)\s*k€/)
-    if (m) {
-      const v = parseInt(m[1])
-      if (v >= 50 && v <= 1000) score += 20
-      else score += 10
-    } else score += 10
+    else score += 8
   }
 
   if (weight === 0) return null
@@ -228,8 +252,15 @@ export const useBoampTenders = () => {
 
   const withCompatibility = (items: BoampTender[]): BoampTender[] => {
     const enriched = items.map((t) => ({ ...t, compatibility: calculateCompatibility(t, company) }))
-    if (company) enriched.sort((a, b) => (b.compatibility ?? 0) - (a.compatibility ?? 0))
-    return enriched
+    if (!company) return enriched
+
+    // On masque les AO clairement HORS MÉTIER (aucun recouvrement secteur ↔ objet/CPV),
+    // sauf si le secteur n'est pas identifiable. Repli : si le filtre laisse trop peu
+    // d'AO (<5), on garde la liste complète triée (pour ne jamais avoir un feed vide).
+    const inMetier = enriched.filter((t) => metierStrength(t, company.sector) !== 0)
+    const list = inMetier.length >= 5 ? inMetier : enriched
+    list.sort((a, b) => (b.compatibility ?? 0) - (a.compatibility ?? 0))
+    return list
   }
 
   const loadFromDb = async (): Promise<BoampTender[]> => {
