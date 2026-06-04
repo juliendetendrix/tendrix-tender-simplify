@@ -250,8 +250,29 @@ export const useBoampTenders = () => {
     return Math.floor((Date.now() - new Date(date).getTime()) / 3_600_000)
   }
 
+  // Un AO n'est présentable que s'il est exploitable MAINTENANT :
+  //  • pas périmé (date limite de réponse passée) ;
+  //  • pas publié le jour même (le DCE n'est en général pas encore en ligne côté
+  //    acheteur → le robot ne peut rien récupérer, on attend le lendemain).
+  const isPresentable = (t: BoampTender): boolean => {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    if (t.deadline) {
+      const d = new Date(t.deadline);
+      if (!isNaN(d.getTime()) && d.getTime() < today.getTime()) return false; // périmé
+    }
+    if (t.datePublication) {
+      const p = new Date(t.datePublication);
+      if (!isNaN(p.getTime())) {
+        p.setHours(0, 0, 0, 0);
+        if (p.getTime() >= today.getTime()) return false; // publié aujourd'hui (trop frais)
+      }
+    }
+    return true;
+  };
+
   const withCompatibility = (items: BoampTender[]): BoampTender[] => {
-    const enriched = items.map((t) => ({ ...t, compatibility: calculateCompatibility(t, company) }))
+    const fresh = items.filter(isPresentable)
+    const enriched = fresh.map((t) => ({ ...t, compatibility: calculateCompatibility(t, company) }))
     if (!company) return enriched
 
     // On masque les AO clairement HORS MÉTIER (aucun recouvrement secteur ↔ objet/CPV),
