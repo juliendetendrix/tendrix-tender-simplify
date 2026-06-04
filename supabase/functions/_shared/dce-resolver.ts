@@ -139,9 +139,13 @@ export function resolveDce(raw: unknown): DceResolution {
   }
 
   // 2) Référence de consultation
-  const reference =
+  let reference =
     deepFind(donnees, ["identifiantInterne"]) ??
     (typeof record.contractfolderid === "string" ? record.contractfolderid : null);
+  // Le ContractFolderID des avis eForms est un UUID inutilisable comme clé de
+  // recherche → on l'écarte (l'adaptateur recherchera par objet du marché).
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (reference && UUID_RE.test(reference)) reference = null;
 
   // 3) Acheteur
   const buyer =

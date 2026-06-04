@@ -122,9 +122,14 @@ export function resolveDce(raw: unknown): DceResolution {
     if (deep) platformUrl = deep;
   }
 
-  const reference =
+  let reference =
     deepFind(donnees, ["identifiantInterne"]) ??
     (typeof record.contractfolderid === "string" ? record.contractfolderid : null);
+  // Le ContractFolderID des avis eForms est un UUID inutilisable comme clé de
+  // recherche sur les plateformes (PLACE/Atexo cherche par réf. ou objet) → on
+  // l'écarte pour que l'adaptateur recherche plutôt par l'objet du marché.
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (reference && UUID_RE.test(reference)) reference = null;
   const buyer =
     (typeof record.nomacheteur === "string" ? record.nomacheteur : null) ??
     deepFind(donnees, ["nomOfficiel"]);
