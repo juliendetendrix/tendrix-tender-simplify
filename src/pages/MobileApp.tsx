@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Coins } from "lucide-react";
 import { LastMinuteAO } from "@/components/mobile/LastMinuteAO";
@@ -51,6 +51,22 @@ export default function MobileApp() {
       return () => clearTimeout(timer);
     }
   }, [welcomeKey]);
+
+  // Ouverture directe d'une conversation via ?chat=ca (expert) ou ?chat=<requestId>
+  // (depuis la fiche analyse, boutons "Discuter avec mon CA" / "Répondre à ce marché").
+  const chatHandled = useRef(false);
+  useEffect(() => {
+    if (chatHandled.current) return;
+    const chat = searchParams.get("chat");
+    if (!chat) return;
+    chatHandled.current = true;
+    if (chat === "ca") {
+      setOpenedChat({ id: CA_THREAD_ID, title: ca.display_name || "Mon chargé d'affaires", isCADirect: true });
+    } else {
+      setActiveTab("dossiers");
+      setOpenedChat({ id: chat, title: searchParams.get("title") || "Votre dossier" });
+    }
+  }, [searchParams, ca.display_name]);
 
   const handleWelcomeClose = () => {
     if (welcomeKey) localStorage.setItem(welcomeKey, "true");

@@ -41,7 +41,7 @@ serve(async (req) => {
       tender.cpvCodes?.length ? `Codes CPV : ${tender.cpvCodes.join(", ")}` : null,
     ].filter(Boolean).join("\n");
 
-    const userMessage = `Voici les informations d'un appel d'offres public :\n\n${lines}\n\nRédige un résumé clair en 3 à 4 phrases pour un artisan du BTP. Explique ce qui est attendu, où, et pourquoi c'est pertinent. Langage simple, pas de jargon juridique, pas de puces, pas de titre.`;
+    const userMessage = `Voici les informations d'un appel d'offres public :\n\n${lines}\n\nRédige un résumé TRÈS court : 2 à 3 phrases maximum (2-3 lignes), pour un artisan du BTP. L'essentiel : ce qui est attendu et où. Langage simple, pas de jargon, pas de puces, pas de titre.`;
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",

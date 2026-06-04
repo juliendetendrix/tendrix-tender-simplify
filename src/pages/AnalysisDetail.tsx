@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft, FileText, Download, Loader2, CheckCircle2, AlertTriangle, XCircle,
   Sparkles, Building2, MapPin, Calendar, ExternalLink, Link2,
-  ListChecks, ShieldCheck, Package, Star, AlertCircle, MapPinned, Timer,
+  ListChecks, ShieldCheck, Package, Star, AlertCircle, MapPinned, Timer, MessageSquare,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -56,6 +56,7 @@ interface AnalysisRow {
   report: AnalysisReport | null;
   selected_lots: string[] | null;
   lots: LotReport[] | null;
+  request_id: string | null;
   buyer_profile_url: string | null;
   platform: string | null;
   consultation_ref: string | null;
@@ -137,7 +138,7 @@ const AnalysisDetail = () => {
     const { data } = await supabase
       .from("tender_analyses")
       .select(`
-        id, status, verdict, report, selected_lots, lots,
+        id, status, verdict, report, selected_lots, lots, request_id,
         buyer_profile_url, platform, consultation_ref,
         tenders ( title, organisme, location, deadline ),
         tender_documents ( id, file_name, doc_type, storage_path, mime_type, size_bytes, source )
@@ -251,7 +252,7 @@ const AnalysisDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       {Header}
-      <main className="max-w-lg mx-auto px-4 py-6 pb-16 space-y-5">
+      <main className="max-w-lg mx-auto px-4 py-6 pb-28 space-y-5">
         {/* Titre */}
         <div>
           <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground mb-1">
@@ -325,6 +326,16 @@ const AnalysisDetail = () => {
               </p>
             ) : (
               <>
+                {/* Accès direct à l'expert / chargé d'affaires */}
+                <button
+                  onClick={() => navigate("/app?chat=ca")}
+                  className="w-full mb-4 h-11 flex items-center justify-center gap-2 rounded-xl text-sm font-semibold border hover:bg-primary/5 transition-colors"
+                  style={{ borderColor: "#c7ccff", color: "#0c1c98" }}
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  Discuter avec mon chargé d'affaires
+                </button>
+
                 {/* Encart "Attention particulière" */}
                 {attention && (
                   <div className="rounded-xl border p-4 mb-4 flex items-start gap-3"
@@ -347,13 +358,15 @@ const AnalysisDetail = () => {
                     </AccordionContent>
                   </AccordionItem>
 
-                  {/* Description du marché */}
-                  <AccordionItem value="description">
-                    <AccordionTrigger className="text-sm font-semibold">Description du marché</AccordionTrigger>
-                    <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-                      {description || "Non spécifié"}
-                    </AccordionContent>
-                  </AccordionItem>
+                  {/* Description du marché (masquée si vide) */}
+                  {okVal(description) && (
+                    <AccordionItem value="description">
+                      <AccordionTrigger className="text-sm font-semibold">Description du marché</AccordionTrigger>
+                      <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                        {description}
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
 
                   {/* Lots */}
                   {lots.length > 0 && (
@@ -529,58 +542,34 @@ const AnalysisDetail = () => {
                 Les documents seront disponibles une fois récupérés par votre chargé d'affaires.
               </p>
             ) : (
-              <div className="space-y-4">
-                {/* Pièces communes (administratif transverse) */}
-                {cls.commun.length > 0 && (
-                  <DocGroup title="Pièces administratives communes" docs={cls.commun.map((c) => c.fileName)}
-                    docByName={docByName} labelFor={labelFor} openDoc={openDoc} />
-                )}
-
-                {/* Un bloc par lot — lots ouverts en premier, badge OUVERT */}
-                {cls.groupes.map((g) => (
-                  <div key={g.lot} className="rounded-lg border overflow-hidden">
-                    <div className="flex items-center gap-2 px-3 py-2 bg-secondary/10 border-b flex-wrap">
-                      <Package className="w-4 h-4 text-primary" />
-                      <span className="text-sm font-bold text-foreground">
-                        Lot {g.lot}{g.intitule ? ` — ${g.intitule}` : ""}
-                      </span>
-                      {g.ouvert ? (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#dcfce7", color: "#16a34a" }}>
-                          OUVERT
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                          autre lot
-                        </span>
-                      )}
-                    </div>
-                    <div className="divide-y">
-                      {g.docs.map((c) => {
-                        const doc = docByName.get(c.fileName);
-                        if (!doc) return null;
-                        const info = labelFor(c.fileName);
-                        return <DocRow key={doc.id} doc={doc} info={info} openDoc={openDoc} />;
-                      })}
-                    </div>
-                  </div>
-                ))}
-
-                {/* Études & contexte */}
-                {cls.etudes.length > 0 && (
-                  <DocGroup title="Études & contexte technique" docs={cls.etudes.map((c) => c.fileName)}
-                    docByName={docByName} labelFor={labelFor} openDoc={openDoc} muted />
-                )}
-
-                {/* Guides plateforme */}
-                {cls.guides.length > 0 && (
-                  <DocGroup title="Guides plateforme" docs={cls.guides.map((c) => c.fileName)}
-                    docByName={docByName} labelFor={labelFor} openDoc={openDoc} muted />
-                )}
+              // Liste plate de TOUS les documents (triés : pièces clés d'abord),
+              // chacun consultable / téléchargeable. Rien n'est masqué.
+              <div className="border rounded-lg overflow-hidden divide-y">
+                {[...docs]
+                  .sort((a, b) => Number(labelFor(b.file_name).key) - Number(labelFor(a.file_name).key))
+                  .map((doc) => (
+                    <DocRow key={doc.id} doc={doc} info={labelFor(doc.file_name)} openDoc={openDoc} />
+                  ))}
               </div>
             )}
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Barre fixe : répondre au marché (toujours visible) */}
+      {!inProgress && analysis.status !== "failed" && (
+        <div className="fixed bottom-0 left-0 right-0 z-30 border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+          <div className="max-w-lg mx-auto px-4 py-3">
+            <button
+              onClick={() => navigate(`/app?chat=${analysis.request_id ?? ""}&title=${encodeURIComponent(tender?.title ?? "Votre dossier")}`)}
+              className="w-full h-12 rounded-xl font-bold text-sm text-white hover:opacity-90 transition-opacity"
+              style={{ backgroundColor: "#0c1c98" }}
+            >
+              Répondre à ce marché
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

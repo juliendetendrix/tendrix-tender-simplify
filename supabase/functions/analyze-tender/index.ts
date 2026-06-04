@@ -227,7 +227,7 @@ Tu disposes du profil de l'entreprise (souvent INCOMPLET à ce stade), du texte 
 
 Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, au format exact :
 {
-  "verdict": "go" | "go_with_reserve" | "no_go",
+  "verdict": "go" | "go_with_reserve",
   "avis": "1 à 2 phrases : la décision, en langage simple pour un artisan",
   "attention": "le point d'attention LE PLUS important en une phrase (ex. agrément/qualification obligatoire), ou null si rien de critique",
   "description": "2 à 3 phrases décrivant l'objet du marché",
@@ -245,10 +245,9 @@ Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, au format exac
 }
 
 Règles IMPORTANTES :
-- VERDICT (sois ENCOURAGEANT, le profil est incomplet exprès) : on matche surtout sur le SECTEUR d'activité.
+- VERDICT (sois ENCOURAGEANT) : il n'y a QUE deux verdicts possibles, "go" ou "go_with_reserve". Tu ne dois JAMAIS rendre un avis négatif : le profil de l'entreprise est volontairement incomplet, on ne sait pas encore tout ce qu'elle sait faire.
   • "go" : le secteur de l'entreprise correspond clairement à l'objet du marché.
-  • "go_with_reserve" : secteur compatible mais profil incomplet ou réserves à lever — c'est le cas PAR DÉFAUT quand tu as peu d'infos. Ne pénalise PAS l'absence de certifications/références : on demandera à l'entreprise de compléter son profil ensuite.
-  • "no_go" : UNIQUEMENT si le métier de l'entreprise est manifestement étranger à l'objet (ex. plombier sur un marché informatique).
+  • "go_with_reserve" : dans TOUS les autres cas (secteur partiellement lié, profil incomplet, doute, ou même métier a priori différent). Mets alors dans "avis" et "attention" les points à vérifier avant de s'engager. Ne pénalise PAS l'absence de certifications/références : on demandera à l'entreprise de compléter son profil ensuite.
 - "calendrier", "jugement", "lieu", "duree", "visites", "qualifications" : reprends UNIQUEMENT ce qui figure dans les documents. Si absent, mets "non précisé" ou liste vide. N'invente JAMAIS de chiffres/dates.
 - "lots" : reprends les lots détectés ci-dessus ; "ouvert": true seulement si DPGF/CDPGF présente.
 - Concision avant tout.`;
@@ -318,6 +317,9 @@ Règles IMPORTANTES :
       return json({ error: "Réponse IA non exploitable" }, 502);
     }
 
+    // Règle produit : pas d'avis négatif. Tout "no_go" devient "go_with_reserve".
+    const verdict = parsed.verdict === "no_go" ? "go_with_reserve" : parsed.verdict;
+
     const arr = (v: unknown) => (Array.isArray(v) ? v : []);
 
     // Fusion lots : on part de la détection déterministe (fiable pour "ouvert")
@@ -361,14 +363,14 @@ Règles IMPORTANTES :
     // ── 8. Écrire le résultat (+ lots sur la ligne pour le sélecteur "Répondre") ──
     await svc.from("tender_analyses").update({
       status: "completed",
-      verdict: parsed.verdict,
+      verdict,
       report,
       lots: mergedLots,
       completed_at: new Date().toISOString(),
       status_detail: null,
     }).eq("id", analysisId);
 
-    return json({ ok: true, verdict: parsed.verdict, report });
+    return json({ ok: true, verdict, report });
 
   } catch (err) {
     console.error("Erreur inattendue analyze-tender:", err);
