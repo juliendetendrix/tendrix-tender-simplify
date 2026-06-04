@@ -182,6 +182,21 @@ export function CAAnalysisPanel({ requestId }: Props) {
         )}
       </div>
 
+      {/* Fiche analyse complète (mêmes onglets que côté client) */}
+      {analysis.status === "completed" && (
+        <a
+          href={`/analysis?id=${analysis.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full h-10 rounded-md text-sm font-bold text-white hover:opacity-90 transition-opacity"
+          style={{ backgroundColor: "#0c1c98" }}
+        >
+          <Sparkles className="w-4 h-4" />
+          Voir la fiche analyse complète
+          <ExternalLink className="w-3.5 h-3.5" />
+        </a>
+      )}
+
       {/* Profil acheteur résolu depuis le BOAMP (où récupérer le DCE) */}
       {analysis.buyer_profile_url ? (
         <div className="rounded-md border bg-card px-2.5 py-2 space-y-1.5">
