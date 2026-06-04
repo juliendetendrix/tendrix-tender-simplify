@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { resolveDce } from "./lib/dce-resolver";
 import { scrapePlace } from "./adapters/place";
 import { scrapeAws, CAPTCHA_MARKER } from "./adapters/aws";
+import { scrapeGenericWithAgent } from "./adapters/stagehand-generic";
 import type { DceFile } from "./adapters/types";
 
 const supabase = createClient(
@@ -92,12 +93,14 @@ export const scrapeDce = task({
       } else if (dce.platform === "aws-achat") {
         files = await scrapeAws(input);
       } else {
-        await markManual(analysisId, `Plateforme non automatisée (captcha ou non supportée) : ${dce.platform}`);
-        return { status: "manual" as const };
+        // Pas d'adaptateur déterministe → repli sur l'agent IA générique (Stagehand).
+        // S'il échoue ou ne ramène rien, on tombera proprement en manuel plus bas.
+        logger.info("no specific adapter, trying generic AI agent", { platform: dce.platform });
+        files = await scrapeGenericWithAgent(input);
       }
     } catch (e) {
       const msg = String(e);
-      // Captcha sur le chemin anonyme : non automatisable → reprise humaine explicite.
+      // Captcha (chemin anonyme ou détecté par l'agent) : non automatisable → reprise humaine.
       if (msg.includes(CAPTCHA_MARKER)) {
         logger.warn("captcha detected, falling back to manual", { platform: dce.platform });
         await markManual(analysisId, `Retrait protégé par captcha (${dce.platform}) — reprise manuelle`);
