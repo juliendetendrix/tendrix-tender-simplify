@@ -2,33 +2,41 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft, FileText, Download, Loader2, CheckCircle2, AlertTriangle, XCircle,
-  Sparkles, ThumbsUp, HelpCircle, Building2, MapPin, Calendar, ExternalLink, Link2,
-  ListChecks, ShieldCheck, Package, Clock, Scale, Star,
+  Sparkles, Building2, MapPin, Calendar, ExternalLink, Link2,
+  ListChecks, ShieldCheck, Package, Star, AlertCircle, MapPinned, Timer,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { toast } from "@/hooks/use-toast";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
 import { classifyDce, DOC_TYPE_LABEL, type DocType } from "@/lib/dce-classify";
 
-interface Prerequis { label: string; obligatoire?: boolean; detail?: string }
-interface DateCle { label: string; valeur: string }
-interface CritereAttribution { label: string; ponderation?: string }
+interface Qualif { label: string; obligatoire?: boolean; detail?: string }
+interface KV { label: string; valeur?: string; detail?: string }
 interface LotReport { numero: string; intitule?: string; ouvert?: boolean; resume?: string | null }
 
 interface AnalysisReport {
-  synthese?: string;
-  points_forts?: string[];
-  points_vigilance?: string[];
-  infos_manquantes?: string[];
-  prerequis?: Prerequis[];
-  dates_cles?: DateCle[];
-  criteres_attribution?: CritereAttribution[];
+  // Nouvelle structure (alignée Iziao)
+  avis?: string;
+  attention?: string | null;
+  description?: string | null;
   lots?: LotReport[];
   lots_ouverts?: string[];
+  calendrier?: KV[];
+  jugement?: KV[];
+  lieu?: string | null;
+  duree?: string | null;
+  visites?: string | null;
+  qualifications?: Qualif[];
   documents_non_lus?: string[];
+  // Rétro-compatibilité (anciennes analyses)
+  synthese?: string;
+  prerequis?: Qualif[];
+  dates_cles?: KV[];
+  criteres_attribution?: { label: string; ponderation?: string }[];
 }
 
 interface TenderDoc {
@@ -62,26 +70,6 @@ const VERDICT_UI: Record<string, { label: string; phrase: string; bg: string; co
 };
 
 const IN_PROGRESS = ["pending", "scraping", "analyzing", "manual_intervention_required"];
-
-function Section({ title, items, Icon, color }: { title: string; items: string[]; Icon: typeof ThumbsUp; color: string }) {
-  if (!items || items.length === 0) return null;
-  return (
-    <div className="space-y-2">
-      <h3 className="flex items-center gap-2 text-sm font-bold" style={{ color }}>
-        <Icon className="w-4 h-4" />
-        {title}
-      </h3>
-      <ul className="space-y-1.5 pl-1">
-        {items.map((it, i) => (
-          <li key={i} className="flex gap-2 text-sm text-foreground">
-            <span className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
-            <span className="leading-snug">{it}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
 
 interface DocInfo { type: DocType; label: string; key: boolean }
 
@@ -237,12 +225,20 @@ const AnalysisDetail = () => {
   // d'attendre l'IA). Permet l'onglet "Documents" structuré comme le concurrent.
   const cls = classifyDce(docs.map((d) => d.file_name));
   const docByName = new Map(docs.map((d) => [d.file_name, d]));
-  const prerequis = report.prerequis ?? [];
-  const datesCles = (report.dates_cles ?? []).filter((d) => d.valeur && d.valeur !== "non précisé");
-  const criteres = report.criteres_attribution ?? [];
+
+  // Mapping structure Iziao (avec rétro-compatibilité des anciennes analyses).
+  const avis = report.avis ?? report.synthese ?? "";
+  const attention = report.attention ?? null;
+  const description = report.description ?? null;
   const lots = (analysis.lots ?? report.lots ?? []) as LotReport[];
-  const lotsOuverts = report.lots_ouverts ?? cls.lotsOuverts;
-  const hasPrerequis = prerequis.length > 0 || datesCles.length > 0 || criteres.length > 0;
+  const okVal = (s?: string | null) => !!s && s.trim() !== "" && s.trim().toLowerCase() !== "non précisé";
+  const calendrier = (report.calendrier ?? report.dates_cles ?? []).filter((d) => okVal(d.valeur));
+  const jugement = (report.jugement ?? (report.criteres_attribution ?? []).map((c) => ({ label: c.label, detail: c.ponderation }))).filter((j) => j.label);
+  const lieu = report.lieu ?? tender?.location ?? null;
+  const duree = report.duree ?? null;
+  const visites = report.visites ?? null;
+  const qualifications = report.qualifications ?? report.prerequis ?? [];
+  const hasPrerequis = okVal(visites) || qualifications.length > 0;
 
   // Onglet Documents : libellé court par fichier + mise en avant des pièces clés.
   const KEY_TYPES: DocType[] = ["RC", "CCAP", "CCTP", "DPGF", "AE"];
@@ -305,8 +301,8 @@ const AnalysisDetail = () => {
               <span className="text-lg font-extrabold tracking-wide" style={{ color: v.color }}>{v.label}</span>
             </div>
             <p className="text-sm font-medium mt-1.5" style={{ color: v.color }}>{v.phrase}</p>
-            {report.synthese && (
-              <p className="text-sm text-foreground mt-3 leading-relaxed">{report.synthese}</p>
+            {avis && (
+              <p className="text-sm text-foreground mt-3 leading-relaxed">{avis}</p>
             )}
           </div>
         ) : null}
@@ -321,116 +317,166 @@ const AnalysisDetail = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* — L'analyse — */}
-          <TabsContent value="analyse" className="space-y-5 pt-4">
-            {inProgress && (
+          {/* — L'analyse (accordéon compact, structure Iziao) — */}
+          <TabsContent value="analyse" className="pt-4">
+            {inProgress ? (
               <p className="text-sm text-muted-foreground text-center py-6">
-                Le verdict détaillé apparaîtra ici une fois l'analyse terminée.
+                Le détail apparaîtra ici une fois l'analyse terminée.
               </p>
-            )}
-            {!inProgress && (
+            ) : (
               <>
-                <Section title="Points forts" items={report.points_forts ?? []} Icon={ThumbsUp} color="#16a34a" />
-                <Section title="Points de vigilance" items={report.points_vigilance ?? []} Icon={AlertTriangle} color="#b45309" />
-                <Section title="Informations manquantes" items={report.infos_manquantes ?? []} Icon={HelpCircle} color="#0c1c98" />
-
-                {/* Lots du marché (tri + lots ouverts) */}
-                {lots.length > 0 && (
-                  <div className="space-y-2">
-                    <h3 className="flex items-center gap-2 text-sm font-bold" style={{ color: "#0c1c98" }}>
-                      <Package className="w-4 h-4" />
-                      Lots du marché
-                    </h3>
-                    <div className="space-y-2">
-                      {lots.map((lot) => (
-                        <div key={lot.numero} className="rounded-lg border p-3 bg-card">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-sm font-semibold text-foreground">
-                              Lot {lot.numero}{lot.intitule ? ` — ${lot.intitule}` : ""}
-                            </span>
-                            {lot.ouvert ? (
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#dcfce7", color: "#16a34a" }}>
-                                OUVERT
-                              </span>
-                            ) : (
-                              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                                autre lot
-                              </span>
-                            )}
-                          </div>
-                          {lot.resume && <p className="text-xs text-muted-foreground mt-1 leading-snug">{lot.resume}</p>}
-                        </div>
-                      ))}
+                {/* Encart "Attention particulière" */}
+                {attention && (
+                  <div className="rounded-xl border p-4 mb-4 flex items-start gap-3"
+                       style={{ backgroundColor: "#fff7ed", borderColor: "#fed7aa" }}>
+                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#ea580c" }} />
+                    <div>
+                      <p className="font-bold text-sm mb-1" style={{ color: "#ea580c" }}>Attention particulière</p>
+                      <p className="text-sm leading-snug" style={{ color: "#9a3412" }}>{attention}</p>
                     </div>
                   </div>
                 )}
 
+                <Accordion type="multiple" defaultValue={["avis"]} className="w-full">
+                  {/* Avis */}
+                  <AccordionItem value="avis">
+                    <AccordionTrigger className="text-sm font-semibold">Avis</AccordionTrigger>
+                    <AccordionContent className="text-sm text-foreground leading-relaxed">
+                      {v && <span className="font-bold" style={{ color: v.color }}>{v.label} · </span>}
+                      {avis || "—"}
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Description du marché */}
+                  <AccordionItem value="description">
+                    <AccordionTrigger className="text-sm font-semibold">Description du marché</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                      {description || "Non spécifié"}
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Lots */}
+                  {lots.length > 0 && (
+                    <AccordionItem value="lots">
+                      <AccordionTrigger className="text-sm font-semibold">Lots ({lots.length})</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-2">
+                          {lots.map((lot) => (
+                            <div key={lot.numero} className="rounded-lg border p-3 bg-card">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-sm font-semibold text-foreground">
+                                  Lot {lot.numero}{lot.intitule ? ` — ${lot.intitule}` : ""}
+                                </span>
+                                {lot.ouvert && (
+                                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#dcfce7", color: "#16a34a" }}>
+                                    OUVERT
+                                  </span>
+                                )}
+                              </div>
+                              {lot.resume && <p className="text-xs text-muted-foreground mt-1 leading-snug">{lot.resume}</p>}
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
+
+                  {/* Calendrier de réponse */}
+                  {calendrier.length > 0 && (
+                    <AccordionItem value="calendrier">
+                      <AccordionTrigger className="text-sm font-semibold">Calendrier de réponse</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-1.5">
+                          {calendrier.map((d, i) => (
+                            <div key={i} className="flex items-center justify-between gap-3 text-sm">
+                              <span className="text-muted-foreground">{d.label}</span>
+                              <span className="font-semibold text-foreground text-right">{d.valeur}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
+
+                  {/* Jugement */}
+                  {jugement.length > 0 && (
+                    <AccordionItem value="jugement">
+                      <AccordionTrigger className="text-sm font-semibold">Jugement des offres</AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-1.5">
+                          {jugement.map((j, i) => (
+                            <div key={i} className="flex items-center justify-between gap-3 text-sm">
+                              <span className="text-foreground">{j.label}</span>
+                              {j.detail && <span className="font-semibold text-primary">{j.detail}</span>}
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
+
+                  {/* Lieu d'exécution */}
+                  {okVal(lieu) && (
+                    <AccordionItem value="lieu">
+                      <AccordionTrigger className="text-sm font-semibold">Lieu d'exécution</AccordionTrigger>
+                      <AccordionContent className="text-sm text-muted-foreground flex items-start gap-2">
+                        <MapPinned className="w-4 h-4 shrink-0 mt-0.5" />
+                        {lieu}
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
+
+                  {/* Durée */}
+                  {okVal(duree) && (
+                    <AccordionItem value="duree">
+                      <AccordionTrigger className="text-sm font-semibold">Durée du marché</AccordionTrigger>
+                      <AccordionContent className="text-sm text-muted-foreground flex items-start gap-2">
+                        <Timer className="w-4 h-4 shrink-0 mt-0.5" />
+                        {duree}
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
+                </Accordion>
+
                 {report.documents_non_lus && report.documents_non_lus.length > 0 && (
-                  <p className="text-xs text-muted-foreground border-t pt-3">
+                  <p className="text-xs text-muted-foreground border-t pt-3 mt-4">
                     À vérifier manuellement (formats non lus par l'IA) : {report.documents_non_lus.join(", ")}
                   </p>
-                )}
-                {!report.points_forts?.length && !report.points_vigilance?.length && !report.infos_manquantes?.length && !lots.length && (
-                  <p className="text-sm text-muted-foreground text-center py-6">Aucun détail disponible.</p>
                 )}
               </>
             )}
           </TabsContent>
 
-          {/* — Prérequis — */}
-          <TabsContent value="prerequis" className="space-y-5 pt-4">
+          {/* — Prérequis (Visites + Qualifications, façon Iziao) — */}
+          <TabsContent value="prerequis" className="space-y-6 pt-4">
             {inProgress ? (
               <p className="text-sm text-muted-foreground text-center py-6">
-                Les prérequis (assurances, qualifications, dates, critères) apparaîtront ici une fois l'analyse terminée.
+                Les prérequis apparaîtront ici une fois l'analyse terminée.
               </p>
             ) : !hasPrerequis ? (
               <p className="text-sm text-muted-foreground text-center py-6">
-                Aucun prérequis n'a pu être extrait des documents fournis.
+                Aucun prérequis particulier n'a pu être extrait des documents fournis.
               </p>
             ) : (
               <>
-                {/* Dates clés */}
-                {datesCles.length > 0 && (
-                  <div className="space-y-2">
-                    <h3 className="flex items-center gap-2 text-sm font-bold" style={{ color: "#0c1c98" }}>
-                      <Clock className="w-4 h-4" /> Dates clés
-                    </h3>
-                    <div className="divide-y border rounded-lg overflow-hidden">
-                      {datesCles.map((d, i) => (
-                        <div key={i} className="flex items-center justify-between gap-3 px-3 py-2 bg-card text-sm">
-                          <span className="text-muted-foreground">{d.label}</span>
-                          <span className="font-semibold text-foreground text-right">{d.valeur}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                {/* Visites */}
+                <div className="space-y-2">
+                  <h3 className="flex items-center gap-2 text-base font-bold text-foreground">
+                    <MapPinned className="w-5 h-5" style={{ color: "#0c1c98" }} /> Visites
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {okVal(visites) ? visites : "Aucune visite obligatoire ou échantillon à fournir n'est mentionnée dans les documents."}
+                  </p>
+                </div>
 
-                {/* Critères d'attribution */}
-                {criteres.length > 0 && (
+                {/* Qualifications & pièces requises */}
+                {qualifications.length > 0 && (
                   <div className="space-y-2">
-                    <h3 className="flex items-center gap-2 text-sm font-bold" style={{ color: "#0c1c98" }}>
-                      <Scale className="w-4 h-4" /> Critères d'attribution
-                    </h3>
-                    <div className="divide-y border rounded-lg overflow-hidden">
-                      {criteres.map((c, i) => (
-                        <div key={i} className="flex items-center justify-between gap-3 px-3 py-2 bg-card text-sm">
-                          <span className="text-foreground">{c.label}</span>
-                          {c.ponderation && <span className="font-semibold text-primary">{c.ponderation}</span>}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Pièces & qualifications exigées */}
-                {prerequis.length > 0 && (
-                  <div className="space-y-2">
-                    <h3 className="flex items-center gap-2 text-sm font-bold" style={{ color: "#0c1c98" }}>
-                      <ShieldCheck className="w-4 h-4" /> Pièces & qualifications exigées
+                    <h3 className="flex items-center gap-2 text-base font-bold text-foreground">
+                      <ShieldCheck className="w-5 h-5" style={{ color: "#0c1c98" }} /> Qualifications requises
                     </h3>
                     <ul className="space-y-2">
-                      {prerequis.map((p, i) => (
+                      {qualifications.map((p, i) => (
                         <li key={i} className="rounded-lg border p-3 bg-card">
                           <div className="flex items-center gap-2 flex-wrap">
                             <ListChecks className="w-4 h-4 shrink-0" style={{ color: p.obligatoire ? "#dc2626" : "#16a34a" }} />

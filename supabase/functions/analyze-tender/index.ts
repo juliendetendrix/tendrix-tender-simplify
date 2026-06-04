@@ -223,38 +223,35 @@ Procédure : ${tender.procedure ?? "—"}
 ${lotsTxt}${otherTxt}${lotsDetectTxt}${officeTxt}
 
 ## TA MISSION
-Tu disposes ci-dessus du profil de l'entreprise, du contenu texte des pièces Word/Excel (le cas échéant), et en pièces jointes des PDF du marché (règlement de consultation, CCTP, CCAP, DPGF...). Tu dois produire une FICHE D'ANALYSE claire et limpide pour un artisan, comme le ferait un conseiller en marchés publics.
+Tu disposes du profil de l'entreprise (souvent INCOMPLET à ce stade), du texte des pièces Word/Excel et des PDF du marché. Produis une fiche d'analyse COMPACTE et factuelle. Pas de longs développements : des phrases courtes, l'essentiel.
 
 Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, au format exact :
 {
-  "verdict": "go" | "no_go" | "go_with_reserve",
-  "synthese": "une phrase qui résume la décision pour un artisan, langage simple",
-  "points_forts": ["raison concrète pour laquelle l'entreprise est bien placée", "..."],
-  "points_vigilance": ["risque ou exigence difficile à satisfaire", "..."],
-  "infos_manquantes": ["information absente des documents dont l'entreprise a besoin avant de s'engager", "..."],
-  "prerequis": [
-    { "label": "Assurance décennale", "obligatoire": true, "detail": "Condition de conclusion du marché (cf. CCAP)" },
-    { "label": "Qualification Qualibat XXXX", "obligatoire": false, "detail": "Souhaitée mais non éliminatoire" }
+  "verdict": "go" | "go_with_reserve" | "no_go",
+  "avis": "1 à 2 phrases : la décision, en langage simple pour un artisan",
+  "attention": "le point d'attention LE PLUS important en une phrase (ex. agrément/qualification obligatoire), ou null si rien de critique",
+  "description": "2 à 3 phrases décrivant l'objet du marché",
+  "lots": [ { "numero": "6", "intitule": "Serrurerie", "ouvert": true, "resume": "une phrase" } ],
+  "calendrier": [
+    { "label": "Date limite de remise des offres", "valeur": "JJ/MM/AAAA ou 'non précisé'" },
+    { "label": "Délai de validité des offres", "valeur": "ex. 120 jours" },
+    { "label": "Date limite des questions", "valeur": "JJ/MM/AAAA si présent" }
   ],
-  "dates_cles": [
-    { "label": "Date limite de remise des offres", "valeur": "JJ/MM/AAAA si présent, sinon 'non précisé'" },
-    { "label": "Délai d'exécution", "valeur": "ex. 13 mois" }
-  ],
-  "criteres_attribution": [
-    { "label": "Prix", "ponderation": "60%" },
-    { "label": "Valeur technique", "ponderation": "40%" }
-  ],
-  "lots": [
-    { "numero": "6", "intitule": "Serrurerie", "ouvert": true, "resume": "une phrase sur le contenu du lot et son adéquation au profil" }
-  ]
+  "jugement": [ { "label": "Prix", "detail": "60%" }, { "label": "Valeur technique", "detail": "40%" } ],
+  "lieu": "lieu d'exécution (commune / adresse)",
+  "duree": "durée ou délai d'exécution du marché",
+  "visites": "phrase sur visite obligatoire / échantillon, ou 'Aucune visite obligatoire mentionnée'",
+  "qualifications": [ { "label": "Assurance décennale", "obligatoire": true, "detail": "phrase courte" } ]
 }
 
 Règles IMPORTANTES :
-- "verdict" : "go" si clairement adapté ; "no_go" si hors de portée (métier, zone, capacité) ; "go_with_reserve" si adapté mais avec conditions à lever.
-- "prerequis" : liste les pièces/qualifications/assurances exigées par le DCE (décennale, RC Pro, attestations fiscale/sociale, qualifications Qualibat/RGE, références, capacité financière…). "obligatoire": true si éliminatoire/condition de conclusion.
-- "dates_cles" et "criteres_attribution" : reprends UNIQUEMENT ce qui figure dans les documents (souvent dans le RC). Si l'information est absente, ne l'invente pas — mets "non précisé" ou laisse la liste vide.
-- "lots" : reprends les lots détectés ci-dessus. "ouvert": true seulement si le lot a une DPGF/CDPGF. Donne un intitulé propre et un résumé court par lot ouvert.
-- Reste factuel, base-toi sur les documents fournis, ne devine JAMAIS de chiffres absents (montants, surfaces, dates).`;
+- VERDICT (sois ENCOURAGEANT, le profil est incomplet exprès) : on matche surtout sur le SECTEUR d'activité.
+  • "go" : le secteur de l'entreprise correspond clairement à l'objet du marché.
+  • "go_with_reserve" : secteur compatible mais profil incomplet ou réserves à lever — c'est le cas PAR DÉFAUT quand tu as peu d'infos. Ne pénalise PAS l'absence de certifications/références : on demandera à l'entreprise de compléter son profil ensuite.
+  • "no_go" : UNIQUEMENT si le métier de l'entreprise est manifestement étranger à l'objet (ex. plombier sur un marché informatique).
+- "calendrier", "jugement", "lieu", "duree", "visites", "qualifications" : reprends UNIQUEMENT ce qui figure dans les documents. Si absent, mets "non précisé" ou liste vide. N'invente JAMAIS de chiffres/dates.
+- "lots" : reprends les lots détectés ci-dessus ; "ouvert": true seulement si DPGF/CDPGF présente.
+- Concision avant tout.`;
 
     // ── 7. Appeler Claude (PDF + contexte). Prefill "{" pour forcer le JSON. ──
     // Timeout dur : si Claude tarde (PDF scannés lourds), on coupe AVANT que la
@@ -276,7 +273,7 @@ Règles IMPORTANTES :
           model: "claude-sonnet-4-5",
           max_tokens: 3000,
           system:
-            "Tu es un expert en marchés publics français qui conseille les artisans et TPE du BTP. Tu rends des verdicts Go / No-Go honnêtes, prudents et factuels, fondés uniquement sur les documents fournis.",
+            "Tu es un conseiller en marchés publics qui aide les artisans et TPE du BTP. Tu produis des fiches d'analyse COMPACTES, factuelles et ENCOURAGEANTES : à ce stade le profil de l'entreprise est volontairement incomplet, tu te bases surtout sur le secteur d'activité. Tu ne mets 'no_go' que si le métier est manifestement étranger à l'objet du marché ; en cas de doute tu donnes 'go_with_reserve'. Tu ne fais jamais de longs développements et tu n'inventes aucun chiffre absent des documents.",
           messages: [
             { role: "user", content: [...documentBlocks, { type: "text", text: contextText }] },
             { role: "assistant", content: "{" },
@@ -339,16 +336,23 @@ Règles IMPORTANTES :
       };
     });
 
+    const str = (v: unknown) => (typeof v === "string" && v.trim() && v.trim().toLowerCase() !== "null" ? v.trim() : null);
+
     const report = {
-      synthese: parsed.synthese ?? "",
-      points_forts: arr(parsed.points_forts),
-      points_vigilance: arr(parsed.points_vigilance),
-      infos_manquantes: arr(parsed.infos_manquantes),
-      prerequis: arr(parsed.prerequis),
-      dates_cles: arr(parsed.dates_cles),
-      criteres_attribution: arr(parsed.criteres_attribution),
+      // Structure alignée sur la fiche concurrente (Iziao) : compact, par sections.
+      avis: str(parsed.avis) ?? str(parsed.synthese) ?? "",
+      attention: str(parsed.attention),
+      description: str(parsed.description) ?? str(tender.summary),
       lots: mergedLots,
       lots_ouverts: classification.lotsOuverts,
+      calendrier: arr(parsed.calendrier).length ? arr(parsed.calendrier) : arr(parsed.dates_cles),
+      jugement: arr(parsed.jugement).length
+        ? arr(parsed.jugement)
+        : arr(parsed.criteres_attribution).map((c: any) => ({ label: c?.label, detail: c?.ponderation })),
+      lieu: str(parsed.lieu) ?? str(tender.location),
+      duree: str(parsed.duree),
+      visites: str(parsed.visites),
+      qualifications: arr(parsed.qualifications).length ? arr(parsed.qualifications) : arr(parsed.prerequis),
       documents_lus: [...documentBlocks.map((b: any) => b.title), ...officeTexts.map((o) => o.name)],
       documents_non_lus: otherDocs.map((d) => d.file_name),
       documents_ignores: skipped,
