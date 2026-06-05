@@ -21,7 +21,7 @@ import { toast } from "@/hooks/use-toast";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
 import {
   Home, Briefcase, FileSearch, Sparkles, Building2, Coins, Plus, Search, Loader2,
-  MapPin, Calendar, Clock, CheckCircle2, AlertTriangle, XCircle, RefreshCw, ChevronRight, MessageSquare, History,
+  MapPin, Calendar, Clock, CheckCircle2, AlertTriangle, XCircle, RefreshCw, ChevronRight, MessageSquare, History, Phone, Mail, Star,
 } from "lucide-react";
 
 type Page = "accueil" | "marches" | "analyses" | "reponses" | "entreprise";
@@ -186,7 +186,16 @@ export default function DesktopApp() {
           <EntrepriseSection tab={entTab} setTab={setEntTab} />
         ) : (
           <div className="max-w-6xl mx-auto px-8 py-8">
-            {page === "accueil" && <Accueil name={company?.contact_name} dossiers={dossiers} onOpen={(d) => d.analysisId && setView({ kind: "analysis", id: d.analysisId })} goMarches={() => setPage("marches")} />}
+            {page === "accueil" && (
+              <Accueil
+                name={company?.name ?? company?.contact_name}
+                tenders={visibleTenders} ca={ca} caInitials={caInitials} dossiers={dossiers}
+                onAnalyse={(t) => setConfirmT(t)}
+                onOpen={(d) => d.analysisId && setView({ kind: "analysis", id: d.analysisId })}
+                onChatCA={() => { setView(null); setOpenedChat({ id: "ca", title: ca.display_name, isCADirect: true }); }}
+                goMarches={() => setPage("marches")}
+              />
+            )}
             {page === "marches" && (
               <Marches
                 tenders={visibleTenders} loading={tendersLoading} query={query} setQuery={setQuery}
@@ -203,45 +212,79 @@ export default function DesktopApp() {
   );
 }
 
-// ─────────────────── Accueil ───────────────────
-function Accueil({ name, dossiers, onOpen, goMarches }: { name?: string | null; dossiers: any[]; onOpen: (d: any) => void; goMarches: () => void }) {
-  const withDeadline = [...dossiers].filter((d) => d.deadline).sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()).slice(0, 6);
-  const recent = dossiers.filter((d) => d.analysisId).slice(0, 6);
+// ─────────────────── Accueil (dashboard à blocs, branché réel) ───────────────────
+const STATUS_TABS = [
+  { id: "demande", label: "Demande émise", pct: 25 },
+  { id: "en_cours", label: "En cours", pct: 50 },
+  { id: "soumis", label: "Soumis", pct: 75 },
+  { id: "gagne", label: "Remporté", pct: 100 },
+] as const;
+
+function Accueil({ name, tenders, ca, caInitials, dossiers, onAnalyse, onOpen, onChatCA, goMarches }:
+  { name?: string | null; tenders: BoampTender[]; ca: any; caInitials: string; dossiers: any[]; onAnalyse: (t: BoampTender) => void; onOpen: (d: any) => void; onChatCA: () => void; goMarches: () => void }) {
+  const [statusTab, setStatusTab] = useState<string>("demande");
+  const lastMinute = tenders.slice(0, 4);
+  const recent = dossiers.filter((d) => d.analysisId).slice(0, 4);
+  const inStatus = dossiers.filter((d) => (d.status ?? "demande") === statusTab);
+  const firstName = (ca?.display_name ?? "").split(" ")[0] || "votre chargé d'affaires";
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold" style={{ color: BLUE }}>Bonjour {name?.split(" ")[0] ?? ""} 👋</h1>
-        <p className="text-sm text-muted-foreground">Voici un aperçu de votre activité.</p>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Panel title="Échéances à venir" icon={Calendar}>
-          {withDeadline.length === 0 ? <Empty text="Aucune échéance pour le moment." /> : (
-            <div className="divide-y">
-              {withDeadline.map((d) => (
-                <button key={d.id} onClick={() => onOpen(d)} className="w-full flex items-center gap-3 py-2.5 text-left hover:opacity-80">
-                  <Clock className="w-4 h-4 shrink-0" style={{ color: BLUE }} />
-                  <span className="flex-1 text-sm text-foreground line-clamp-1">{d.title}</span>
-                  <span className="text-xs font-semibold text-muted-foreground">{d.deadline}</span>
+      <h1 className="text-2xl font-bold text-foreground">Bonjour <span style={{ color: BLUE }}>{name?.split(" ")[0] ?? "Entreprise"}</span></h1>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Appels d'offres last minute */}
+        <Panel title="Appels d'offres recommandés" icon={Clock} accent>
+          {lastMinute.length === 0 ? (
+            <div className="text-center py-4">
+              <Empty text="Aucune recommandation pour le moment." />
+              <Button onClick={goMarches} size="sm" className="mt-2 text-white" style={{ backgroundColor: BLUE }}>Voir les marchés</Button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {lastMinute.map((t) => (
+                <button key={t.id} onClick={() => onAnalyse(t)} className="w-full text-left rounded-lg border p-3 hover:border-primary/40 hover:bg-primary/5 transition-colors">
+                  <p className="text-sm font-semibold text-foreground line-clamp-1">{t.title}</p>
+                  <div className="flex items-center justify-between mt-1 text-xs text-muted-foreground">
+                    <span className="line-clamp-1">{t.organisme ?? t.location ?? ""}</span>
+                    {t.compatibility != null && <span className="font-bold shrink-0 ml-2" style={{ color: BLUE }}>{t.compatibility}%</span>}
+                  </div>
                 </button>
               ))}
             </div>
           )}
         </Panel>
-        <Panel title="Analyses récentes" icon={FileSearch}>
-          {recent.length === 0 ? (
-            <div className="text-center py-6">
-              <Empty text="Aucune analyse pour l'instant." />
-              <Button onClick={goMarches} className="mt-3 text-white" style={{ backgroundColor: BLUE }}>Voir les marchés</Button>
+
+        {/* Chargé d'affaires référent */}
+        <Panel title="Mon chargé d'affaires référent" icon={Star} accent accentColor={YELLOW}>
+          <div className="flex items-center gap-3 rounded-lg border p-3">
+            {ca?.photo_url ? <img src={ca.photo_url} alt="" className="w-12 h-12 rounded-full object-cover" />
+              : <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold" style={{ color: BLUE }}>{caInitials}</div>}
+            <div>
+              <p className="font-bold text-foreground">{ca?.display_name ?? "—"}</p>
+              <p className="text-xs text-muted-foreground">Chargé d'affaires</p>
             </div>
-          ) : (
-            <div className="divide-y">
+          </div>
+          <div className="grid grid-cols-2 gap-2 mt-3">
+            {ca?.phone && <a href={`tel:${ca.phone}`} className="flex items-center justify-center gap-1.5 h-9 rounded-lg border text-sm font-medium hover:bg-muted"><Phone className="w-4 h-4" />Appeler</a>}
+            {ca?.email && <a href={`mailto:${ca.email}`} className="flex items-center justify-center gap-1.5 h-9 rounded-lg border text-sm font-medium hover:bg-muted"><Mail className="w-4 h-4" />Email</a>}
+          </div>
+          <button onClick={onChatCA} className="w-full h-10 rounded-lg font-bold text-sm mt-2" style={{ backgroundColor: YELLOW, color: BLUE }}>
+            Écrire un message à {firstName}
+          </button>
+        </Panel>
+
+        {/* Dernières analyses */}
+        <Panel title="Mes dernières analyses" icon={FileSearch}>
+          {recent.length === 0 ? <Empty text="Aucune analyse pour l'instant." /> : (
+            <div className="space-y-2">
               {recent.map((d) => {
                 const v = d.analysisVerdict ? VERDICT[d.analysisVerdict] : null;
                 return (
-                  <button key={d.id} onClick={() => onOpen(d)} className="w-full flex items-center gap-3 py-2.5 text-left hover:opacity-80">
+                  <button key={d.id} onClick={() => onOpen(d)} className="w-full text-left rounded-lg border p-3 hover:bg-muted/40 transition-colors flex items-center gap-2">
                     <span className="flex-1 text-sm text-foreground line-clamp-1">{d.title}</span>
-                    {v ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: v.bg, color: v.color }}>{v.label}</span>
-                       : <span className="text-[10px] text-muted-foreground">En cours…</span>}
+                    {v ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0" style={{ backgroundColor: v.bg, color: v.color }}>{v.label}</span>
+                       : <span className="text-[10px] text-muted-foreground shrink-0">En cours…</span>}
                   </button>
                 );
               })}
@@ -249,6 +292,35 @@ function Accueil({ name, dossiers, onOpen, goMarches }: { name?: string | null; 
           )}
         </Panel>
       </div>
+
+      {/* Mes appels d'offres en cours (par statut) */}
+      <Panel title="Mes appels d'offres en cours" icon={Briefcase}>
+        <div className="flex gap-1 border-b mb-3 -mt-1">
+          {STATUS_TABS.map((s) => (
+            <button key={s.id} onClick={() => setStatusTab(s.id)}
+              className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px ${statusTab === s.id ? "" : "border-transparent text-muted-foreground"}`}
+              style={statusTab === s.id ? { borderColor: BLUE, color: BLUE } : undefined}>{s.label}</button>
+          ))}
+        </div>
+        {inStatus.length === 0 ? <Empty text="Aucun dossier dans ce statut." /> : (
+          <div className="space-y-3">
+            {inStatus.map((d) => {
+              const pct = STATUS_TABS.find((s) => s.id === statusTab)?.pct ?? 25;
+              return (
+                <button key={d.id} onClick={() => onOpen(d)} className="w-full text-left">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-foreground line-clamp-1">{d.title}</span>
+                    {d.budget && <span className="text-sm font-bold shrink-0 ml-2" style={{ color: BLUE }}>{d.budget}</span>}
+                  </div>
+                  <div className="mt-1.5 h-2 rounded-full bg-muted overflow-hidden">
+                    <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: BLUE }} />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </Panel>
     </div>
   );
 }
@@ -422,9 +494,9 @@ function Historique() {
 }
 
 // ─────────────────── helpers ───────────────────
-function Panel({ title, icon: Icon, children }: { title: string; icon: typeof Home; children: React.ReactNode }) {
+function Panel({ title, icon: Icon, children, accent, accentColor }: { title: string; icon: typeof Home; children: React.ReactNode; accent?: boolean; accentColor?: string }) {
   return (
-    <div className="rounded-xl border bg-white p-5">
+    <div className="rounded-xl border bg-white p-5" style={accent ? { borderLeftWidth: 4, borderLeftColor: accentColor ?? BLUE } : undefined}>
       <h2 className="flex items-center gap-2 text-sm font-bold mb-3" style={{ color: BLUE }}><Icon className="w-4 h-4" />{title}</h2>
       {children}
     </div>
