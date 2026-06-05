@@ -7,7 +7,9 @@ import { MonCompte } from "@/components/mobile/MonCompte";
 import { DemoChat } from "@/components/mobile/DemoChat";
 import { MessagesInbox, CA_THREAD_ID } from "@/components/mobile/MessagesInbox";
 import { BottomNav } from "@/components/mobile/BottomNav";
+import { BuyCreditsDialog } from "@/components/mobile/BuyCreditsDialog";
 import { ChargeAffairesWelcome } from "@/components/mobile/ChargeAffairesWelcome";
+import { toast } from "@/hooks/use-toast";
 import { useCAProfile } from "@/hooks/useCAProfile";
 import { useCredits } from "@/hooks/useCredits";
 import { useAuth } from "@/hooks/useAuth";
@@ -35,6 +37,7 @@ export default function MobileApp() {
   const [messagesOpen, setMessagesOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const [buyOpen, setBuyOpen] = useState(false);
 
   // Solde réel de crédits, mis à jour en direct (Realtime)
   const { credits: liveCredits } = useCredits();
@@ -68,6 +71,22 @@ export default function MobileApp() {
     }
   }, [searchParams, ca.display_name]);
 
+  // Retour de paiement Stripe (?purchase=success|cancel). Les crédits sont
+  // ajoutés par le webhook → le compteur se met à jour seul (Realtime).
+  const purchaseHandled = useRef(false);
+  useEffect(() => {
+    if (purchaseHandled.current) return;
+    const p = searchParams.get("purchase");
+    if (!p) return;
+    purchaseHandled.current = true;
+    setActiveTab("compte");
+    if (p === "success") {
+      toast({ title: "Paiement réussi 🎉", description: "Tes crédits seront crédités dans quelques secondes." });
+    } else if (p === "cancel") {
+      toast({ title: "Paiement annulé", description: "Aucun montant n'a été débité." });
+    }
+  }, [searchParams]);
+
   const handleWelcomeClose = () => {
     if (welcomeKey) localStorage.setItem(welcomeKey, "true");
     setWelcomeOpen(false);
@@ -100,15 +119,22 @@ export default function MobileApp() {
       <header className="sticky top-0 z-50 bg-white px-4 py-3 flex items-center justify-between shadow-[0_1px_0_0_#e5e7eb,0_2px_8px_0_rgba(12,28,152,0.06)]">
         <img src={tendrixLogo} alt="Tendrix" className="h-7" />
 
-        {/* Compteur de crédits */}
-        <div className="flex items-center gap-2 bg-primary px-3.5 py-2 rounded-xl shadow-sm">
+        {/* Compteur de crédits — cliquable pour en acheter */}
+        <button
+          onClick={() => setBuyOpen(true)}
+          className="flex items-center gap-2 bg-primary px-3.5 py-2 rounded-xl shadow-sm hover:opacity-90 transition-opacity"
+          aria-label="Acheter des crédits"
+        >
           <Coins className="w-4 h-4 text-secondary" />
           <span className="text-sm font-bold text-white leading-none">{credits}</span>
           <span className="text-xs text-white/70 font-medium leading-none">
             crédit{credits > 1 ? "s" : ""}
           </span>
-        </div>
+          <span className="ml-1 text-sm font-bold leading-none" style={{ color: "#f9bd43" }}>+</span>
+        </button>
       </header>
+
+      <BuyCreditsDialog open={buyOpen} onOpenChange={setBuyOpen} />
 
       <main className="flex-1 overflow-y-auto pb-24">
         {openedChat ? (
