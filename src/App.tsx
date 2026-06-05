@@ -16,7 +16,7 @@ import QuestionnairePME from "./pages/QuestionnairePME";
 import TenderDetails from "./pages/TenderDetails";
 import AnalysisDetail from "./pages/AnalysisDetail";
 import ResponseDetail from "./pages/ResponseDetail";
-import MobileApp from "./pages/MobileApp";
+import ClientApp from "./pages/ClientApp";
 import MentionsLegales from "./pages/MentionsLegales";
 import Login from "./pages/Login";
 import LoginCA from "./pages/LoginCA";
@@ -93,7 +93,7 @@ const App = () => (
                 path="/app"
                 element={
                   <RequireAuth role="entreprise">
-                    <MobileApp />
+                    <ClientApp />
                   </RequireAuth>
                 }
               />
