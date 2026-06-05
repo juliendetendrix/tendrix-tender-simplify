@@ -83,6 +83,18 @@ function findAwsDeepLink(raw: unknown): string | null {
   );
 }
 
+// Référence de consultation LISIBLE utilisée par les plateformes (PLACE/Atexo).
+// Dans les avis BOAMP au format eForms, elle vit dans
+//   cac:CallForTendersDocumentReference > cbc:ID  (ex. "DRAAF-Bretagne_2026-2027_azote")
+// — à ne pas confondre avec cbc:ContractFolderID (un UUID inutilisable).
+// C'est CETTE référence qui permet de retrouver l'AO sur le profil acheteur.
+function findConsultationRef(raw: unknown): string | null {
+  let text: string;
+  try { text = JSON.stringify(raw); } catch { return null; }
+  const m = text.match(/CallForTendersDocumentReference"\s*:\s*\{\s*"cbc:ID"\s*:\s*"([^"]+)"/i);
+  return m && m[1].trim() ? m[1].trim() : null;
+}
+
 function normalizeUrl(u: string | null): string | null {
   if (!u) return null;
   let url = u.trim();
@@ -123,11 +135,11 @@ export function resolveDce(raw: unknown): DceResolution {
   }
 
   let reference =
+    findConsultationRef(raw) ??
     deepFind(donnees, ["identifiantInterne"]) ??
     (typeof record.contractfolderid === "string" ? record.contractfolderid : null);
-  // Le ContractFolderID des avis eForms est un UUID inutilisable comme clé de
-  // recherche sur les plateformes (PLACE/Atexo cherche par réf. ou objet) → on
-  // l'écarte pour que l'adaptateur recherche plutôt par l'objet du marché.
+  // Garde-fou : le ContractFolderID eForms est un UUID inutilisable comme clé de
+  // recherche → on l'écarte (l'adaptateur recherchera alors par l'objet du marché).
   const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (reference && UUID_RE.test(reference)) reference = null;
   const buyer =
