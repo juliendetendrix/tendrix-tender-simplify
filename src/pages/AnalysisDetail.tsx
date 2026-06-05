@@ -57,6 +57,8 @@ interface AnalysisRow {
   selected_lots: string[] | null;
   lots: LotReport[] | null;
   request_id: string | null;
+  company_id: string | null;
+  tender_id: string | null;
   buyer_profile_url: string | null;
   platform: string | null;
   consultation_ref: string | null;
@@ -133,6 +135,38 @@ const AnalysisDetail = () => {
   const id = searchParams.get("id");
   const [analysis, setAnalysis] = useState<AnalysisRow | null>(null);
   const [loading, setLoading] = useState(true);
+  const [responding, setResponding] = useState(false);
+
+  // « Répondre à ce marché » : dépense des crédits + génère la 1re version de la
+  // réponse (IA) à partir du profil + librairie + analyse, puis ouvre la page Réponse.
+  const respondToMarket = async () => {
+    if (!analysis?.company_id) return;
+    if (!window.confirm(`Générer une première version de la réponse à ce marché ?\nCela utilise ${RESPONSE_CREDIT_COST} crédits.`)) return;
+    setResponding(true);
+    const { error: spendErr } = await supabase.rpc("spend_credits", {
+      _company_id: analysis.company_id, _amount: RESPONSE_CREDIT_COST, _reason: "response",
+    });
+    if (spendErr) {
+      setResponding(false);
+      toast(spendErr.message?.includes("insufficient_credits")
+        ? { title: "Crédits insuffisants", description: "Rechargez pour générer une réponse.", variant: "destructive" }
+        : { title: "Action impossible", description: "Réessayez.", variant: "destructive" });
+      return;
+    }
+    const { data: created, error: insErr } = await supabase.from("tender_responses").insert({
+      company_id: analysis.company_id, analysis_id: analysis.id, request_id: analysis.request_id,
+      tender_id: analysis.tender_id, selected_lots: analysis.selected_lots ?? [],
+      status: "generating", credits_spent: RESPONSE_CREDIT_COST,
+    } as never).select("id").single();
+    setResponding(false);
+    if (insErr || !created) {
+      toast({ title: "Génération impossible", description: "Réessayez.", variant: "destructive" });
+      return;
+    }
+    const respId = (created as { id: string }).id;
+    navigate(`/response?id=${respId}`);
+    supabase.functions.invoke("generate-response", { body: { response_id: respId } }).catch(() => {});
+  };
 
   const fetchAnalysis = useCallback(async () => {
     if (!id) {
@@ -142,7 +176,7 @@ const AnalysisDetail = () => {
     const { data } = await supabase
       .from("tender_analyses")
       .select(`
-        id, status, verdict, report, selected_lots, lots, request_id,
+        id, status, verdict, report, selected_lots, lots, request_id, company_id, tender_id,
         buyer_profile_url, platform, consultation_ref,
         tenders ( title, organisme, location, deadline ),
         tender_documents ( id, file_name, doc_type, storage_path, mime_type, size_bytes, source )
@@ -565,10 +599,12 @@ const AnalysisDetail = () => {
         <div className="fixed bottom-0 left-0 right-0 z-30 border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
           <div className="max-w-lg mx-auto px-4 py-3">
             <button
-              onClick={() => navigate(`/app?chat=${analysis.request_id ?? ""}&title=${encodeURIComponent(tender?.title ?? "Votre dossier")}`)}
-              className="w-full h-12 rounded-xl font-bold text-sm text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+              onClick={respondToMarket}
+              disabled={responding}
+              className="w-full h-12 rounded-xl font-bold text-sm text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-2 disabled:opacity-60"
               style={{ backgroundColor: "#0c1c98" }}
             >
+              {responding && <Loader2 className="w-4 h-4 animate-spin" />}
               Répondre à ce marché
               <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold"
                     style={{ backgroundColor: "rgba(249,189,67,0.25)", color: "#f9bd43" }}>

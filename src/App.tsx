@@ -15,6 +15,7 @@ import BetaOffer from "./pages/BetaOffer";
 import QuestionnairePME from "./pages/QuestionnairePME";
 import TenderDetails from "./pages/TenderDetails";
 import AnalysisDetail from "./pages/AnalysisDetail";
+import ResponseDetail from "./pages/ResponseDetail";
 import MobileApp from "./pages/MobileApp";
 import MentionsLegales from "./pages/MentionsLegales";
 import Login from "./pages/Login";
@@ -87,6 +88,7 @@ const App = () => (
               <Route path="/questionnaire-pme" element={<QuestionnairePME />} />
               <Route path="/tender-details" element={<TenderDetails />} />
               <Route path="/analysis" element={<AnalysisDetail />} />
+              <Route path="/response" element={<ResponseDetail />} />
               <Route
                 path="/app"
                 element={
