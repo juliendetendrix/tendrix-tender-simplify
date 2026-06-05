@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Coins } from "lucide-react";
+import { Coins, Clock, FileText, MessageSquare, Building2, Plus } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { LastMinuteAO } from "@/components/mobile/LastMinuteAO";
 import { MesDossiers } from "@/components/mobile/MesDossiers";
 import { MonCompte } from "@/components/mobile/MonCompte";
@@ -110,97 +111,114 @@ export default function MobileApp() {
     setAddOpen(true);
   };
 
+  const isMobile = useIsMobile();
+  const closeOverlays = () => { setOpenedChat(null); setMessagesOpen(false); setTarifOpen(false); setProfileOpen(false); };
+  const goTab = (t: Tab) => { closeOverlays(); setActiveTab(t); };
+
+  // Dialogues globaux (identiques mobile/desktop)
+  const dialogs = (
+    <>
+      <ChargeAffairesWelcome isOpen={welcomeOpen} onClose={handleWelcomeClose} onContactCA={handleContactCA} ca={ca} caInitials={caInitials} />
+      <PurchaseSuccessDialog open={purchaseOpen} onOpenChange={setPurchaseOpen} onCompleteProfile={() => { setPurchaseOpen(false); setProfileOpen(true); }} />
+    </>
+  );
+
+  // Contenu central (même logique d'état partout)
+  const content = profileOpen ? (
+    <CompanyProfile onBack={() => setProfileOpen(false)} />
+  ) : tarifOpen ? (
+    <Tarification onBack={() => setTarifOpen(false)} />
+  ) : openedChat ? (
+    <DemoChat dossierTitle={openedChat.title} onBack={() => setOpenedChat(null)} isCADirect={openedChat.isCADirect} ca={ca} caInitials={caInitials} />
+  ) : messagesOpen ? (
+    <MessagesInbox onBack={() => setMessagesOpen(false)} onOpenChat={(id, title, isCADirect) => { setMessagesOpen(false); setOpenedChat({ id, title, isCADirect }); }} ca={ca} caInitials={caInitials} />
+  ) : (
+    <>
+      {activeTab === "opportunites" && <LastMinuteAO onRequestCreated={handleRequestCreated} addOpen={addOpen} onAddOpenChange={setAddOpen} />}
+      {activeTab === "dossiers" && <MesDossiers onOpenChat={(id, title) => setOpenedChat({ id, title })} />}
+      {activeTab === "compte" && <MonCompte onOpenCAChat={() => setOpenedChat({ id: CA_THREAD_ID, title: ca.display_name, isCADirect: true })} onOpenProfile={() => setProfileOpen(true)} />}
+    </>
+  );
+
+  // ─────────────────────────── DESKTOP (sidebar façon Iziao) ───────────────────────────
+  if (!isMobile) {
+    const navActive = (k: string) => {
+      if (k === "entreprise") return profileOpen;
+      if (k === "messages") return messagesOpen && !openedChat;
+      if (k === "dossiers") return activeTab === "dossiers" && !profileOpen && !tarifOpen && !messagesOpen && !openedChat;
+      if (k === "opportunites") return activeTab === "opportunites" && !profileOpen && !tarifOpen && !messagesOpen && !openedChat;
+      return false;
+    };
+    const NavItem = ({ k, icon: Icon, label, onClick }: { k: string; icon: typeof Clock; label: string; onClick: () => void }) => (
+      <button onClick={onClick}
+        className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${navActive(k) ? "bg-white/15 text-white" : "text-white/60 hover:bg-white/10 hover:text-white"}`}>
+        <Icon className="w-4.5 h-4.5 shrink-0" />{label}
+        {navActive(k) && <span className="ml-auto w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#f9bd43" }} />}
+      </button>
+    );
+    const initial = (user?.email ?? "?").charAt(0).toUpperCase();
+    return (
+      <div className="min-h-screen flex bg-gray-50">
+        {dialogs}
+        <aside className="w-64 shrink-0 flex flex-col" style={{ backgroundColor: "#0c1c98" }}>
+          <div className="px-5 py-5 border-b border-white/10">
+            <img src={tendrixLogo} alt="Tendrix" className="h-7 brightness-0 invert" />
+          </div>
+          <div className="px-3 pt-4">
+            <button onClick={() => { goTab("opportunites"); setAddOpen(true); }}
+              className="w-full flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-bold mb-3"
+              style={{ backgroundColor: "#f9bd43", color: "#0c1c98" }}>
+              <Plus className="w-4 h-4" /> Ajouter un AO
+            </button>
+          </div>
+          <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
+            <NavItem k="opportunites" icon={Clock} label="Opportunités" onClick={() => goTab("opportunites")} />
+            <NavItem k="dossiers" icon={FileText} label="Mes dossiers" onClick={() => goTab("dossiers")} />
+            <NavItem k="messages" icon={MessageSquare} label="Messages" onClick={() => { closeOverlays(); setMessagesOpen(true); }} />
+            <NavItem k="entreprise" icon={Building2} label="Mon entreprise" onClick={() => { closeOverlays(); setProfileOpen(true); }} />
+          </nav>
+          <div className="p-3 border-t border-white/10 space-y-3">
+            <button onClick={() => { closeOverlays(); setTarifOpen(true); }}
+              className="w-full flex items-center justify-between gap-2 bg-white/10 hover:bg-white/15 px-3.5 py-2.5 rounded-xl transition-colors">
+              <span className="flex items-center gap-2"><Coins className="w-4 h-4 text-secondary" /><span className="text-sm font-bold text-white">{credits}</span><span className="text-xs text-white/70">crédits</span></span>
+              <span className="text-sm font-bold" style={{ color: "#f9bd43" }}>+</span>
+            </button>
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white text-sm font-bold shrink-0">{initial}</div>
+              <div className="min-w-0">
+                <p className="text-white text-xs font-semibold truncate">{user?.email ?? "Mon compte"}</p>
+                <p className="text-white/50 text-[11px]">Entreprise</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+        <main className="flex-1 min-w-0 overflow-y-auto">
+          <div className="max-w-5xl mx-auto w-full">{content}</div>
+        </main>
+      </div>
+    );
+  }
+
+  // ─────────────────────────── MOBILE ───────────────────────────
   return (
     <div className="min-h-screen bg-background flex flex-col max-w-[430px] mx-auto">
-      <ChargeAffairesWelcome
-        isOpen={welcomeOpen}
-        onClose={handleWelcomeClose}
-        onContactCA={handleContactCA}
-        ca={ca}
-        caInitials={caInitials}
-      />
-
+      {dialogs}
       <header className="sticky top-0 z-50 bg-white px-4 py-3 flex items-center justify-between shadow-[0_1px_0_0_#e5e7eb,0_2px_8px_0_rgba(12,28,152,0.06)]">
         <img src={tendrixLogo} alt="Tendrix" className="h-7" />
-
-        {/* Compteur de crédits — cliquable pour en acheter */}
-        <button
-          onClick={() => setTarifOpen(true)}
+        <button onClick={() => setTarifOpen(true)}
           className="flex items-center gap-2 bg-primary px-3.5 py-2 rounded-xl shadow-sm hover:opacity-90 transition-opacity"
-          aria-label="Acheter des crédits"
-        >
+          aria-label="Acheter des crédits">
           <Coins className="w-4 h-4 text-secondary" />
           <span className="text-sm font-bold text-white leading-none">{credits}</span>
-          <span className="text-xs text-white/70 font-medium leading-none">
-            crédit{credits > 1 ? "s" : ""}
-          </span>
+          <span className="text-xs text-white/70 font-medium leading-none">crédit{credits > 1 ? "s" : ""}</span>
           <span className="ml-1 text-sm font-bold leading-none" style={{ color: "#f9bd43" }}>+</span>
         </button>
       </header>
 
-      <PurchaseSuccessDialog
-        open={purchaseOpen}
-        onOpenChange={setPurchaseOpen}
-        onCompleteProfile={() => { setPurchaseOpen(false); setProfileOpen(true); }}
-      />
-
-      <main className="flex-1 overflow-y-auto pb-24">
-        {profileOpen ? (
-          <CompanyProfile onBack={() => setProfileOpen(false)} />
-        ) : tarifOpen ? (
-          <Tarification onBack={() => setTarifOpen(false)} />
-        ) : openedChat ? (
-          <DemoChat
-            dossierTitle={openedChat.title}
-            onBack={() => setOpenedChat(null)}
-            isCADirect={openedChat.isCADirect}
-            ca={ca}
-            caInitials={caInitials}
-          />
-        ) : messagesOpen ? (
-          <MessagesInbox
-            onBack={() => setMessagesOpen(false)}
-            onOpenChat={(id, title, isCADirect) => {
-              setMessagesOpen(false);
-              setOpenedChat({ id, title, isCADirect });
-            }}
-            ca={ca}
-            caInitials={caInitials}
-          />
-        ) : (
-          <>
-            {activeTab === "opportunites" && (
-              <LastMinuteAO
-                onRequestCreated={handleRequestCreated}
-                addOpen={addOpen}
-                onAddOpenChange={setAddOpen}
-              />
-            )}
-            {activeTab === "dossiers" && (
-              <MesDossiers
-                onOpenChat={(id, title) => setOpenedChat({ id, title })}
-              />
-            )}
-            {activeTab === "compte" && (
-              <MonCompte
-                onOpenCAChat={() =>
-                  setOpenedChat({ id: CA_THREAD_ID, title: ca.display_name, isCADirect: true })
-                }
-                onOpenProfile={() => setProfileOpen(true)}
-              />
-            )}
-          </>
-        )}
-      </main>
+      <main className="flex-1 overflow-y-auto pb-24">{content}</main>
 
       {!openedChat && !messagesOpen && !tarifOpen && !profileOpen && (
-        <BottomNav
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          onAdd={handleAdd}
-          onMessages={() => setMessagesOpen(true)}
-          hasUnreadMessages={true}
-        />
+        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} onAdd={handleAdd} onMessages={() => setMessagesOpen(true)} hasUnreadMessages={true} />
       )}
     </div>
   );
