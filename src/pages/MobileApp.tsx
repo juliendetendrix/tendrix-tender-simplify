@@ -8,6 +8,8 @@ import { DemoChat } from "@/components/mobile/DemoChat";
 import { MessagesInbox, CA_THREAD_ID } from "@/components/mobile/MessagesInbox";
 import { BottomNav } from "@/components/mobile/BottomNav";
 import { Tarification } from "@/components/mobile/Tarification";
+import { CompanyProfile } from "@/components/mobile/CompanyProfile";
+import { PurchaseSuccessDialog } from "@/components/mobile/PurchaseSuccessDialog";
 import { ChargeAffairesWelcome } from "@/components/mobile/ChargeAffairesWelcome";
 import { toast } from "@/hooks/use-toast";
 import { useCAProfile } from "@/hooks/useCAProfile";
@@ -38,6 +40,8 @@ export default function MobileApp() {
   const [addOpen, setAddOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
   const [tarifOpen, setTarifOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [purchaseOpen, setPurchaseOpen] = useState(false);
 
   // Solde réel de crédits, mis à jour en direct (Realtime)
   const { credits: liveCredits } = useCredits();
@@ -81,7 +85,7 @@ export default function MobileApp() {
     purchaseHandled.current = true;
     setActiveTab("compte");
     if (p === "success") {
-      toast({ title: "Paiement réussi 🎉", description: "Tes crédits seront crédités dans quelques secondes." });
+      setPurchaseOpen(true);
     } else if (p === "cancel") {
       toast({ title: "Paiement annulé", description: "Aucun montant n'a été débité." });
     }
@@ -134,8 +138,16 @@ export default function MobileApp() {
         </button>
       </header>
 
+      <PurchaseSuccessDialog
+        open={purchaseOpen}
+        onOpenChange={setPurchaseOpen}
+        onCompleteProfile={() => { setPurchaseOpen(false); setProfileOpen(true); }}
+      />
+
       <main className="flex-1 overflow-y-auto pb-24">
-        {tarifOpen ? (
+        {profileOpen ? (
+          <CompanyProfile onBack={() => setProfileOpen(false)} />
+        ) : tarifOpen ? (
           <Tarification onBack={() => setTarifOpen(false)} />
         ) : openedChat ? (
           <DemoChat
@@ -174,13 +186,14 @@ export default function MobileApp() {
                 onOpenCAChat={() =>
                   setOpenedChat({ id: CA_THREAD_ID, title: ca.display_name, isCADirect: true })
                 }
+                onOpenProfile={() => setProfileOpen(true)}
               />
             )}
           </>
         )}
       </main>
 
-      {!openedChat && !messagesOpen && !tarifOpen && (
+      {!openedChat && !messagesOpen && !tarifOpen && !profileOpen && (
         <BottomNav
           activeTab={activeTab}
           onTabChange={setActiveTab}

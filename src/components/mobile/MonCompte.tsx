@@ -35,9 +35,10 @@ import { useCAProfile } from "@/hooks/useCAProfile";
 
 interface Props {
   onOpenCAChat?: () => void;
+  onOpenProfile?: () => void;
 }
 
-export function MonCompte({ onOpenCAChat }: Props) {
+export function MonCompte({ onOpenCAChat, onOpenProfile }: Props) {
   const { user, signOut } = useAuth();
   const { company, loading, refetch } = useCurrentCompany();
   const { ca, initials: caInitials } = useCAProfile();
@@ -130,6 +131,20 @@ export function MonCompte({ onOpenCAChat }: Props) {
             Gérez votre profil et vos documents
           </p>
         </div>
+
+        {onOpenProfile && (
+          <button
+            onClick={onOpenProfile}
+            className="w-full flex items-center justify-between gap-3 rounded-lg p-4 text-white text-left hover:opacity-95 transition-opacity"
+            style={{ backgroundColor: "#0c1c98" }}
+          >
+            <div>
+              <p className="font-bold text-sm">Mon entreprise & ma librairie</p>
+              <p className="text-xs text-white/70 mt-0.5">Complétez vos infos et documents — le carburant de vos réponses.</p>
+            </div>
+            <span className="text-2xl font-bold shrink-0" style={{ color: "#f9bd43" }}>→</span>
+          </button>
+        )}
 
         <section className="bg-white border border-border rounded-lg p-4 space-y-3 relative">
           <div className="flex items-center justify-between mb-3">
