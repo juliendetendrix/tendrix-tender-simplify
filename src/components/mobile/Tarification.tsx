@@ -54,10 +54,10 @@ export function Tarification({ onBack }: Props) {
       </header>
 
       <main className="px-4 py-5 space-y-6 max-w-5xl mx-auto">
-        {/* Offres préconfigurées */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Offres préconfigurées — défilement horizontal (cartes lisibles) */}
+        <div className="flex gap-4 overflow-x-auto pb-3 -mx-4 px-4 snap-x snap-mandatory">
           {OFFERS.map((o) => (
-            <div key={o.id} className="relative rounded-2xl border bg-card p-5 flex flex-col"
+            <div key={o.id} className="relative rounded-2xl border bg-card p-5 flex flex-col w-[78%] min-w-[260px] max-w-[320px] shrink-0 snap-center"
                  style={o.popular ? { borderColor: BLUE, borderWidth: 2 } : undefined}>
               {o.popular && (
                 <span className="absolute -top-2.5 left-5 flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: BLUE }}>
