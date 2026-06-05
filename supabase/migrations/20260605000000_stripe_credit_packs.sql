@@ -55,7 +55,24 @@ security definer
 set search_path = public
 as $$
 begin
-  -- Tente d'enregistrer l'achat ; si la session existe déjà → conflit ignoré.
+  -- Cas 1 : une ligne 'pending' existe déjà (pré-insérée au checkout) → on la
+  -- passe à 'paid' et on crédite. Le filtre status='pending' garantit l'idempotence
+  -- (un 2e webhook pour la même session ne re-flippera rien).
+  update public.credit_purchases
+     set status = 'paid', paid_at = now(), credits = _credits,
+         amount_cents = coalesce(_amount, amount_cents),
+         pack_id = coalesce(_pack_id, pack_id), currency = coalesce(_currency, currency)
+   where stripe_session_id = _session_id and status = 'pending';
+
+  if found then
+    update public.companies set credits = credits + _credits where id = _company_id;
+    insert into public.credit_transactions (company_id, amount, reason)
+    values (_company_id, _credits, 'purchase');
+    return true;
+  end if;
+
+  -- Cas 2 : aucune ligne 'pending' → on insère (webhook sans pré-insert).
+  -- Si la session existe déjà (donc déjà 'paid') → conflit ignoré → pas de crédit.
   insert into public.credit_purchases (
     company_id, stripe_session_id, pack_id, credits, amount_cents, currency, status, paid_at
   ) values (
@@ -64,14 +81,12 @@ begin
   on conflict (stripe_session_id) do nothing;
 
   if not found then
-    return false; -- déjà traité : on ne recrédite pas
+    return false; -- déjà traité (paid) : pas de double crédit
   end if;
 
   update public.companies set credits = credits + _credits where id = _company_id;
-
   insert into public.credit_transactions (company_id, amount, reason)
   values (_company_id, _credits, 'purchase');
-
   return true;
 end $$;
 
