@@ -7,6 +7,8 @@ import { useCredits } from "@/hooks/useCredits";
 import { useBoampTenders, type BoampTender } from "@/hooks/useBoampTenders";
 import { useDossiers } from "@/hooks/useDossiers";
 import { useCAProfile } from "@/hooks/useCAProfile";
+import AnalysisDetail from "./AnalysisDetail";
+import ResponseDetail from "./ResponseDetail";
 import { CompanyProfile } from "@/components/mobile/CompanyProfile";
 import { Tarification } from "@/components/mobile/Tarification";
 import { AddTenderDialog } from "@/components/mobile/AddTenderDialog";
@@ -53,6 +55,8 @@ export default function DesktopApp() {
   const [hidden, setHidden] = useState<Set<string>>(new Set());
   const [confirmT, setConfirmT] = useState<BoampTender | null>(null);
   const [launching, setLaunching] = useState(false);
+  // Fiche analyse / réponse affichée DANS le shell (sidebar persistante)
+  const [view, setView] = useState<{ kind: "analysis" | "response"; id: string } | null>(null);
 
   // Retour de paiement Stripe
   const purchaseHandled = useRef(false);
@@ -86,7 +90,7 @@ export default function DesktopApp() {
       supabase.functions.invoke("resolve-dce", { body: { analysis_id: analysisId } }).catch(() => {});
       supabase.functions.invoke("start-scrape", { body: { analysis_id: analysisId } }).catch(() => {});
       supabase.functions.invoke("notify-ca", { body: { analysis_id: analysisId } }).catch(() => {});
-      navigate(`/analysis?id=${analysisId}`);
+      setView({ kind: "analysis", id: analysisId as string });
     }
   };
 
@@ -141,20 +145,20 @@ export default function DesktopApp() {
           {NAV.map(({ id, label, icon: Icon }) => {
             const active = page === id;
             return (
-              <button key={id} onClick={() => { setOpenedChat(null); setPage(id); }}
+              <button key={id} onClick={() => { setOpenedChat(null); setView(null); setPage(id); }}
                 className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${active ? "bg-white/15 text-white" : "text-white/60 hover:bg-white/10 hover:text-white"}`}>
                 <Icon className="w-4.5 h-4.5 shrink-0" />{label}
                 {active && <span className="ml-auto w-1.5 h-1.5 rounded-full" style={{ backgroundColor: YELLOW }} />}
               </button>
             );
           })}
-          <button onClick={() => { setOpenedChat({ id: "ca", title: ca.display_name, isCADirect: true }); }}
+          <button onClick={() => { setView(null); setOpenedChat({ id: "ca", title: ca.display_name, isCADirect: true }); }}
             className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:bg-white/10 hover:text-white text-left">
             <MessageSquare className="w-4.5 h-4.5 shrink-0" /> Messages
           </button>
         </nav>
         <div className="p-3 border-t border-white/10 space-y-3">
-          <button onClick={() => { setPage("entreprise"); setEntTab("plans"); }} className="w-full flex items-center justify-between gap-2 bg-white/10 hover:bg-white/15 px-3.5 py-2.5 rounded-xl transition-colors">
+          <button onClick={() => { setView(null); setPage("entreprise"); setEntTab("plans"); }} className="w-full flex items-center justify-between gap-2 bg-white/10 hover:bg-white/15 px-3.5 py-2.5 rounded-xl transition-colors">
             <span className="flex items-center gap-2"><Coins className="w-4 h-4" style={{ color: YELLOW }} /><span className="text-sm font-bold text-white">{credits}</span><span className="text-xs text-white/70">crédits</span></span>
             <span className="text-sm font-bold" style={{ color: YELLOW }}>+</span>
           </button>
@@ -170,13 +174,19 @@ export default function DesktopApp() {
 
       {/* ─── Contenu ─── */}
       <main className="flex-1 min-w-0 ml-64 overflow-y-auto">
-        {openedChat ? (
+        {view ? (
+          view.kind === "analysis" ? (
+            <AnalysisDetail analysisId={view.id} onBack={() => setView(null)} onOpenResponse={(rid) => setView({ kind: "response", id: rid })} />
+          ) : (
+            <ResponseDetail responseId={view.id} onBack={() => setView(null)} />
+          )
+        ) : openedChat ? (
           <div className="max-w-3xl mx-auto"><DemoChat dossierTitle={openedChat.title} onBack={() => setOpenedChat(null)} isCADirect={openedChat.isCADirect} ca={ca} caInitials={caInitials} /></div>
         ) : page === "entreprise" ? (
           <EntrepriseSection tab={entTab} setTab={setEntTab} />
         ) : (
           <div className="max-w-6xl mx-auto px-8 py-8">
-            {page === "accueil" && <Accueil name={company?.contact_name} dossiers={dossiers} onOpen={(d) => d.analysisId && navigate(`/analysis?id=${d.analysisId}`)} goMarches={() => setPage("marches")} />}
+            {page === "accueil" && <Accueil name={company?.contact_name} dossiers={dossiers} onOpen={(d) => d.analysisId && setView({ kind: "analysis", id: d.analysisId })} goMarches={() => setPage("marches")} />}
             {page === "marches" && (
               <Marches
                 tenders={visibleTenders} loading={tendersLoading} query={query} setQuery={setQuery}
@@ -184,8 +194,8 @@ export default function DesktopApp() {
                 onAnalyse={(t) => setConfirmT(t)} onImport={() => setAddOpen(true)}
               />
             )}
-            {page === "analyses" && <Analyses analyses={analyses} onOpen={(d) => d.analysisId && navigate(`/analysis?id=${d.analysisId}`)} />}
-            {page === "reponses" && <Reponses companyId={company?.id} onOpen={(id) => navigate(`/response?id=${id}`)} />}
+            {page === "analyses" && <Analyses analyses={analyses} onOpen={(d) => d.analysisId && setView({ kind: "analysis", id: d.analysisId })} />}
+            {page === "reponses" && <Reponses companyId={company?.id} onOpen={(rid) => setView({ kind: "response", id: rid })} />}
           </div>
         )}
       </main>
@@ -267,28 +277,31 @@ function Marches({ tenders, loading, query, setQuery, onRefresh, onHide, onAnaly
       ) : tenders.length === 0 ? (
         <Empty text="Aucune opportunité correspondant à votre profil pour le moment." />
       ) : (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <div className="space-y-3">
           {tenders.map((t) => (
-            <div key={t.id} className="rounded-xl border bg-white p-4 flex flex-col">
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="font-semibold text-sm text-foreground line-clamp-2 flex-1">{t.title}</h3>
-                {t.compatibility != null && (
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full shrink-0" style={{ backgroundColor: "#eef0ff", color: BLUE }}>{t.compatibility}%</span>
-                )}
-              </div>
-              <div className="mt-2 space-y-1 text-xs text-muted-foreground">
-                {t.organisme && <div className="line-clamp-1">{t.organisme}</div>}
-                <div className="flex items-center gap-3 flex-wrap">
-                  {t.location && <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{t.location}</span>}
-                  {t.deadline && <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{t.deadline}</span>}
+            <div key={t.id} className="rounded-xl border bg-white p-4 hover:shadow-sm transition-shadow">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
+                  {t.compatibility != null && (
+                    <span className="font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#eef0ff", color: BLUE }}>Matching {t.compatibility}%</span>
+                  )}
+                  {t.datePublication && <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />Publié {new Date(t.datePublication).toLocaleDateString("fr-FR")}</span>}
+                  {t.deadline && <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />Limite {t.deadline}</span>}
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <Button variant="outline" size="sm" className="text-muted-foreground" onClick={() => onHide(t.id)}>Ne plus afficher</Button>
+                  <Button size="sm" className="text-white" style={{ backgroundColor: BLUE }} onClick={() => onAnalyse(t)}>
+                    <Sparkles className="w-4 h-4 mr-1.5" /> Lancer l'analyse
+                  </Button>
                 </div>
               </div>
-              <div className="flex gap-2 mt-3 pt-3 border-t">
-                <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={() => onHide(t.id)}>Ne plus afficher</Button>
-                <Button size="sm" className="flex-1 text-white" style={{ backgroundColor: BLUE }} onClick={() => onAnalyse(t)}>
-                  <Sparkles className="w-4 h-4 mr-1.5" /> Lancer l'analyse
-                </Button>
+              <h3 className="font-semibold text-sm text-foreground mt-2">{t.title}</h3>
+              <div className="mt-1.5 flex items-center gap-4 flex-wrap text-xs text-muted-foreground">
+                {t.organisme && <span className="flex items-center gap-1"><Briefcase className="w-3.5 h-3.5" />{t.organisme}</span>}
+                {t.location && <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{t.location}</span>}
+                {t.budget && <span className="flex items-center gap-1"><Coins className="w-3.5 h-3.5" />{t.budget}</span>}
               </div>
+              {t.famille && <span className="inline-block mt-2 text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">#{t.famille}</span>}
             </div>
           ))}
         </div>

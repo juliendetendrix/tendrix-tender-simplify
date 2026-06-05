@@ -129,10 +129,18 @@ function DocGroup({
   );
 }
 
-const AnalysisDetail = () => {
+interface AnalysisDetailProps {
+  analysisId?: string;       // mode intégré (desktop) : id fourni en prop
+  onBack?: () => void;        // mode intégré : retour géré par le parent
+  onOpenResponse?: (id: string) => void; // mode intégré : ouvrir la réponse dans le shell
+}
+
+const AnalysisDetail = ({ analysisId, onBack, onOpenResponse }: AnalysisDetailProps = {}) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const id = searchParams.get("id");
+  const id = analysisId ?? searchParams.get("id");
+  const embedded = !!onBack;
+  const goBack = onBack ?? (() => navigate(-1));
   const [analysis, setAnalysis] = useState<AnalysisRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [responding, setResponding] = useState(false);
@@ -164,8 +172,9 @@ const AnalysisDetail = () => {
       return;
     }
     const respId = (created as { id: string }).id;
-    navigate(`/response?id=${respId}`);
     supabase.functions.invoke("generate-response", { body: { response_id: respId } }).catch(() => {});
+    if (onOpenResponse) onOpenResponse(respId);
+    else navigate(`/response?id=${respId}`);
   };
 
   const fetchAnalysis = useCallback(async () => {
@@ -218,10 +227,16 @@ const AnalysisDetail = () => {
     window.open(data.signedUrl, "_blank");
   };
 
-  const Header = (
+  const Header = embedded ? (
+    <header className="bg-card px-6 py-3 border-b sticky top-0 z-20">
+      <button onClick={goBack} className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="h-4 w-4" /> Retour
+      </button>
+    </header>
+  ) : (
     <header className="bg-card relative pt-4 pb-4 px-4 border-b sticky top-0 z-20">
       <div className="max-w-lg mx-auto flex items-center justify-between">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-10 w-10">
+        <Button variant="ghost" size="icon" onClick={goBack} className="h-10 w-10">
           <ArrowLeft className="h-6 w-6" />
         </Button>
         <img src={tendrixLogo} alt="Tendrix" className="h-7" />
@@ -229,12 +244,13 @@ const AnalysisDetail = () => {
       </div>
     </header>
   );
+  const wrapMax = embedded ? "max-w-3xl" : "max-w-lg";
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
         {Header}
-        <main className="max-w-lg mx-auto px-4 py-6 space-y-4">
+        <main className={`${wrapMax} mx-auto px-4 py-6 space-y-4`}>
           <Skeleton className="h-8 w-3/4" />
           <Skeleton className="h-24 w-full" />
           <Skeleton className="h-40 w-full" />
@@ -247,7 +263,7 @@ const AnalysisDetail = () => {
     return (
       <div className="min-h-screen bg-background">
         {Header}
-        <main className="max-w-lg mx-auto px-4 py-10 text-center text-muted-foreground">
+        <main className={`${wrapMax} mx-auto px-4 py-10 text-center text-muted-foreground`}>
           Analyse introuvable.
         </main>
       </div>
@@ -290,7 +306,7 @@ const AnalysisDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       {Header}
-      <main className="max-w-lg mx-auto px-4 py-6 pb-28 space-y-5">
+      <main className={`${wrapMax} mx-auto px-4 py-6 pb-28 space-y-5`}>
         {/* Titre */}
         <div>
           <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground mb-1">
@@ -597,7 +613,7 @@ const AnalysisDetail = () => {
       {/* Barre fixe : répondre au marché (toujours visible) */}
       {!inProgress && analysis.status !== "failed" && (
         <div className="fixed bottom-0 left-0 right-0 z-30 border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-          <div className="max-w-lg mx-auto px-4 py-3">
+          <div className={`${wrapMax} mx-auto px-4 py-3`}>
             <button
               onClick={respondToMarket}
               disabled={responding}

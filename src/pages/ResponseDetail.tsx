@@ -18,10 +18,15 @@ interface ResponseRow {
   tenders?: { title: string | null } | null;
 }
 
-const ResponseDetail = () => {
+interface ResponseDetailProps { responseId?: string; onBack?: () => void }
+
+const ResponseDetail = ({ responseId, onBack }: ResponseDetailProps = {}) => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const id = params.get("id");
+  const id = responseId ?? params.get("id");
+  const embedded = !!onBack;
+  const goBack = onBack ?? (() => navigate(-1));
+  const wrapMax = embedded ? "max-w-3xl" : "max-w-lg";
   const [resp, setResp] = useState<ResponseRow | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -46,10 +51,14 @@ const ResponseDetail = () => {
 
   const copy = (txt: string) => { navigator.clipboard?.writeText(txt); toast({ title: "Copié" }); };
 
-  const Header = (
+  const Header = embedded ? (
+    <header className="bg-card px-6 py-3 border-b sticky top-0 z-20">
+      <button onClick={goBack} className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"><ArrowLeft className="h-4 w-4" /> Retour</button>
+    </header>
+  ) : (
     <header className="bg-card pt-4 pb-4 px-4 border-b sticky top-0 z-20">
       <div className="max-w-lg mx-auto flex items-center justify-between">
-        <button onClick={() => navigate(-1)} className="h-10 w-10 flex items-center justify-center"><ArrowLeft className="h-6 w-6" /></button>
+        <button onClick={goBack} className="h-10 w-10 flex items-center justify-center"><ArrowLeft className="h-6 w-6" /></button>
         <img src={tendrixLogo} alt="Tendrix" className="h-7" />
         <div className="w-10" />
       </div>
@@ -66,7 +75,7 @@ const ResponseDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       {Header}
-      <main className="max-w-lg mx-auto px-4 py-6 pb-16 space-y-5">
+      <main className={`${wrapMax} mx-auto px-4 py-6 pb-16 space-y-5`}>
         <div>
           <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground mb-1">
             <Sparkles className="w-3.5 h-3.5" style={{ color: "#0c1c98" }} /> Dossier de réponse — 1ʳᵉ version
