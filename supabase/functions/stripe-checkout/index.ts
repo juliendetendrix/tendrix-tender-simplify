@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import Stripe from "https://esm.sh/stripe@16.12.0?target=deno";
-import { getPack } from "../_shared/credit-packs.ts";
+import { getOffer, computeCustom, type CustomQty } from "../_shared/credit-packs.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -30,9 +30,24 @@ serve(async (req) => {
   try {
     if (!STRIPE_SECRET_KEY) return json({ error: "Paiement non configuré (clé Stripe absente)" }, 503);
 
-    const { pack_id } = await req.json();
-    const pack = getPack(String(pack_id ?? ""));
-    if (!pack) return json({ error: "Pack inconnu" }, 400);
+    const { offer_id, custom } = await req.json();
+    // Détermine crédits + prix EN SERVEUR (jamais le montant envoyé par le client).
+    let credits = 0;
+    let priceCents = 0;
+    let label = "";
+    let packId = "";
+    if (offer_id) {
+      const o = getOffer(String(offer_id));
+      if (!o) return json({ error: "Offre inconnue" }, 400);
+      credits = o.credits; priceCents = o.priceCents; label = o.name; packId = o.id;
+    } else if (custom && typeof custom === "object") {
+      const c = computeCustom(custom as CustomQty);
+      if (c.credits <= 0) return json({ error: "Sélection vide" }, 400);
+      credits = c.credits; priceCents = c.priceCents; label = "Offre sur-mesure"; packId = "custom";
+    } else {
+      return json({ error: "Offre manquante" }, 400);
+    }
+    if (priceCents < 50) return json({ error: "Montant trop faible" }, 400); // min Stripe ~0,50€
 
     // Identifier l'entreprise du caller (via son jeton + RLS).
     const authHeader = req.headers.get("Authorization") ?? "";
@@ -69,10 +84,10 @@ serve(async (req) => {
           quantity: 1,
           price_data: {
             currency: "eur",
-            unit_amount: pack.amountCents,
+            unit_amount: priceCents,
             product_data: {
-              name: `Tendrix — Pack ${pack.label}`,
-              description: `${pack.credits} crédits d'analyse`,
+              name: `Tendrix — ${label}`,
+              description: `${credits.toLocaleString("fr-FR")} crédits`,
             },
           },
         },
@@ -81,8 +96,8 @@ serve(async (req) => {
       cancel_url: `${origin}/app?tab=compte&purchase=cancel`,
       metadata: {
         company_id: company.id,
-        credits: String(pack.credits),
-        pack_id: pack.id,
+        credits: String(credits),
+        pack_id: packId,
       },
     });
 
@@ -91,9 +106,9 @@ serve(async (req) => {
     await svc.from("credit_purchases").insert({
       company_id: company.id,
       stripe_session_id: session.id,
-      pack_id: pack.id,
-      credits: pack.credits,
-      amount_cents: pack.amountCents,
+      pack_id: packId,
+      credits,
+      amount_cents: priceCents,
       status: "pending",
     }).then(() => {}, () => {});
 

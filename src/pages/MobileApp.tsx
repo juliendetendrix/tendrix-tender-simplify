@@ -7,7 +7,7 @@ import { MonCompte } from "@/components/mobile/MonCompte";
 import { DemoChat } from "@/components/mobile/DemoChat";
 import { MessagesInbox, CA_THREAD_ID } from "@/components/mobile/MessagesInbox";
 import { BottomNav } from "@/components/mobile/BottomNav";
-import { BuyCreditsDialog } from "@/components/mobile/BuyCreditsDialog";
+import { Tarification } from "@/components/mobile/Tarification";
 import { ChargeAffairesWelcome } from "@/components/mobile/ChargeAffairesWelcome";
 import { toast } from "@/hooks/use-toast";
 import { useCAProfile } from "@/hooks/useCAProfile";
@@ -37,7 +37,7 @@ export default function MobileApp() {
   const [messagesOpen, setMessagesOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
-  const [buyOpen, setBuyOpen] = useState(false);
+  const [tarifOpen, setTarifOpen] = useState(false);
 
   // Solde réel de crédits, mis à jour en direct (Realtime)
   const { credits: liveCredits } = useCredits();
@@ -121,7 +121,7 @@ export default function MobileApp() {
 
         {/* Compteur de crédits — cliquable pour en acheter */}
         <button
-          onClick={() => setBuyOpen(true)}
+          onClick={() => setTarifOpen(true)}
           className="flex items-center gap-2 bg-primary px-3.5 py-2 rounded-xl shadow-sm hover:opacity-90 transition-opacity"
           aria-label="Acheter des crédits"
         >
@@ -134,10 +134,10 @@ export default function MobileApp() {
         </button>
       </header>
 
-      <BuyCreditsDialog open={buyOpen} onOpenChange={setBuyOpen} />
-
       <main className="flex-1 overflow-y-auto pb-24">
-        {openedChat ? (
+        {tarifOpen ? (
+          <Tarification onBack={() => setTarifOpen(false)} />
+        ) : openedChat ? (
           <DemoChat
             dossierTitle={openedChat.title}
             onBack={() => setOpenedChat(null)}
@@ -180,7 +180,7 @@ export default function MobileApp() {
         )}
       </main>
 
-      {!openedChat && !messagesOpen && (
+      {!openedChat && !messagesOpen && !tarifOpen && (
         <BottomNav
           activeTab={activeTab}
           onTabChange={setActiveTab}
