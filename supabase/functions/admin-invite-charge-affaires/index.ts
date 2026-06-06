@@ -41,7 +41,7 @@ serve(async (req) => {
     if (!parse.success) return j('invalid_body', 400, parse.error.flatten())
     const p = parse.data
 
-    const redirect = `${Deno.env.get('SUPABASE_URL')!.replace('.supabase.co', '.lovable.app')}/`
+    const redirect = `${Deno.env.get('APP_URL') ?? 'https://tendrix.fr'}/`
     const { data: invite, error: inviteErr } = await supabaseAdmin.auth.admin.inviteUserByEmail(p.email, {
       redirectTo: redirect,
     })

@@ -36,7 +36,7 @@ const MentionsLegales = () => {
           <section>
             <h2 className="text-xl font-bold text-foreground mb-4">HEBERGEUR</h2>
             <p>
-              L'hébergeur du Site est la société Lovable (GPT Engineer Inc.), dont le siège social est situé au 2261 Market Street #5039 94114 San Francisco.
+              L'hébergeur du Site est la société Vercel Inc., dont le siège social est situé au 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis.
             </p>
           </section>
 

@@ -52,7 +52,7 @@ serve(async (req) => {
     const p = parse.data
 
     // Invite user (sends magic link)
-    const redirect = `${Deno.env.get('SUPABASE_URL')!.replace('.supabase.co', '.lovable.app')}/`
+    const redirect = `${Deno.env.get('APP_URL') ?? 'https://tendrix.fr'}/`
     const { data: invite, error: inviteErr } = await supabaseAdmin.auth.admin.inviteUserByEmail(p.email, {
       redirectTo: redirect,
     })
