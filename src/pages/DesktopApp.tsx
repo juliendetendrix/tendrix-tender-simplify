@@ -108,7 +108,8 @@ export default function DesktopApp() {
   const analyses = dossiers.filter((d) => d.analysisId);
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="tdx-app">
+      <div className="app">
       <PurchaseSuccessDialog open={purchaseOpen} onOpenChange={setPurchaseOpen} onCompleteProfile={() => { setPurchaseOpen(false); setPage("entreprise"); setEntTab("profil"); }} />
       <AddTenderDialog open={addOpen} onOpenChange={setAddOpen} onCreated={() => { setAddOpen(false); setPage("analyses"); }} />
 
@@ -131,49 +132,40 @@ export default function DesktopApp() {
         </DialogContent>
       </Dialog>
 
-      {/* ─── Sidebar ─── */}
-      <aside className="w-64 shrink-0 flex flex-col fixed inset-y-0 left-0" style={{ backgroundColor: BLUE }}>
-        <div className="px-5 py-5 border-b border-white/10">
-          <img src={tendrixLogo} alt="Tendrix" className="h-7 brightness-0 invert" />
-        </div>
-        <div className="px-3 pt-4">
-          <button onClick={() => setAddOpen(true)} className="w-full flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-bold mb-3" style={{ backgroundColor: YELLOW, color: BLUE }}>
-            <Plus className="w-4 h-4" /> Ajouter un AO
-          </button>
-        </div>
-        <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
-          {NAV.map(({ id, label, icon: Icon }) => {
-            const active = page === id;
-            return (
-              <button key={id} onClick={() => { setOpenedChat(null); setView(null); setPage(id); }}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${active ? "bg-white/15 text-white" : "text-white/60 hover:bg-white/10 hover:text-white"}`}>
-                <Icon className="w-4.5 h-4.5 shrink-0" />{label}
-                {active && <span className="ml-auto w-1.5 h-1.5 rounded-full" style={{ backgroundColor: YELLOW }} />}
-              </button>
-            );
-          })}
-          <button onClick={() => { setView(null); setOpenedChat({ id: "ca", title: ca.display_name, isCADirect: true }); }}
-            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:bg-white/10 hover:text-white text-left">
-            <MessageSquare className="w-4.5 h-4.5 shrink-0" /> Messages
+      {/* ─── Sidebar (design system) ─── */}
+      <aside className="side">
+        <div className="side-logo"><img src={tendrixLogo} alt="Tendrix" /></div>
+        <button className="side-cta" onClick={() => setAddOpen(true)}><Plus className="ico-sm" /> <span className="lbl">Ajouter un AO</span></button>
+        <nav className="side-nav scrollbar">
+          <div className="side-sec lbl">Pilotage</div>
+          {NAV.map(({ id, label, icon: Icon }) => (
+            <button key={id} onClick={() => { setOpenedChat(null); setView(null); setPage(id); }}
+              className={`nav-item ${page === id ? "active" : ""}`}>
+              <Icon className="ico-md" /><span className="lbl">{label}</span>
+            </button>
+          ))}
+          <div className="side-sec lbl">Compte</div>
+          <button onClick={() => { setView(null); setOpenedChat({ id: "ca", title: ca.display_name, isCADirect: true }); }} className="nav-item">
+            <MessageSquare className="ico-md" /><span className="lbl">Messages</span>
           </button>
         </nav>
-        <div className="p-3 border-t border-white/10 space-y-3">
-          <button onClick={() => { setView(null); setPage("entreprise"); setEntTab("plans"); }} className="w-full flex items-center justify-between gap-2 bg-white/10 hover:bg-white/15 px-3.5 py-2.5 rounded-xl transition-colors">
-            <span className="flex items-center gap-2"><Coins className="w-4 h-4" style={{ color: YELLOW }} /><span className="text-sm font-bold text-white">{credits}</span><span className="text-xs text-white/70">crédits</span></span>
-            <span className="text-sm font-bold" style={{ color: YELLOW }}>+</span>
+        <div className="side-foot">
+          <button className="credit-pill" onClick={() => { setView(null); setPage("entreprise"); setEntTab("plans"); }}>
+            <span className="c-left"><Coins className="ico-sm" style={{ color: YELLOW }} /><span style={{ fontWeight: 800 }}>{credits}</span><span style={{ fontSize: 11, opacity: 0.7 }}>crédits</span></span>
+            <span style={{ fontWeight: 800, color: YELLOW }}>+</span>
           </button>
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white text-sm font-bold shrink-0">{(company?.name ?? user?.email ?? "?").charAt(0).toUpperCase()}</div>
-            <div className="min-w-0">
-              <p className="text-white text-xs font-semibold truncate">{company?.name ?? "Mon entreprise"}</p>
-              <p className="text-white/50 text-[11px] truncate">{user?.email}</p>
+          <div className="side-user">
+            <div className="av">{(company?.name ?? user?.email ?? "?").charAt(0).toUpperCase()}</div>
+            <div style={{ minWidth: 0 }}>
+              <p className="nm" style={{ color: "#fff", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{company?.name ?? "Mon entreprise"}</p>
+              <p style={{ color: "rgba(255,255,255,.5)", fontSize: 11, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{user?.email}</p>
             </div>
           </div>
         </div>
       </aside>
 
       {/* ─── Contenu ─── */}
-      <main className="flex-1 min-w-0 ml-64 overflow-y-auto">
+      <div className="main">
         {view ? (
           view.kind === "analysis" ? (
             <AnalysisDetail analysisId={view.id} onBack={() => setView(null)} onOpenResponse={(rid) => setView({ kind: "response", id: rid })} />
@@ -185,7 +177,7 @@ export default function DesktopApp() {
         ) : page === "entreprise" ? (
           <EntrepriseSection tab={entTab} setTab={setEntTab} />
         ) : (
-          <div className="max-w-6xl mx-auto px-8 py-8">
+          <div className="page page-anim">
             {page === "accueil" && (
               <Accueil
                 name={company?.name ?? company?.contact_name}
@@ -207,7 +199,8 @@ export default function DesktopApp() {
             {page === "reponses" && <Reponses companyId={company?.id} onOpen={(rid) => setView({ kind: "response", id: rid })} />}
           </div>
         )}
-      </main>
+      </div>
+      </div>
     </div>
   );
 }
@@ -496,8 +489,11 @@ function Historique() {
 // ─────────────────── helpers ───────────────────
 function Panel({ title, icon: Icon, children, accent, accentColor }: { title: string; icon: typeof Home; children: React.ReactNode; accent?: boolean; accentColor?: string }) {
   return (
-    <div className="rounded-xl border bg-white p-5" style={accent ? { borderLeftWidth: 4, borderLeftColor: accentColor ?? BLUE } : undefined}>
-      <h2 className="flex items-center gap-2 text-sm font-bold mb-3" style={{ color: BLUE }}><Icon className="w-4 h-4" />{title}</h2>
+    <div className="card card-pad" style={accent ? { borderLeftWidth: 4, borderLeftColor: accentColor ?? BLUE } : undefined}>
+      <div className="card-h">
+        <span className="ico"><Icon className="ico-md" /></span>
+        <span className="t">{title}</span>
+      </div>
       {children}
     </div>
   );
