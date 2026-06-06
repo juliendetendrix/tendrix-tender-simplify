@@ -36,6 +36,13 @@ const VERDICT: Record<string, { label: string; bg: string; color: string; Icon: 
 };
 const IN_PROGRESS = ["pending", "scraping", "analyzing", "manual_intervention_required"];
 
+// Chip verdict au style du design system (.v-chip v-go/v-warn/v-no)
+const VCHIP_CLS: Record<string, string> = { go: "v-go", go_with_reserve: "v-warn", no_go: "v-no" };
+function VChip({ verdict }: { verdict?: string | null }) {
+  if (!verdict || !VERDICT[verdict]) return null;
+  return <span className={`v-chip ${VCHIP_CLS[verdict] ?? ""}`}>{VERDICT[verdict].label}</span>;
+}
+
 export default function DesktopApp() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -276,7 +283,7 @@ function Accueil({ name, tenders, ca, caInitials, dossiers, onAnalyse, onOpen, o
                 return (
                   <button key={d.id} onClick={() => onOpen(d)} className="w-full text-left rounded-lg border p-3 hover:bg-muted/40 transition-colors flex items-center gap-2">
                     <span className="flex-1 text-sm text-foreground line-clamp-1">{d.title}</span>
-                    {v ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0" style={{ backgroundColor: v.bg, color: v.color }}>{v.label}</span>
+                    {v ? <VChip verdict={d.analysisVerdict} />
                        : <span className="text-[10px] text-muted-foreground shrink-0">En cours…</span>}
                   </button>
                 );
@@ -344,7 +351,7 @@ function Marches({ tenders, loading, query, setQuery, onRefresh, onHide, onAnaly
       ) : (
         <div className="space-y-3">
           {tenders.map((t) => (
-            <div key={t.id} className="rounded-xl border bg-white p-4 hover:shadow-sm transition-shadow">
+            <div key={t.id} className="card p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
                   {t.compatibility != null && (
@@ -386,7 +393,7 @@ function Analyses({ analyses, onOpen }: { analyses: any[]; onOpen: (d: any) => v
             const v = d.analysisVerdict ? VERDICT[d.analysisVerdict] : null;
             const inProgress = d.analysisStatus && IN_PROGRESS.includes(d.analysisStatus);
             return (
-              <button key={d.id} onClick={() => onOpen(d)} className="w-full rounded-xl border bg-white p-4 flex items-center gap-4 text-left hover:shadow-sm transition-shadow">
+              <button key={d.id} onClick={() => onOpen(d)} className="card w-full p-4 flex items-center gap-4 text-left">
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-sm text-foreground line-clamp-1">{d.title}</h3>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
@@ -394,7 +401,7 @@ function Analyses({ analyses, onOpen }: { analyses: any[]; onOpen: (d: any) => v
                     {d.deadline && <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{d.deadline}</span>}
                   </div>
                 </div>
-                {v ? <span className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full" style={{ backgroundColor: v.bg, color: v.color }}><v.Icon className="w-3.5 h-3.5" />{v.label}</span>
+                {v ? <VChip verdict={d.analysisVerdict} />
                   : inProgress ? <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground"><Loader2 className="w-3.5 h-3.5 animate-spin" />En cours…</span>
                   : <span className="text-xs text-muted-foreground">—</span>}
                 <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
@@ -424,7 +431,7 @@ function Reponses({ companyId, onOpen }: { companyId?: string; onOpen: (id: stri
       {rows.length === 0 ? <Empty text='Aucune réponse générée. Cliquez "Répondre à ce marché" sur une fiche analyse.' /> : (
         <div className="space-y-3">
           {rows.map((r) => (
-            <button key={r.id} onClick={() => onOpen(r.id)} className="w-full rounded-xl border bg-white p-4 flex items-center gap-4 text-left hover:shadow-sm transition-shadow">
+            <button key={r.id} onClick={() => onOpen(r.id)} className="card w-full p-4 flex items-center gap-4 text-left">
               <Sparkles className="w-5 h-5 shrink-0" style={{ color: BLUE }} />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-sm text-foreground line-clamp-1">{r.content?.synthese ? r.content.synthese : "Dossier de réponse"}</h3>
