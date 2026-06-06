@@ -52,6 +52,10 @@
   [data-lucide] { width: 1em; height: 1em; stroke-width: 2; vertical-align: middle; }
 .tdx-app .ico-sm [data-lucide] { width: 15px; height: 15px; }
 .tdx-app .ico-md [data-lucide] { width: 18px; height: 18px; }
+/* lucide-react rend des <svg> directement (pas de <i data-lucide>) : dimensionner le svg porteur de la classe */
+.tdx-app svg.ico-sm { width: 15px; height: 15px; }
+.tdx-app svg.ico-md { width: 18px; height: 18px; }
+.tdx-app .side-cta svg, .tdx-app .nav-item svg { flex-shrink: 0; }
 .tdx-app /* ── App shell ── */
   .app { display: flex; min-height: 100vh; }
 .tdx-app /* Sidebar */
