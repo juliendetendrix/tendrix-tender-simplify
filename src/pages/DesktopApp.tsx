@@ -36,13 +36,6 @@ const VERDICT: Record<string, { label: string; bg: string; color: string; Icon: 
 };
 const IN_PROGRESS = ["pending", "scraping", "analyzing", "manual_intervention_required"];
 
-// Chip verdict au style du design system (.v-chip v-go/v-warn/v-no)
-const VCHIP_CLS: Record<string, string> = { go: "v-go", go_with_reserve: "v-warn", no_go: "v-no" };
-function VChip({ verdict }: { verdict?: string | null }) {
-  if (!verdict || !VERDICT[verdict]) return null;
-  return <span className={`v-chip ${VCHIP_CLS[verdict] ?? ""}`}>{VERDICT[verdict].label}</span>;
-}
-
 export default function DesktopApp() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -115,8 +108,7 @@ export default function DesktopApp() {
   const analyses = dossiers.filter((d) => d.analysisId);
 
   return (
-    <div className="tdx-app">
-      <div className="app">
+    <div className="min-h-screen flex bg-gray-50">
       <PurchaseSuccessDialog open={purchaseOpen} onOpenChange={setPurchaseOpen} onCompleteProfile={() => { setPurchaseOpen(false); setPage("entreprise"); setEntTab("profil"); }} />
       <AddTenderDialog open={addOpen} onOpenChange={setAddOpen} onCreated={() => { setAddOpen(false); setPage("analyses"); }} />
 
@@ -139,40 +131,49 @@ export default function DesktopApp() {
         </DialogContent>
       </Dialog>
 
-      {/* ─── Sidebar (design system) ─── */}
-      <aside className="side">
-        <div className="side-logo"><img src={tendrixLogo} alt="Tendrix" /></div>
-        <button className="side-cta" onClick={() => setAddOpen(true)}><Plus className="ico-sm" /> <span className="lbl">Ajouter un AO</span></button>
-        <nav className="side-nav scrollbar">
-          <div className="side-sec lbl">Pilotage</div>
-          {NAV.map(({ id, label, icon: Icon }) => (
-            <button key={id} onClick={() => { setOpenedChat(null); setView(null); setPage(id); }}
-              className={`nav-item ${page === id ? "active" : ""}`}>
-              <Icon className="ico-md" /><span className="lbl">{label}</span>
-            </button>
-          ))}
-          <div className="side-sec lbl">Compte</div>
-          <button onClick={() => { setView(null); setOpenedChat({ id: "ca", title: ca.display_name, isCADirect: true }); }} className="nav-item">
-            <MessageSquare className="ico-md" /><span className="lbl">Messages</span>
+      {/* ─── Sidebar ─── */}
+      <aside className="w-64 shrink-0 flex flex-col fixed inset-y-0 left-0" style={{ backgroundColor: BLUE }}>
+        <div className="px-5 py-5 border-b border-white/10">
+          <img src={tendrixLogo} alt="Tendrix" className="h-7 brightness-0 invert" />
+        </div>
+        <div className="px-3 pt-4">
+          <button onClick={() => setAddOpen(true)} className="w-full flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-bold mb-3" style={{ backgroundColor: YELLOW, color: BLUE }}>
+            <Plus className="w-4 h-4" /> Ajouter un AO
+          </button>
+        </div>
+        <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
+          {NAV.map(({ id, label, icon: Icon }) => {
+            const active = page === id;
+            return (
+              <button key={id} onClick={() => { setOpenedChat(null); setView(null); setPage(id); }}
+                className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${active ? "bg-white/15 text-white" : "text-white/60 hover:bg-white/10 hover:text-white"}`}>
+                <Icon className="w-4.5 h-4.5 shrink-0" />{label}
+                {active && <span className="ml-auto w-1.5 h-1.5 rounded-full" style={{ backgroundColor: YELLOW }} />}
+              </button>
+            );
+          })}
+          <button onClick={() => { setView(null); setOpenedChat({ id: "ca", title: ca.display_name, isCADirect: true }); }}
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:bg-white/10 hover:text-white text-left">
+            <MessageSquare className="w-4.5 h-4.5 shrink-0" /> Messages
           </button>
         </nav>
-        <div className="side-foot">
-          <button className="credit-pill" onClick={() => { setView(null); setPage("entreprise"); setEntTab("plans"); }}>
-            <span className="c-left"><Coins className="ico-sm" style={{ color: YELLOW }} /><span style={{ fontWeight: 800 }}>{credits}</span><span style={{ fontSize: 11, opacity: 0.7 }}>crédits</span></span>
-            <span style={{ fontWeight: 800, color: YELLOW }}>+</span>
+        <div className="p-3 border-t border-white/10 space-y-3">
+          <button onClick={() => { setView(null); setPage("entreprise"); setEntTab("plans"); }} className="w-full flex items-center justify-between gap-2 bg-white/10 hover:bg-white/15 px-3.5 py-2.5 rounded-xl transition-colors">
+            <span className="flex items-center gap-2"><Coins className="w-4 h-4" style={{ color: YELLOW }} /><span className="text-sm font-bold text-white">{credits}</span><span className="text-xs text-white/70">crédits</span></span>
+            <span className="text-sm font-bold" style={{ color: YELLOW }}>+</span>
           </button>
-          <div className="side-user">
-            <div className="av">{(company?.name ?? user?.email ?? "?").charAt(0).toUpperCase()}</div>
-            <div style={{ minWidth: 0 }}>
-              <p className="nm" style={{ color: "#fff", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{company?.name ?? "Mon entreprise"}</p>
-              <p style={{ color: "rgba(255,255,255,.5)", fontSize: 11, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{user?.email}</p>
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white text-sm font-bold shrink-0">{(company?.name ?? user?.email ?? "?").charAt(0).toUpperCase()}</div>
+            <div className="min-w-0">
+              <p className="text-white text-xs font-semibold truncate">{company?.name ?? "Mon entreprise"}</p>
+              <p className="text-white/50 text-[11px] truncate">{user?.email}</p>
             </div>
           </div>
         </div>
       </aside>
 
       {/* ─── Contenu ─── */}
-      <div className="main">
+      <main className="flex-1 min-w-0 ml-64 overflow-y-auto">
         {view ? (
           view.kind === "analysis" ? (
             <AnalysisDetail analysisId={view.id} onBack={() => setView(null)} onOpenResponse={(rid) => setView({ kind: "response", id: rid })} />
@@ -184,7 +185,7 @@ export default function DesktopApp() {
         ) : page === "entreprise" ? (
           <EntrepriseSection tab={entTab} setTab={setEntTab} />
         ) : (
-          <div className="page page-anim">
+          <div className="max-w-6xl mx-auto px-8 py-8">
             {page === "accueil" && (
               <Accueil
                 name={company?.name ?? company?.contact_name}
@@ -206,8 +207,7 @@ export default function DesktopApp() {
             {page === "reponses" && <Reponses companyId={company?.id} onOpen={(rid) => setView({ kind: "response", id: rid })} />}
           </div>
         )}
-      </div>
-      </div>
+      </main>
     </div>
   );
 }
@@ -220,159 +220,107 @@ const STATUS_TABS = [
   { id: "gagne", label: "Remporté", pct: 100 },
 ] as const;
 
-// Mini-barre de compatibilité (style maquette)
-function MiniMatch({ value }: { value: number | null }) {
-  const v = value ?? 0;
-  const tone = v >= 75 ? "var(--go-dot)" : v >= 55 ? "var(--warn-dot)" : "var(--no-dot)";
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 104 }}>
-      <div style={{ flex: 1, height: 6, borderRadius: 6, background: "var(--line)", overflow: "hidden" }}>
-        <div style={{ height: "100%", width: `${v}%`, background: tone, borderRadius: 6 }} />
-      </div>
-      <span className="tnum" style={{ fontSize: 12.5, fontWeight: 800, color: tone, width: 34, textAlign: "right" }}>{value == null ? "—" : `${v}%`}</span>
-    </div>
-  );
-}
-
-const PIPE_COLS = [
-  { id: "demande", label: "Demande émise", tone: "var(--muted-2)" },
-  { id: "en_cours", label: "En cours", tone: "var(--navy)" },
-  { id: "soumis", label: "Soumis", tone: "var(--warn-dot)" },
-  { id: "gagne", label: "Remporté", tone: "var(--go-dot)" },
-];
-
 function Accueil({ name, tenders, ca, caInitials, dossiers, onAnalyse, onOpen, onChatCA, goMarches }:
   { name?: string | null; tenders: BoampTender[]; ca: any; caInitials: string; dossiers: any[]; onAnalyse: (t: BoampTender) => void; onOpen: (d: any) => void; onChatCA: () => void; goMarches: () => void }) {
+  const [statusTab, setStatusTab] = useState<string>("demande");
   const lastMinute = tenders.slice(0, 4);
-  const analysesDone = dossiers.filter((d) => d.analysisId);
-  const recent = analysesDone.slice(0, 4);
+  const recent = dossiers.filter((d) => d.analysisId).slice(0, 4);
+  const inStatus = dossiers.filter((d) => (d.status ?? "demande") === statusTab);
   const firstName = (ca?.display_name ?? "").split(" ")[0] || "votre chargé d'affaires";
 
-  // KPIs dérivés des vraies données (aucune valeur inventée)
-  const analyzed = dossiers.filter((d) => d.analysisVerdict);
-  const goCount = analyzed.filter((d) => d.analysisVerdict === "go" || d.analysisVerdict === "go_with_reserve").length;
-  const tauxGo = analyzed.length ? `${Math.round((goCount / analyzed.length) * 100)}%` : "—";
-  const enCours = dossiers.filter((d) => (d.status ?? "demande") !== "gagne").length;
-  const kpis = [
-    { label: "Recommandations", value: tenders.length, Icon: Sparkles },
-    { label: "AO en cours", value: enCours, Icon: Briefcase },
-    { label: "Analyses réalisées", value: analysesDone.length, Icon: FileSearch },
-    { label: "Taux GO", value: tauxGo, Icon: CheckCircle2 },
-  ];
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap)" }}>
-      {/* En-tête */}
-      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-        <div>
-          <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-.02em" }}>Bonjour {name?.split(" ")[0] ?? "Entreprise"} 👋</h2>
-          <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 4 }}>Voici l'activité de <strong style={{ color: "var(--ink-2)" }}>{name ?? "votre entreprise"}</strong> aujourd'hui.</p>
-        </div>
-        <button className="btn btn-primary" onClick={goMarches}><Plus className="ico-sm" /> Analyser un nouvel AO</button>
-      </div>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-foreground">Bonjour <span style={{ color: BLUE }}>{name?.split(" ")[0] ?? "Entreprise"}</span></h1>
 
-      {/* KPIs */}
-      <div className="grid" style={{ gridTemplateColumns: "repeat(4, minmax(0,1fr))" }}>
-        {kpis.map((k) => (
-          <div key={k.label} className="card card-pad" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--muted)" }}>{k.label}</span>
-              <span style={{ width: 32, height: 32, borderRadius: 9, background: "color-mix(in oklab, var(--navy) 7%, white)", color: "var(--navy)", display: "flex", alignItems: "center", justifyContent: "center" }}><k.Icon className="ico-sm" /></span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Appels d'offres last minute */}
+        <Panel title="Appels d'offres recommandés" icon={Clock} accent>
+          {lastMinute.length === 0 ? (
+            <div className="text-center py-4">
+              <Empty text="Aucune recommandation pour le moment." />
+              <Button onClick={goMarches} size="sm" className="mt-2 text-white" style={{ backgroundColor: BLUE }}>Voir les marchés</Button>
             </div>
-            <span className="tnum" style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-.02em", lineHeight: 1 }}>{k.value}</span>
+          ) : (
+            <div className="space-y-2">
+              {lastMinute.map((t) => (
+                <button key={t.id} onClick={() => onAnalyse(t)} className="w-full text-left rounded-lg border p-3 hover:border-primary/40 hover:bg-primary/5 transition-colors">
+                  <p className="text-sm font-semibold text-foreground line-clamp-1">{t.title}</p>
+                  <div className="flex items-center justify-between mt-1 text-xs text-muted-foreground">
+                    <span className="line-clamp-1">{t.organisme ?? t.location ?? ""}</span>
+                    {t.compatibility != null && <span className="font-bold shrink-0 ml-2" style={{ color: BLUE }}>{t.compatibility}%</span>}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </Panel>
+
+        {/* Chargé d'affaires référent */}
+        <Panel title="Mon chargé d'affaires référent" icon={Star} accent accentColor={YELLOW}>
+          <div className="flex items-center gap-3 rounded-lg border p-3">
+            {ca?.photo_url ? <img src={ca.photo_url} alt="" className="w-12 h-12 rounded-full object-cover" />
+              : <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold" style={{ color: BLUE }}>{caInitials}</div>}
+            <div>
+              <p className="font-bold text-foreground">{ca?.display_name ?? "—"}</p>
+              <p className="text-xs text-muted-foreground">Chargé d'affaires</p>
+            </div>
           </div>
-        ))}
+          <div className="grid grid-cols-2 gap-2 mt-3">
+            {ca?.phone && <a href={`tel:${ca.phone}`} className="flex items-center justify-center gap-1.5 h-9 rounded-lg border text-sm font-medium hover:bg-muted"><Phone className="w-4 h-4" />Appeler</a>}
+            {ca?.email && <a href={`mailto:${ca.email}`} className="flex items-center justify-center gap-1.5 h-9 rounded-lg border text-sm font-medium hover:bg-muted"><Mail className="w-4 h-4" />Email</a>}
+          </div>
+          <button onClick={onChatCA} className="w-full h-10 rounded-lg font-bold text-sm mt-2" style={{ backgroundColor: YELLOW, color: BLUE }}>
+            Écrire un message à {firstName}
+          </button>
+        </Panel>
+
+        {/* Dernières analyses */}
+        <Panel title="Mes dernières analyses" icon={FileSearch}>
+          {recent.length === 0 ? <Empty text="Aucune analyse pour l'instant." /> : (
+            <div className="space-y-2">
+              {recent.map((d) => {
+                const v = d.analysisVerdict ? VERDICT[d.analysisVerdict] : null;
+                return (
+                  <button key={d.id} onClick={() => onOpen(d)} className="w-full text-left rounded-lg border p-3 hover:bg-muted/40 transition-colors flex items-center gap-2">
+                    <span className="flex-1 text-sm text-foreground line-clamp-1">{d.title}</span>
+                    {v ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0" style={{ backgroundColor: v.bg, color: v.color }}>{v.label}</span>
+                       : <span className="text-[10px] text-muted-foreground shrink-0">En cours…</span>}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </Panel>
       </div>
 
-      {/* Pipeline kanban */}
-      <div className="card card-pad">
-        <div className="card-h"><span className="ico"><Briefcase className="ico-md" /></span><span className="t">Mes appels d'offres en cours</span></div>
-        {dossiers.length === 0 ? <Empty text="Aucun dossier en cours." /> : (
-          <div className="grid" style={{ gridTemplateColumns: "repeat(4, minmax(0,1fr))", gap: 14 }}>
-            {PIPE_COLS.map((col) => {
-              const items = dossiers.filter((d) => (d.status ?? "demande") === col.id);
-              const pct = STATUS_TABS.find((s) => s.id === col.id)?.pct ?? 25;
+      {/* Mes appels d'offres en cours (par statut) */}
+      <Panel title="Mes appels d'offres en cours" icon={Briefcase}>
+        <div className="flex gap-1 border-b mb-3 -mt-1">
+          {STATUS_TABS.map((s) => (
+            <button key={s.id} onClick={() => setStatusTab(s.id)}
+              className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px ${statusTab === s.id ? "" : "border-transparent text-muted-foreground"}`}
+              style={statusTab === s.id ? { borderColor: BLUE, color: BLUE } : undefined}>{s.label}</button>
+          ))}
+        </div>
+        {inStatus.length === 0 ? <Empty text="Aucun dossier dans ce statut." /> : (
+          <div className="space-y-3">
+            {inStatus.map((d) => {
+              const pct = STATUS_TABS.find((s) => s.id === statusTab)?.pct ?? 25;
               return (
-                <div key={col.id}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 11, paddingBottom: 9, borderBottom: "1px solid var(--line)" }}>
-                    <span className="dot" style={{ background: col.tone }} />
-                    <span style={{ fontSize: 12, fontWeight: 800, color: "var(--ink-2)" }}>{col.label}</span>
-                    <span className="tnum" style={{ marginLeft: "auto", fontSize: 11.5, fontWeight: 800, color: "var(--muted-2)" }}>{items.length}</span>
+                <button key={d.id} onClick={() => onOpen(d)} className="w-full text-left">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-foreground line-clamp-1">{d.title}</span>
+                    {d.budget && <span className="text-sm font-bold shrink-0 ml-2" style={{ color: BLUE }}>{d.budget}</span>}
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10, minHeight: 60 }}>
-                    {items.length === 0 ? (
-                      <div style={{ border: "1.5px dashed var(--line)", borderRadius: 11, height: 64, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11.5, color: "var(--muted-2)" }}>—</div>
-                    ) : items.map((d) => (
-                      <button key={d.id} onClick={() => onOpen(d)} className="card" style={{ textAlign: "left", padding: 13, display: "block", width: "100%" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginBottom: 8, alignItems: "center" }}>
-                          {d.analysisVerdict ? <VChip verdict={d.analysisVerdict} /> : <span style={{ fontSize: 10.5, color: "var(--muted-2)", fontWeight: 700 }}>—</span>}
-                          {d.budget && <span className="mono" style={{ fontSize: 11.5, fontWeight: 600, color: "var(--navy)" }}>{d.budget}</span>}
-                        </div>
-                        <p className="clip2" style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.35, color: "var(--ink)" }}>{d.title}</p>
-                        <div style={{ marginTop: 10, height: 5, borderRadius: 5, background: "var(--line)", overflow: "hidden" }}>
-                          <div style={{ height: "100%", width: `${pct}%`, background: col.id === "gagne" ? "var(--go-dot)" : "var(--navy)", borderRadius: 5 }} />
-                        </div>
-                        {d.deadline && <div style={{ marginTop: 8, fontSize: 11.5, color: "var(--muted)", display: "flex", alignItems: "center", gap: 5 }}><Clock className="ico-sm" />{d.deadline}</div>}
-                      </button>
-                    ))}
+                  <div className="mt-1.5 h-2 rounded-full bg-muted overflow-hidden">
+                    <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: BLUE }} />
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
         )}
-      </div>
-
-      {/* Recommandations + Chargé d'affaires */}
-      <div className="grid" style={{ gridTemplateColumns: "minmax(0,1.35fr) minmax(0,1fr)" }}>
-        <div className="card card-pad">
-          <div className="card-h"><span className="ico"><Sparkles className="ico-md" /></span><span className="t">Appels d'offres recommandés</span><button className="more" onClick={goMarches}>Marchés <ChevronRight className="ico-sm" /></button></div>
-          {lastMinute.length === 0 ? (
-            <div style={{ textAlign: "center", padding: 12 }}>
-              <Empty text="Aucune recommandation pour le moment." />
-              <button className="btn btn-primary btn-sm" style={{ marginTop: 8 }} onClick={goMarches}>Voir les marchés</button>
-            </div>
-          ) : lastMinute.map((t, i) => (
-            <div key={t.id} style={{ padding: "13px 4px", borderTop: i ? "1px solid var(--line-2)" : "none", display: "flex", gap: 12, alignItems: "center" }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p className="clip1" style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)" }}>{t.title}</p>
-                <p className="clip1" style={{ fontSize: 11.5, color: "var(--muted)", marginTop: 4 }}>{t.organisme ?? t.location ?? ""}</p>
-              </div>
-              <div style={{ width: 104, flexShrink: 0 }}><MiniMatch value={t.compatibility} /></div>
-              <button className="btn btn-ghost btn-sm" style={{ flexShrink: 0 }} onClick={() => onAnalyse(t)}><Sparkles className="ico-sm" /> Analyser</button>
-            </div>
-          ))}
-        </div>
-
-        <div className="card card-pad" style={{ display: "flex", flexDirection: "column" }}>
-          <div className="card-h"><span className="ico" style={{ color: "var(--warn-fg)" }}><Star className="ico-md" /></span><span className="t">Mon chargé d'affaires</span></div>
-          <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
-            {ca?.photo_url ? <img src={ca.photo_url} alt="" style={{ width: 52, height: 52, borderRadius: 14, objectFit: "cover" }} />
-              : <div style={{ width: 52, height: 52, borderRadius: 14, background: "var(--yellow-soft)", color: "var(--warn-fg)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 19 }}>{caInitials}</div>}
-            <div>
-              <p style={{ fontSize: 15, fontWeight: 800 }}>{ca?.display_name ?? "—"}</p>
-              <p style={{ fontSize: 12, color: "var(--muted)" }}>Chargé d'affaires</p>
-            </div>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9, marginTop: 15 }}>
-            {ca?.phone && <a href={`tel:${ca.phone}`} className="btn btn-ghost btn-sm"><Phone className="ico-sm" /> Appeler</a>}
-            {ca?.email && <a href={`mailto:${ca.email}`} className="btn btn-ghost btn-sm"><Mail className="ico-sm" /> Email</a>}
-          </div>
-          <button onClick={onChatCA} className="btn btn-accent" style={{ marginTop: 9 }}><MessageSquare className="ico-sm" /> Écrire à {firstName}</button>
-        </div>
-      </div>
-
-      {/* Dernières analyses */}
-      <div className="card card-pad">
-        <div className="card-h"><span className="ico"><FileSearch className="ico-md" /></span><span className="t">Mes dernières analyses</span></div>
-        {recent.length === 0 ? <Empty text="Aucune analyse pour l'instant." /> : recent.map((d, i) => (
-          <button key={d.id} onClick={() => onOpen(d)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 6px", borderTop: i ? "1px solid var(--line-2)" : "none", textAlign: "left", width: "100%" }}>
-            <span className="clip1" style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 700 }}>{d.title}</span>
-            {d.analysisVerdict ? <VChip verdict={d.analysisVerdict} /> : <span style={{ fontSize: 11.5, color: "var(--muted)" }}>En cours…</span>}
-            <ChevronRight className="ico-sm" style={{ color: "var(--muted-2)" }} />
-          </button>
-        ))}
-      </div>
+      </Panel>
     </div>
   );
 }
@@ -403,7 +351,7 @@ function Marches({ tenders, loading, query, setQuery, onRefresh, onHide, onAnaly
       ) : (
         <div className="space-y-3">
           {tenders.map((t) => (
-            <div key={t.id} className="card p-4">
+            <div key={t.id} className="rounded-xl border bg-white p-4 hover:shadow-sm transition-shadow">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
                   {t.compatibility != null && (
@@ -445,7 +393,7 @@ function Analyses({ analyses, onOpen }: { analyses: any[]; onOpen: (d: any) => v
             const v = d.analysisVerdict ? VERDICT[d.analysisVerdict] : null;
             const inProgress = d.analysisStatus && IN_PROGRESS.includes(d.analysisStatus);
             return (
-              <button key={d.id} onClick={() => onOpen(d)} className="card w-full p-4 flex items-center gap-4 text-left">
+              <button key={d.id} onClick={() => onOpen(d)} className="w-full rounded-xl border bg-white p-4 flex items-center gap-4 text-left hover:shadow-sm transition-shadow">
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-sm text-foreground line-clamp-1">{d.title}</h3>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
@@ -453,7 +401,7 @@ function Analyses({ analyses, onOpen }: { analyses: any[]; onOpen: (d: any) => v
                     {d.deadline && <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{d.deadline}</span>}
                   </div>
                 </div>
-                {v ? <VChip verdict={d.analysisVerdict} />
+                {v ? <span className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full" style={{ backgroundColor: v.bg, color: v.color }}><v.Icon className="w-3.5 h-3.5" />{v.label}</span>
                   : inProgress ? <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground"><Loader2 className="w-3.5 h-3.5 animate-spin" />En cours…</span>
                   : <span className="text-xs text-muted-foreground">—</span>}
                 <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
@@ -483,7 +431,7 @@ function Reponses({ companyId, onOpen }: { companyId?: string; onOpen: (id: stri
       {rows.length === 0 ? <Empty text='Aucune réponse générée. Cliquez "Répondre à ce marché" sur une fiche analyse.' /> : (
         <div className="space-y-3">
           {rows.map((r) => (
-            <button key={r.id} onClick={() => onOpen(r.id)} className="card w-full p-4 flex items-center gap-4 text-left">
+            <button key={r.id} onClick={() => onOpen(r.id)} className="w-full rounded-xl border bg-white p-4 flex items-center gap-4 text-left hover:shadow-sm transition-shadow">
               <Sparkles className="w-5 h-5 shrink-0" style={{ color: BLUE }} />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-sm text-foreground line-clamp-1">{r.content?.synthese ? r.content.synthese : "Dossier de réponse"}</h3>
@@ -548,11 +496,8 @@ function Historique() {
 // ─────────────────── helpers ───────────────────
 function Panel({ title, icon: Icon, children, accent, accentColor }: { title: string; icon: typeof Home; children: React.ReactNode; accent?: boolean; accentColor?: string }) {
   return (
-    <div className="card card-pad" style={accent ? { borderLeftWidth: 4, borderLeftColor: accentColor ?? BLUE } : undefined}>
-      <div className="card-h">
-        <span className="ico"><Icon className="ico-md" /></span>
-        <span className="t">{title}</span>
-      </div>
+    <div className="rounded-xl border bg-white p-5" style={accent ? { borderLeftWidth: 4, borderLeftColor: accentColor ?? BLUE } : undefined}>
+      <h2 className="flex items-center gap-2 text-sm font-bold mb-3" style={{ color: BLUE }}><Icon className="w-4 h-4" />{title}</h2>
       {children}
     </div>
   );
