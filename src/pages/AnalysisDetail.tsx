@@ -66,10 +66,10 @@ interface AnalysisRow {
   tender_documents: TenderDoc[] | null;
 }
 
-const VERDICT_UI: Record<string, { label: string; phrase: string; bg: string; color: string; Icon: typeof CheckCircle2 }> = {
-  go:              { label: "GO",              phrase: "Foncez, ce marché est fait pour vous !",          bg: "#dcfce7", color: "#16a34a", Icon: CheckCircle2 },
-  go_with_reserve: { label: "GO AVEC RÉSERVE", phrase: "Profil compatible, mais quelques points à lever.", bg: "#fef3c7", color: "#b45309", Icon: AlertTriangle },
-  no_go:           { label: "NO GO",           phrase: "Ce marché ne semble pas adapté à votre profil.",   bg: "#fee2e2", color: "#dc2626", Icon: XCircle },
+const VERDICT_UI: Record<string, { label: string; phrase: string; bg: string; color: string; tone: "go" | "warn" | "no"; Icon: typeof CheckCircle2 }> = {
+  go:              { label: "GO",              phrase: "Foncez, ce marché est fait pour vous !",          bg: "#dcfce7", color: "#16a34a", tone: "go",   Icon: CheckCircle2 },
+  go_with_reserve: { label: "GO AVEC RÉSERVE", phrase: "Profil compatible, mais quelques points à lever.", bg: "#fef3c7", color: "#b45309", tone: "warn", Icon: AlertTriangle },
+  no_go:           { label: "NO GO",           phrase: "Ce marché ne semble pas adapté à votre profil.",   bg: "#fee2e2", color: "#dc2626", tone: "no",   Icon: XCircle },
 };
 
 const IN_PROGRESS = ["pending", "scraping", "analyzing", "manual_intervention_required"];
@@ -99,32 +99,6 @@ function DocRow({ doc, info, openDoc }: { doc: TenderDoc; info: DocInfo; openDoc
       >
         <Download className="w-4 h-4" />
       </button>
-    </div>
-  );
-}
-
-function DocGroup({
-  title, docs, docByName, labelFor, openDoc, muted,
-}: {
-  title: string;
-  docs: string[];
-  docByName: Map<string, TenderDoc>;
-  labelFor: (name: string) => DocInfo;
-  openDoc: (d: TenderDoc) => void;
-  muted?: boolean;
-}) {
-  const rows = docs.map((name) => docByName.get(name)).filter(Boolean) as TenderDoc[];
-  if (rows.length === 0) return null;
-  return (
-    <div className="rounded-lg border overflow-hidden">
-      <div className={`px-3 py-2 border-b text-sm font-bold ${muted ? "bg-muted/40 text-muted-foreground" : "bg-secondary/10 text-foreground"}`}>
-        {title}
-      </div>
-      <div className="divide-y">
-        {rows.map((doc) => (
-          <DocRow key={doc.id} doc={doc} info={labelFor(doc.file_name)} openDoc={openDoc} />
-        ))}
-      </div>
     </div>
   );
 }
@@ -303,6 +277,342 @@ const AnalysisDetail = ({ analysisId, onBack, onOpenResponse }: AnalysisDetailPr
     return { type, label: DOC_TYPE_LABEL[type], key: KEY_TYPES.includes(type) };
   };
 
+  // ── Bloc d'onglets (contenu identique partagé mobile + desktop) ──────────────
+  const tabsBlock = (
+    <Tabs defaultValue="analyse" className="w-full">
+      <TabsList className="w-full grid grid-cols-3">
+        <TabsTrigger value="analyse">L'analyse</TabsTrigger>
+        <TabsTrigger value="prerequis">Prérequis</TabsTrigger>
+        <TabsTrigger value="documents">
+          Documents{docs.length > 0 ? ` (${docs.length})` : ""}
+        </TabsTrigger>
+      </TabsList>
+
+      {/* — L'analyse (accordéon compact, structure Iziao) — */}
+      <TabsContent value="analyse" className="pt-4">
+        {inProgress ? (
+          <p className="text-sm text-muted-foreground text-center py-6">
+            Le détail apparaîtra ici une fois l'analyse terminée.
+          </p>
+        ) : (
+          <>
+            {/* Accès direct à l'expert / chargé d'affaires */}
+            <button
+              onClick={() => navigate("/app?chat=ca")}
+              className="w-full mb-4 h-11 flex items-center justify-center gap-2 rounded-xl text-sm font-semibold border hover:bg-primary/5 transition-colors"
+              style={{ borderColor: "#c7ccff", color: "#0c1c98" }}
+            >
+              <MessageSquare className="w-4 h-4" />
+              Discuter avec mon chargé d'affaires
+            </button>
+
+            {/* Encart "Attention particulière" */}
+            {attention && (
+              <div className="rounded-xl border p-4 mb-4 flex items-start gap-3"
+                   style={{ backgroundColor: "#fff7ed", borderColor: "#fed7aa" }}>
+                <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#ea580c" }} />
+                <div>
+                  <p className="font-bold text-sm mb-1" style={{ color: "#ea580c" }}>Attention particulière</p>
+                  <p className="text-sm leading-snug" style={{ color: "#9a3412" }}>{attention}</p>
+                </div>
+              </div>
+            )}
+
+            <Accordion type="multiple" defaultValue={["avis"]} className="w-full">
+              {/* Avis */}
+              <AccordionItem value="avis">
+                <AccordionTrigger className="text-sm font-semibold">Avis</AccordionTrigger>
+                <AccordionContent className="text-sm text-foreground leading-relaxed">
+                  {v && <span className="font-bold" style={{ color: v.color }}>{v.label} · </span>}
+                  {avis || "—"}
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Description du marché (masquée si vide) */}
+              {okVal(description) && (
+                <AccordionItem value="description">
+                  <AccordionTrigger className="text-sm font-semibold">Description du marché</AccordionTrigger>
+                  <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                    {description}
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+
+              {/* Lots */}
+              {lots.length > 0 && (
+                <AccordionItem value="lots">
+                  <AccordionTrigger className="text-sm font-semibold">Lots ({lots.length})</AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-2">
+                      {lots.map((lot) => (
+                        <div key={lot.numero} className="rounded-lg border p-3 bg-card">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-semibold text-foreground">
+                              Lot {lot.numero}{lot.intitule ? ` — ${lot.intitule}` : ""}
+                            </span>
+                            {lot.ouvert && (
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#dcfce7", color: "#16a34a" }}>
+                                OUVERT
+                              </span>
+                            )}
+                          </div>
+                          {lot.resume && <p className="text-xs text-muted-foreground mt-1 leading-snug">{lot.resume}</p>}
+                        </div>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+
+              {/* Calendrier de réponse */}
+              {calendrier.length > 0 && (
+                <AccordionItem value="calendrier">
+                  <AccordionTrigger className="text-sm font-semibold">Calendrier de réponse</AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-1.5">
+                      {calendrier.map((d, i) => (
+                        <div key={i} className="flex items-center justify-between gap-3 text-sm">
+                          <span className="text-muted-foreground">{d.label}</span>
+                          <span className="font-semibold text-foreground text-right">{d.valeur}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+
+              {/* Jugement */}
+              {jugement.length > 0 && (
+                <AccordionItem value="jugement">
+                  <AccordionTrigger className="text-sm font-semibold">Jugement des offres</AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-1.5">
+                      {jugement.map((j, i) => (
+                        <div key={i} className="flex items-center justify-between gap-3 text-sm">
+                          <span className="text-foreground">{j.label}</span>
+                          {j.detail && <span className="font-semibold text-primary">{j.detail}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+
+              {/* Lieu d'exécution */}
+              {okVal(lieu) && (
+                <AccordionItem value="lieu">
+                  <AccordionTrigger className="text-sm font-semibold">Lieu d'exécution</AccordionTrigger>
+                  <AccordionContent className="text-sm text-muted-foreground flex items-start gap-2">
+                    <MapPinned className="w-4 h-4 shrink-0 mt-0.5" />
+                    {lieu}
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+
+              {/* Durée */}
+              {okVal(duree) && (
+                <AccordionItem value="duree">
+                  <AccordionTrigger className="text-sm font-semibold">Durée du marché</AccordionTrigger>
+                  <AccordionContent className="text-sm text-muted-foreground flex items-start gap-2">
+                    <Timer className="w-4 h-4 shrink-0 mt-0.5" />
+                    {duree}
+                  </AccordionContent>
+                </AccordionItem>
+              )}
+            </Accordion>
+
+            {report.documents_non_lus && report.documents_non_lus.length > 0 && (
+              <p className="text-xs text-muted-foreground border-t pt-3 mt-4">
+                À vérifier manuellement (formats non lus par l'IA) : {report.documents_non_lus.join(", ")}
+              </p>
+            )}
+          </>
+        )}
+      </TabsContent>
+
+      {/* — Prérequis (Visites + Qualifications, façon Iziao) — */}
+      <TabsContent value="prerequis" className="space-y-6 pt-4">
+        {inProgress ? (
+          <p className="text-sm text-muted-foreground text-center py-6">
+            Les prérequis apparaîtront ici une fois l'analyse terminée.
+          </p>
+        ) : !hasPrerequis ? (
+          <p className="text-sm text-muted-foreground text-center py-6">
+            Aucun prérequis particulier n'a pu être extrait des documents fournis.
+          </p>
+        ) : (
+          <>
+            {/* Visites */}
+            <div className="space-y-2">
+              <h3 className="flex items-center gap-2 text-base font-bold text-foreground">
+                <MapPinned className="w-5 h-5" style={{ color: "#0c1c98" }} /> Visites
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {okVal(visites) ? visites : "Aucune visite obligatoire ou échantillon à fournir n'est mentionnée dans les documents."}
+              </p>
+            </div>
+
+            {/* Qualifications & pièces requises */}
+            {qualifications.length > 0 && (
+              <div className="space-y-2">
+                <h3 className="flex items-center gap-2 text-base font-bold text-foreground">
+                  <ShieldCheck className="w-5 h-5" style={{ color: "#0c1c98" }} /> Qualifications requises
+                </h3>
+                <ul className="space-y-2">
+                  {qualifications.map((p, i) => (
+                    <li key={i} className="rounded-lg border p-3 bg-card">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <ListChecks className="w-4 h-4 shrink-0" style={{ color: p.obligatoire ? "#dc2626" : "#16a34a" }} />
+                        <span className="text-sm font-semibold text-foreground">{p.label}</span>
+                        {p.obligatoire && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#fee2e2", color: "#dc2626" }}>
+                            OBLIGATOIRE
+                          </span>
+                        )}
+                      </div>
+                      {p.detail && <p className="text-xs text-muted-foreground mt-1 leading-snug pl-6">{p.detail}</p>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </>
+        )}
+      </TabsContent>
+
+      {/* — Documents (triés par lot) — */}
+      <TabsContent value="documents" className="pt-4 space-y-4">
+        {/* Profil acheteur détecté par le robot */}
+        {analysis.buyer_profile_url && (
+          <div className="rounded-lg border p-3 bg-primary/5 border-primary/20">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-primary mb-1.5">
+              <Link2 className="w-3.5 h-3.5" />
+              Profil acheteur détecté
+            </div>
+            {analysis.platform && (
+              <p className="text-[11px] text-muted-foreground mb-1">
+                Plateforme : <span className="font-medium">{analysis.platform}</span>
+                {analysis.consultation_ref ? ` · réf. ${analysis.consultation_ref}` : ""}
+              </p>
+            )}
+            <a
+              href={analysis.buyer_profile_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline break-all"
+            >
+              <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+              {analysis.buyer_profile_url}
+            </a>
+          </div>
+        )}
+
+        {docs.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-8">
+            Les documents seront disponibles une fois récupérés par votre chargé d'affaires.
+          </p>
+        ) : (
+          // Liste plate de TOUS les documents (triés : pièces clés d'abord),
+          // chacun consultable / téléchargeable. Rien n'est masqué.
+          <div className="border rounded-lg overflow-hidden divide-y">
+            {[...docs]
+              .sort((a, b) => Number(labelFor(b.file_name).key) - Number(labelFor(a.file_name).key))
+              .map((doc) => (
+                <DocRow key={doc.id} doc={doc} info={labelFor(doc.file_name)} openDoc={openDoc} />
+              ))}
+          </div>
+        )}
+      </TabsContent>
+    </Tabs>
+  );
+
+  // ════════════════════ MISE EN PAGE DESKTOP (2 colonnes) ════════════════════
+  // Rendue uniquement en mode intégré (shell desktop). Le CTA « Répondre » vit
+  // dans la colonne sticky de gauche → plus de barre fixe qui déborde la sidebar.
+  if (embedded) {
+    const tone = v?.tone ?? "warn";
+    const hasFacts = okVal(tender?.deadline) || okVal(duree) || okVal(lieu);
+    return (
+      <div className="page page-anim" style={{ maxWidth: 1240 }}>
+        <button onClick={goBack} className="btn btn-ghost btn-sm" style={{ marginBottom: 16 }}>
+          <ArrowLeft className="ico-sm" /> Retour
+        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 12, fontWeight: 700, color: "var(--navy)", marginBottom: 7 }}>
+          <Sparkles className="ico-sm" /> FICHE ANALYSE IA
+        </div>
+        <h2 style={{ fontSize: 25, fontWeight: 800, letterSpacing: "-.02em", lineHeight: 1.2, maxWidth: 820 }}>
+          {tender?.title ?? "Appel d'offres"}
+        </h2>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 16, marginTop: 11, fontSize: 13, color: "var(--muted)" }}>
+          {tender?.organisme && <span style={{ display: "flex", alignItems: "center", gap: 6 }}><Building2 className="ico-sm" />{tender.organisme}</span>}
+          {tender?.location && <span style={{ display: "flex", alignItems: "center", gap: 6 }}><MapPin className="ico-sm" />{tender.location}</span>}
+          {tender?.deadline && <span style={{ display: "flex", alignItems: "center", gap: 6 }}><Calendar className="ico-sm" />Date limite : {tender.deadline}</span>}
+        </div>
+
+        {inProgress ? (
+          <div className="card card-pad" style={{ marginTop: 22, display: "flex", gap: 12, alignItems: "flex-start" }}>
+            <Loader2 className="ico-md animate-spin" style={{ color: "var(--navy)" }} />
+            <div>
+              <p style={{ fontWeight: 800, fontSize: 14, color: "var(--navy)" }}>Analyse en cours…</p>
+              <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4, lineHeight: 1.5 }}>
+                {analysis.status === "manual_intervention_required"
+                  ? "Votre chargé d'affaires récupère le dossier de consultation (DCE). Vous serez notifié dès que le verdict est prêt."
+                  : "L'IA lit les documents du marché et prépare votre verdict. Cela prend généralement quelques instants."}
+              </p>
+            </div>
+          </div>
+        ) : analysis.status === "failed" ? (
+          <div className="card card-pad" style={{ marginTop: 22, borderColor: "#fecaca", background: "#fef2f2" }}>
+            <p style={{ fontWeight: 800, fontSize: 14, color: "#dc2626" }}>L'analyse a échoué</p>
+            <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>Votre crédit a été remboursé. Vous pouvez relancer l'analyse depuis l'appel d'offres.</p>
+          </div>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "344px minmax(0,1fr)", gap: 22, marginTop: 24, alignItems: "start" }}>
+            {/* ─ Colonne gauche sticky : verdict + faits + CTA ─ */}
+            <div style={{ position: "sticky", top: 24, display: "flex", flexDirection: "column", gap: 16 }}>
+              {v && (
+                <div className="card card-pad" style={{ textAlign: "center", paddingTop: 22, paddingBottom: 20 }}>
+                  <div className={`v-chip v-${tone}`} style={{ fontSize: 14, padding: "6px 14px" }}>
+                    <v.Icon className="ico-sm" /> {v.label}
+                  </div>
+                  <p style={{ fontSize: 13.5, fontWeight: 700, color: `var(--${tone}-fg)`, marginTop: 12, lineHeight: 1.4 }}>{v.phrase}</p>
+                </div>
+              )}
+
+              {hasFacts && (
+                <div className="card card-pad" style={{ paddingTop: 6 }}>
+                  {tender?.deadline && <FactRow icon={<Calendar className="ico-sm" />} label="Remise des offres" value={tender.deadline} strong />}
+                  {okVal(duree) && <FactRow icon={<Timer className="ico-sm" />} label="Durée du marché" value={duree as string} />}
+                  {okVal(lieu) && <FactRow icon={<MapPinned className="ico-sm" />} label="Lieu d'exécution" value={lieu as string} />}
+                </div>
+              )}
+
+              <button
+                onClick={respondToMarket}
+                disabled={responding}
+                className="btn btn-primary"
+                style={{ height: 48, fontSize: 14.5 }}
+              >
+                {responding && <Loader2 className="ico-sm animate-spin" />}
+                Répondre à ce marché
+                <span className="v-chip" style={{ background: "rgba(249,189,67,.22)", color: "var(--yellow)" }}>
+                  <Coins className="ico-sm" /> {RESPONSE_CREDIT_COST}
+                </span>
+              </button>
+              <button onClick={() => navigate("/app?chat=ca")} className="btn btn-ghost" style={{ marginTop: -6 }}>
+                <MessageSquare className="ico-sm" /> Discuter avec mon chargé d'affaires
+              </button>
+            </div>
+
+            {/* ─ Colonne droite : onglets (contenu partagé) ─ */}
+            <div>{tabsBlock}</div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ════════════════════ MISE EN PAGE MOBILE (inchangée) ════════════════════
   return (
     <div className="min-h-screen bg-background">
       {Header}
@@ -363,251 +673,7 @@ const AnalysisDetail = ({ analysisId, onBack, onOpenResponse }: AnalysisDetailPr
         ) : null}
 
         {/* Onglets */}
-        <Tabs defaultValue="analyse" className="w-full">
-          <TabsList className="w-full grid grid-cols-3">
-            <TabsTrigger value="analyse">L'analyse</TabsTrigger>
-            <TabsTrigger value="prerequis">Prérequis</TabsTrigger>
-            <TabsTrigger value="documents">
-              Documents{docs.length > 0 ? ` (${docs.length})` : ""}
-            </TabsTrigger>
-          </TabsList>
-
-          {/* — L'analyse (accordéon compact, structure Iziao) — */}
-          <TabsContent value="analyse" className="pt-4">
-            {inProgress ? (
-              <p className="text-sm text-muted-foreground text-center py-6">
-                Le détail apparaîtra ici une fois l'analyse terminée.
-              </p>
-            ) : (
-              <>
-                {/* Accès direct à l'expert / chargé d'affaires */}
-                <button
-                  onClick={() => navigate("/app?chat=ca")}
-                  className="w-full mb-4 h-11 flex items-center justify-center gap-2 rounded-xl text-sm font-semibold border hover:bg-primary/5 transition-colors"
-                  style={{ borderColor: "#c7ccff", color: "#0c1c98" }}
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  Discuter avec mon chargé d'affaires
-                </button>
-
-                {/* Encart "Attention particulière" */}
-                {attention && (
-                  <div className="rounded-xl border p-4 mb-4 flex items-start gap-3"
-                       style={{ backgroundColor: "#fff7ed", borderColor: "#fed7aa" }}>
-                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: "#ea580c" }} />
-                    <div>
-                      <p className="font-bold text-sm mb-1" style={{ color: "#ea580c" }}>Attention particulière</p>
-                      <p className="text-sm leading-snug" style={{ color: "#9a3412" }}>{attention}</p>
-                    </div>
-                  </div>
-                )}
-
-                <Accordion type="multiple" defaultValue={["avis"]} className="w-full">
-                  {/* Avis */}
-                  <AccordionItem value="avis">
-                    <AccordionTrigger className="text-sm font-semibold">Avis</AccordionTrigger>
-                    <AccordionContent className="text-sm text-foreground leading-relaxed">
-                      {v && <span className="font-bold" style={{ color: v.color }}>{v.label} · </span>}
-                      {avis || "—"}
-                    </AccordionContent>
-                  </AccordionItem>
-
-                  {/* Description du marché (masquée si vide) */}
-                  {okVal(description) && (
-                    <AccordionItem value="description">
-                      <AccordionTrigger className="text-sm font-semibold">Description du marché</AccordionTrigger>
-                      <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-                        {description}
-                      </AccordionContent>
-                    </AccordionItem>
-                  )}
-
-                  {/* Lots */}
-                  {lots.length > 0 && (
-                    <AccordionItem value="lots">
-                      <AccordionTrigger className="text-sm font-semibold">Lots ({lots.length})</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2">
-                          {lots.map((lot) => (
-                            <div key={lot.numero} className="rounded-lg border p-3 bg-card">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className="text-sm font-semibold text-foreground">
-                                  Lot {lot.numero}{lot.intitule ? ` — ${lot.intitule}` : ""}
-                                </span>
-                                {lot.ouvert && (
-                                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#dcfce7", color: "#16a34a" }}>
-                                    OUVERT
-                                  </span>
-                                )}
-                              </div>
-                              {lot.resume && <p className="text-xs text-muted-foreground mt-1 leading-snug">{lot.resume}</p>}
-                            </div>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  )}
-
-                  {/* Calendrier de réponse */}
-                  {calendrier.length > 0 && (
-                    <AccordionItem value="calendrier">
-                      <AccordionTrigger className="text-sm font-semibold">Calendrier de réponse</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-1.5">
-                          {calendrier.map((d, i) => (
-                            <div key={i} className="flex items-center justify-between gap-3 text-sm">
-                              <span className="text-muted-foreground">{d.label}</span>
-                              <span className="font-semibold text-foreground text-right">{d.valeur}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  )}
-
-                  {/* Jugement */}
-                  {jugement.length > 0 && (
-                    <AccordionItem value="jugement">
-                      <AccordionTrigger className="text-sm font-semibold">Jugement des offres</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-1.5">
-                          {jugement.map((j, i) => (
-                            <div key={i} className="flex items-center justify-between gap-3 text-sm">
-                              <span className="text-foreground">{j.label}</span>
-                              {j.detail && <span className="font-semibold text-primary">{j.detail}</span>}
-                            </div>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  )}
-
-                  {/* Lieu d'exécution */}
-                  {okVal(lieu) && (
-                    <AccordionItem value="lieu">
-                      <AccordionTrigger className="text-sm font-semibold">Lieu d'exécution</AccordionTrigger>
-                      <AccordionContent className="text-sm text-muted-foreground flex items-start gap-2">
-                        <MapPinned className="w-4 h-4 shrink-0 mt-0.5" />
-                        {lieu}
-                      </AccordionContent>
-                    </AccordionItem>
-                  )}
-
-                  {/* Durée */}
-                  {okVal(duree) && (
-                    <AccordionItem value="duree">
-                      <AccordionTrigger className="text-sm font-semibold">Durée du marché</AccordionTrigger>
-                      <AccordionContent className="text-sm text-muted-foreground flex items-start gap-2">
-                        <Timer className="w-4 h-4 shrink-0 mt-0.5" />
-                        {duree}
-                      </AccordionContent>
-                    </AccordionItem>
-                  )}
-                </Accordion>
-
-                {report.documents_non_lus && report.documents_non_lus.length > 0 && (
-                  <p className="text-xs text-muted-foreground border-t pt-3 mt-4">
-                    À vérifier manuellement (formats non lus par l'IA) : {report.documents_non_lus.join(", ")}
-                  </p>
-                )}
-              </>
-            )}
-          </TabsContent>
-
-          {/* — Prérequis (Visites + Qualifications, façon Iziao) — */}
-          <TabsContent value="prerequis" className="space-y-6 pt-4">
-            {inProgress ? (
-              <p className="text-sm text-muted-foreground text-center py-6">
-                Les prérequis apparaîtront ici une fois l'analyse terminée.
-              </p>
-            ) : !hasPrerequis ? (
-              <p className="text-sm text-muted-foreground text-center py-6">
-                Aucun prérequis particulier n'a pu être extrait des documents fournis.
-              </p>
-            ) : (
-              <>
-                {/* Visites */}
-                <div className="space-y-2">
-                  <h3 className="flex items-center gap-2 text-base font-bold text-foreground">
-                    <MapPinned className="w-5 h-5" style={{ color: "#0c1c98" }} /> Visites
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {okVal(visites) ? visites : "Aucune visite obligatoire ou échantillon à fournir n'est mentionnée dans les documents."}
-                  </p>
-                </div>
-
-                {/* Qualifications & pièces requises */}
-                {qualifications.length > 0 && (
-                  <div className="space-y-2">
-                    <h3 className="flex items-center gap-2 text-base font-bold text-foreground">
-                      <ShieldCheck className="w-5 h-5" style={{ color: "#0c1c98" }} /> Qualifications requises
-                    </h3>
-                    <ul className="space-y-2">
-                      {qualifications.map((p, i) => (
-                        <li key={i} className="rounded-lg border p-3 bg-card">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <ListChecks className="w-4 h-4 shrink-0" style={{ color: p.obligatoire ? "#dc2626" : "#16a34a" }} />
-                            <span className="text-sm font-semibold text-foreground">{p.label}</span>
-                            {p.obligatoire && (
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "#fee2e2", color: "#dc2626" }}>
-                                OBLIGATOIRE
-                              </span>
-                            )}
-                          </div>
-                          {p.detail && <p className="text-xs text-muted-foreground mt-1 leading-snug pl-6">{p.detail}</p>}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </>
-            )}
-          </TabsContent>
-
-          {/* — Documents (triés par lot) — */}
-          <TabsContent value="documents" className="pt-4 space-y-4">
-            {/* Profil acheteur détecté par le robot */}
-            {analysis.buyer_profile_url && (
-              <div className="rounded-lg border p-3 bg-primary/5 border-primary/20">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-primary mb-1.5">
-                  <Link2 className="w-3.5 h-3.5" />
-                  Profil acheteur détecté
-                </div>
-                {analysis.platform && (
-                  <p className="text-[11px] text-muted-foreground mb-1">
-                    Plateforme : <span className="font-medium">{analysis.platform}</span>
-                    {analysis.consultation_ref ? ` · réf. ${analysis.consultation_ref}` : ""}
-                  </p>
-                )}
-                <a
-                  href={analysis.buyer_profile_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline break-all"
-                >
-                  <ExternalLink className="w-3.5 h-3.5 shrink-0" />
-                  {analysis.buyer_profile_url}
-                </a>
-              </div>
-            )}
-
-            {docs.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                Les documents seront disponibles une fois récupérés par votre chargé d'affaires.
-              </p>
-            ) : (
-              // Liste plate de TOUS les documents (triés : pièces clés d'abord),
-              // chacun consultable / téléchargeable. Rien n'est masqué.
-              <div className="border rounded-lg overflow-hidden divide-y">
-                {[...docs]
-                  .sort((a, b) => Number(labelFor(b.file_name).key) - Number(labelFor(a.file_name).key))
-                  .map((doc) => (
-                    <DocRow key={doc.id} doc={doc} info={labelFor(doc.file_name)} openDoc={openDoc} />
-                  ))}
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
+        {tabsBlock}
       </main>
 
       {/* Barre fixe : répondre au marché (toujours visible) */}
@@ -634,5 +700,18 @@ const AnalysisDetail = ({ analysisId, onBack, onOpenResponse }: AnalysisDetailPr
     </div>
   );
 };
+
+// Ligne de fait (colonne gauche desktop)
+function FactRow({ icon, label, value, strong }: { icon: React.ReactNode; label: string; value: string; strong?: boolean }) {
+  return (
+    <div style={{ display: "flex", gap: 11, padding: "11px 0", borderTop: "1px solid var(--line-2)" }}>
+      <span style={{ color: "var(--navy)", marginTop: 1, display: "flex" }}>{icon}</span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 11.5, fontWeight: 700, color: "var(--muted)", marginBottom: 2 }}>{label}</div>
+        <div style={{ fontSize: 13, fontWeight: strong ? 800 : 600, color: "var(--ink)", lineHeight: 1.4 }}>{value}</div>
+      </div>
+    </div>
+  );
+}
 
 export default AnalysisDetail;
