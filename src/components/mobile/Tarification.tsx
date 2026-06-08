@@ -55,7 +55,7 @@ export function Tarification({ onBack }: Props) {
 
       <main className="px-4 py-5 space-y-6 max-w-5xl mx-auto">
         {/* Offres préconfigurées — défilement horizontal (cartes lisibles) */}
-        <div className="flex gap-4 overflow-x-auto pb-3 -mx-4 px-4 snap-x snap-mandatory">
+        <div className="flex gap-4 overflow-x-auto pt-4 pb-3 -mx-4 px-4 snap-x snap-mandatory">
           {OFFERS.map((o) => (
             <div key={o.id} className="relative rounded-2xl border bg-card p-5 flex flex-col w-[78%] min-w-[260px] max-w-[320px] shrink-0 snap-center"
                  style={o.popular ? { borderColor: BLUE, borderWidth: 2 } : undefined}>
