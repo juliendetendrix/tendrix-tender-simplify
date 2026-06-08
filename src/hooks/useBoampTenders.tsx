@@ -250,22 +250,15 @@ export const useBoampTenders = () => {
     return Math.floor((Date.now() - new Date(date).getTime()) / 3_600_000)
   }
 
-  // Un AO n'est présentable que s'il est exploitable MAINTENANT :
-  //  • pas périmé (date limite de réponse passée) ;
-  //  • pas publié le jour même (le DCE n'est en général pas encore en ligne côté
-  //    acheteur → le robot ne peut rien récupérer, on attend le lendemain).
+  // Un AO n'est présentable que s'il n'est pas périmé (date limite de réponse
+  // passée). NB : on NE filtre PAS les avis publiés le jour même — ils
+  // représentent la majorité des opportunités fraîches (les plus pertinentes) ;
+  // si le DCE n'est pas encore en ligne, le robot retentera / le CA prend le relais.
   const isPresentable = (t: BoampTender): boolean => {
     const today = new Date(); today.setHours(0, 0, 0, 0);
     if (t.deadline) {
       const d = new Date(t.deadline);
       if (!isNaN(d.getTime()) && d.getTime() < today.getTime()) return false; // périmé
-    }
-    if (t.datePublication) {
-      const p = new Date(t.datePublication);
-      if (!isNaN(p.getTime())) {
-        p.setHours(0, 0, 0, 0);
-        if (p.getTime() >= today.getTime()) return false; // publié aujourd'hui (trop frais)
-      }
     }
     return true;
   };
@@ -321,11 +314,13 @@ export const useBoampTenders = () => {
       // 2. Read from DB (populated by edge function if it succeeded)
       let items = await loadFromDb()
 
-      // 3. Si la base ne contient pas assez d'AO (edge function KO ou base
-      //    quasi vide), on complète avec un fetch BOAMP direct (CORS-enabled)
-      //    et on fusionne sans doublon. Garantit une liste fournie.
-      if (items.length < 10) {
-        console.log(`DB n'a que ${items.length} AO — complément via BOAMP direct`)
+      // 3. Si la base ne contient pas assez d'AO *présentables* (non périmés)
+      //    — edge function KO, base vide, ou base pleine d'avis périmés —, on
+      //    complète avec un fetch BOAMP direct (CORS-enabled) et on fusionne
+      //    sans doublon. Garantit une liste fournie et fraîche.
+      const presentableInDb = items.filter(isPresentable).length
+      if (presentableInDb < 10) {
+        console.log(`DB n'a que ${presentableInDb} AO présentables — complément via BOAMP direct`)
         setUsingFallback(true)
         try {
           const direct = await fetchBoampDirect()

@@ -289,7 +289,7 @@ function Accueil({ name, tenders, ca, caInitials, dossiers, onAnalyse, onOpen, o
                     <span style={{ fontSize: 12, fontWeight: 800, color: "var(--ink-2)" }}>{col.label}</span>
                     <span className="tnum" style={{ marginLeft: "auto", fontSize: 11.5, fontWeight: 800, color: "var(--muted-2)" }}>{items.length}</span>
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10, minHeight: 60 }}>
+                  <div className="scrollbar" style={{ display: "flex", flexDirection: "column", gap: 10, minHeight: 60, maxHeight: 384, overflowY: "auto", paddingRight: items.length > 3 ? 4 : 0 }}>
                     {items.length === 0 ? (
                       <div style={{ border: "1.5px dashed var(--line)", borderRadius: 11, height: 64, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11.5, color: "var(--muted-2)" }}>—</div>
                     ) : items.map((d) => (
@@ -383,7 +383,7 @@ function Marches({ tenders, loading, query, setQuery, onRefresh, onHide, onAnaly
           <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 4 }}><strong className="tnum" style={{ color: "var(--ink-2)" }}>{list.length}</strong> opportunités correspondant à votre profil</p>
         </div>
         <div style={{ display: "flex", gap: 10 }}>
-          <button className="btn btn-ghost" onClick={onImport}><Upload className="ico-sm" /> Importer une URL / un PDF</button>
+          <button className="btn btn-ghost" onClick={onImport}><Upload className="ico-sm" /> Importer un marché</button>
           <button className="btn btn-ghost icon-btn" style={{ width: 40 }} onClick={onRefresh}><RefreshCw className="ico-sm" /></button>
         </div>
       </div>
