@@ -228,6 +228,8 @@ Tu disposes du profil de l'entreprise (souvent INCOMPLET à ce stade), du texte 
 Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, au format exact :
 {
   "verdict": "go" | "go_with_reserve",
+  "compatibilite": <entier 0-100 : adéquation HONNÊTE profil entreprise ↔ marché>,
+  "budget_estime": "≈ montant ou fourchette en € HT (ex: '≈ 480 000 € HT' ou '300 000 – 500 000 € HT'), ou 'non précisé'",
   "avis": "1 à 2 phrases : la décision, en langage simple pour un artisan",
   "attention": "le point d'attention LE PLUS important en une phrase (ex. agrément/qualification obligatoire), ou null si rien de critique",
   "description": "2 à 3 phrases décrivant l'objet du marché",
@@ -248,6 +250,8 @@ Règles IMPORTANTES :
 - VERDICT (sois ENCOURAGEANT) : il n'y a QUE deux verdicts possibles, "go" ou "go_with_reserve". Tu ne dois JAMAIS rendre un avis négatif : le profil de l'entreprise est volontairement incomplet, on ne sait pas encore tout ce qu'elle sait faire.
   • "go" : le secteur de l'entreprise correspond clairement à l'objet du marché.
   • "go_with_reserve" : dans TOUS les autres cas (secteur partiellement lié, profil incomplet, doute, ou même métier a priori différent). Mets alors dans "avis" et "attention" les points à vérifier avant de s'engager. Ne pénalise PAS l'absence de certifications/références : on demandera à l'entreprise de compléter son profil ensuite.
+- "compatibilite" : note de 0 à 100 reflétant l'adéquation RÉELLE entre le métier/zone/qualifications de l'entreprise et les exigences du marché. Sois HONNÊTE et indépendant du verdict (qui, lui, reste encourageant) : un métier clairement éloigné de l'objet ⇒ note basse (30-50) ; secteur qui correspond bien ⇒ note haute (80-95) ; zone et qualifications affinent. Si le profil est très incomplet, base-toi surtout sur le secteur.
+- "budget_estime" : si un montant figure dans les documents (DPGF chiffrée, estimation prévisionnelle, montant maximum d'accord-cadre), reprends-le. Sinon donne une ESTIMATION à la louche de l'ordre de grandeur à partir de l'ampleur des travaux (surfaces, quantités, nature des lots), préfixée par "≈". Mets "non précisé" seulement si vraiment aucun élément ne permet d'estimer.
 - "calendrier", "jugement", "lieu", "duree", "visites", "qualifications" : reprends UNIQUEMENT ce qui figure dans les documents. Si absent, mets "non précisé" ou liste vide. N'invente JAMAIS de chiffres/dates.
 - "lots" : reprends les lots détectés ci-dessus ; "ouvert": true seulement si DPGF/CDPGF présente.
 - Concision avant tout.`;
@@ -339,9 +343,12 @@ Règles IMPORTANTES :
     });
 
     const str = (v: unknown) => (typeof v === "string" && v.trim() && v.trim().toLowerCase() !== "null" ? v.trim() : null);
+    const pct = (v: unknown) => { const n = Number(v); return Number.isFinite(n) ? Math.max(0, Math.min(100, Math.round(n))) : null; };
 
     const report = {
       // Structure alignée sur la fiche concurrente (Iziao) : compact, par sections.
+      compatibilite: pct(parsed.compatibilite),
+      budget_estime: str(parsed.budget_estime),
       avis: str(parsed.avis) ?? str(parsed.synthese) ?? "",
       attention: str(parsed.attention),
       description: str(parsed.description) ?? str(tender.summary),

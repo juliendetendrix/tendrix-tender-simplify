@@ -13,12 +13,15 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { toast } from "@/hooks/use-toast";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
 import { classifyDce, DOC_TYPE_LABEL, type DocType } from "@/lib/dce-classify";
+import { MatchRing } from "@/components/desktop/DesignKit";
 
 interface Qualif { label: string; obligatoire?: boolean; detail?: string }
 interface KV { label: string; valeur?: string; detail?: string }
 interface LotReport { numero: string; intitule?: string; ouvert?: boolean; resume?: string | null }
 
 interface AnalysisReport {
+  compatibilite?: number | null;
+  budget_estime?: string | null;
   avis?: string;
   attention?: string | null;
   description?: string | null;
@@ -448,7 +451,9 @@ const AnalysisDetail = ({ analysisId, onBack, onOpenResponse }: AnalysisDetailPr
   // ════════════════ DESKTOP (2 colonnes, handoff écran 5) ════════════════
   if (embedded) {
     const tone = v?.tone ?? "warn";
-    const hasFacts = okVal(tender?.deadline) || okVal(duree) || okVal(lieu);
+    const compat = typeof report.compatibilite === "number" ? report.compatibilite : null;
+    const budget = report.budget_estime ?? null;
+    const hasFacts = okVal(budget) || okVal(tender?.deadline) || okVal(duree) || okVal(lieu);
     return (
       <div className="page page-anim" style={{ maxWidth: 1240 }}>
         <button onClick={goBack} className="btn btn-ghost btn-sm" style={{ marginBottom: 16 }}><ArrowLeft className="ico-sm" /> Retour</button>
@@ -482,14 +487,20 @@ const AnalysisDetail = ({ analysisId, onBack, onOpenResponse }: AnalysisDetailPr
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "344px minmax(0,1fr)", gap: 22, marginTop: 24, alignItems: "start" }}>
             <div style={{ position: "sticky", top: 24, display: "flex", flexDirection: "column", gap: 16 }}>
-              {v && (
-                <div className="card card-pad" style={{ textAlign: "center", paddingTop: 22, paddingBottom: 20 }}>
-                  <div className={`v-chip v-${tone}`} style={{ fontSize: 14, padding: "6px 14px" }}><v.Icon className="ico-sm" /> {v.label}</div>
-                  <p style={{ fontSize: 13.5, fontWeight: 700, color: `var(--${tone}-fg)`, marginTop: 12, lineHeight: 1.4 }}>{v.phrase}</p>
+              {(v || compat != null) && (
+                <div className="card card-pad" style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", paddingTop: 24, paddingBottom: 22 }}>
+                  {compat != null && <MatchRing value={compat} />}
+                  {v && (
+                    <>
+                      <div className={`v-chip v-${tone}`} style={{ fontSize: 14, padding: "6px 14px", marginTop: compat != null ? 16 : 0 }}><v.Icon className="ico-sm" /> {v.label}</div>
+                      <p style={{ fontSize: 13.5, fontWeight: 700, color: `var(--${tone}-fg)`, marginTop: 10, lineHeight: 1.4 }}>{v.phrase}</p>
+                    </>
+                  )}
                 </div>
               )}
               {hasFacts && (
                 <div className="card card-pad" style={{ paddingTop: 6 }}>
+                  {okVal(budget) && <FactRow icon={<Coins className="ico-sm" />} label="Budget estimé" value={budget as string} strong />}
                   {tender?.deadline && <FactRow icon={<Calendar className="ico-sm" />} label="Remise des offres" value={tender.deadline} strong />}
                   {okVal(duree) && <FactRow icon={<Timer className="ico-sm" />} label="Durée du marché" value={duree as string} />}
                   {okVal(lieu) && <FactRow icon={<MapPinned className="ico-sm" />} label="Lieu d'exécution" value={lieu as string} />}
