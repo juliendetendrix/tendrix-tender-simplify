@@ -198,7 +198,7 @@ export default function DesktopApp() {
               <ResponseDetail responseId={view.id} onBack={() => setView(null)} />
             )
           ) : openedChat ? (
-            <div className="page" style={{ maxWidth: 820 }}><DemoChat dossierTitle={openedChat.title} onBack={() => setOpenedChat(null)} isCADirect={openedChat.isCADirect} ca={ca} caInitials={caInitials} /></div>
+            <DemoChat desktop dossierTitle={openedChat.title} onBack={() => setOpenedChat(null)} isCADirect={openedChat.isCADirect} ca={ca} caInitials={caInitials} />
           ) : page === "entreprise" ? (
             <EntrepriseSection tab={entTab} setTab={setEntTab} />
           ) : (

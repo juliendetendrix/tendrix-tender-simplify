@@ -25,6 +25,8 @@ interface Props {
   isCADirect?: boolean;
   ca: CAProfile;
   caInitials: string;
+  /** Rendu desktop (espace messagerie pleine hauteur, design system .tdx-app) */
+  desktop?: boolean;
 }
 
 function getNow() {
@@ -59,7 +61,7 @@ const DOSSIER_INITIAL_MESSAGES: ChatMessage[] = [
   },
 ];
 
-export function DemoChat({ dossierTitle, onBack, isCADirect = false, ca, caInitials }: Props) {
+export function DemoChat({ dossierTitle, onBack, isCADirect = false, ca, caInitials, desktop = false }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>(
     isCADirect ? CA_WELCOME_MESSAGES : DOSSIER_INITIAL_MESSAGES
   );
@@ -83,6 +85,81 @@ export function DemoChat({ dossierTitle, onBack, isCADirect = false, ca, caIniti
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSend();
   };
+
+  // ════════════════ ESPACE MESSAGES DESKTOP (design system) ════════════════
+  if (desktop) {
+    return (
+      <div style={{ height: "100vh", display: "flex", flexDirection: "column", padding: "24px 32px" }}>
+        <div className="card page-anim" style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", width: "100%", maxWidth: 940, margin: "0 auto" }}>
+          {/* Header */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 18px", borderBottom: "1px solid var(--line)" }}>
+            <button onClick={onBack} className="icon-btn" style={{ width: 34, height: 34 }}><ArrowLeft className="ico-sm" /></button>
+            <div style={{ position: "relative", flexShrink: 0 }}>
+              <img src={ca.photo_url} alt={ca.display_name} style={{ width: 42, height: 42, borderRadius: "50%", objectFit: "cover" }}
+                onError={(e) => { e.currentTarget.style.display = "none"; const fb = e.currentTarget.nextElementSibling as HTMLElement; if (fb) fb.style.display = "flex"; }} />
+              <div style={{ width: 42, height: 42, borderRadius: "50%", background: "var(--navy)", color: "#fff", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 15, display: "none" }}>{caInitials}</div>
+              {isCADirect && <span style={{ position: "absolute", bottom: 0, right: 0, width: 11, height: 11, borderRadius: "50%", background: "var(--go-dot)", border: "2px solid var(--surface)" }} />}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 14.5, fontWeight: 800 }}>{ca.display_name}</div>
+              <div style={{ fontSize: 12, color: "var(--muted)" }}>{isCADirect ? "Chargé d'affaires référent" : dossierTitle}</div>
+            </div>
+            {ca.phone && (
+              <a href={`tel:${ca.phone.replace(/\s/g, "")}`} className="icon-btn" style={{ width: 38, height: 38 }} aria-label={`Appeler ${ca.display_name}`}>
+                <Phone className="ico-sm" style={{ color: "var(--navy)" }} />
+              </a>
+            )}
+          </div>
+
+          {/* Messages */}
+          <div ref={scrollRef} className="scrollbar" style={{ flex: 1, overflowY: "auto", padding: "22px 24px", display: "flex", flexDirection: "column", gap: 12, background: "var(--surface-2)" }}>
+            {messages.map((m) =>
+              m.type === "proposal" ? (
+                <button key={m.id} style={{ alignSelf: "flex-start", maxWidth: "78%", textAlign: "left", background: "var(--surface)", border: "1px solid color-mix(in oklab, var(--navy) 25%, white)", borderRadius: 14, boxShadow: "var(--shadow-sm)", padding: 14 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 8 }}>
+                    <span style={{ width: 32, height: 32, borderRadius: 9, background: "color-mix(in oklab, var(--navy) 9%, white)", color: "var(--navy)", display: "flex", alignItems: "center", justifyContent: "center" }}><Sparkles className="ico-sm" /></span>
+                    <div>
+                      <div style={{ fontSize: 10.5, fontWeight: 800, color: "var(--navy)", textTransform: "uppercase", letterSpacing: ".04em" }}>IA Tendrix</div>
+                      <div style={{ fontSize: 13.5, fontWeight: 700 }}>Proposition de réponse V1</div>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, fontWeight: 700, color: "var(--navy)", borderTop: "1px solid var(--line-2)", paddingTop: 8 }}>
+                    <FileText className="ico-sm" /> Voir la proposition
+                  </div>
+                  <div style={{ fontSize: 10.5, marginTop: 4, color: "var(--muted)" }}>{m.time}</div>
+                </button>
+              ) : (
+                <div key={m.id} style={{ alignSelf: m.mine ? "flex-end" : "flex-start", maxWidth: "76%" }}>
+                  <div style={{
+                    borderRadius: 16, padding: "9px 13px", fontSize: 13.5, lineHeight: 1.5, whiteSpace: "pre-wrap", wordBreak: "break-word",
+                    ...(m.mine
+                      ? { background: "var(--navy)", color: "#fff", borderBottomRightRadius: 5 }
+                      : { background: "var(--surface)", border: "1px solid var(--line)", color: "var(--ink)", borderBottomLeftRadius: 5 }),
+                  }}>
+                    {m.body}
+                    <div style={{ fontSize: 10, marginTop: 4, color: m.mine ? "rgba(255,255,255,.7)" : "var(--muted)" }}>{m.time}</div>
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+
+          {/* Composer */}
+          <div style={{ padding: "14px 18px", borderTop: "1px solid var(--line)", display: "flex", gap: 12, alignItems: "flex-end" }}>
+            <textarea
+              rows={2}
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Écrire un message… (⌘+Entrée pour envoyer)"
+              style={{ flex: 1, resize: "none", border: "1px solid var(--line)", borderRadius: 12, padding: "10px 13px", fontFamily: "inherit", fontSize: 13.5, lineHeight: 1.5, outline: "none", background: "var(--surface-2)", color: "var(--ink)" }}
+            />
+            <button onClick={handleSend} disabled={!body.trim()} className="btn btn-primary"><Send className="ico-sm" /> Envoyer</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-[calc(100vh-120px)]">
