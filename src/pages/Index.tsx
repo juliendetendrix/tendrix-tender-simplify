@@ -71,18 +71,18 @@ const Index = () => {
                 <a className="btn btn-ghost btn-lg" href="#comment"><PlayCircle size={20} /> Comment ça marche</a>
               </div>
 
+              <div className="hero-microtrust"><span className="dot" /> Importez les marchés que vous avez repérés, ou laissez-vous guider par nos recommandations.</div>
+
               <div className="store-badges">
-                <button className="store-badge" onClick={go} aria-label="Télécharger sur l'App Store">
-                  <Apple size={24} fill="#fff" />
-                  <span><small>Télécharger sur</small><b>l'App Store</b></span>
+                <button className="store-badge" onClick={go} aria-label="Télécharger dans l'App Store">
+                  <span className="glyph"><Apple size={26} fill="#fff" /></span>
+                  <span><small>Télécharger dans</small><b>l'App Store</b></span>
                 </button>
                 <button className="store-badge" onClick={go} aria-label="Disponible sur Google Play">
-                  <PlayStoreGlyph />
-                  <span><small>Disponible sur</small><b>Google Play</b></span>
+                  <span className="glyph"><PlayStoreGlyph /></span>
+                  <span><small style={{ textTransform: "uppercase" }}>Disponible sur</small><b>Google Play</b></span>
                 </button>
               </div>
-
-              <div className="hero-microtrust"><span className="dot" /> Importez les marchés que vous avez repérés, ou laissez-vous guider par nos recommandations.</div>
             </div>
 
             {/* Mockup produit */}

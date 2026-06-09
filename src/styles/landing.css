@@ -81,12 +81,13 @@
 .tdx-landing .hero-microtrust { display: flex; align-items: center; gap: 9px; margin-top: 20px; font-size: 13px; color: var(--muted); font-weight: 600; }
 .tdx-landing .hero-microtrust .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--go-dot); }
 
-/* Badges App Store / Google Play */
+/* Badges App Store / Google Play (style officiel : noir + bordure claire) */
 .tdx-landing .store-badges { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
-.tdx-landing .store-badge { display: inline-flex; align-items: center; gap: 11px; height: 54px; padding: 0 18px; border-radius: 13px; background: #141a33; color: #fff; cursor: pointer; box-shadow: var(--shadow-md); transition: transform .15s, box-shadow .15s; }
-.tdx-landing .store-badge:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-.tdx-landing .store-badge small { display: block; font-size: 10px; font-weight: 600; opacity: .82; letter-spacing: .02em; }
-.tdx-landing .store-badge b { display: block; font-size: 16px; font-weight: 800; line-height: 1.12; margin-top: 1px; letter-spacing: -.01em; }
+.tdx-landing .store-badge { display: inline-flex; align-items: center; gap: 12px; height: 58px; padding: 0 18px; border-radius: 12px; background: #000; color: #fff; border: 1px solid rgba(255,255,255,.28); cursor: pointer; transition: transform .15s, box-shadow .15s, border-color .15s; }
+.tdx-landing .store-badge:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: rgba(255,255,255,.5); }
+.tdx-landing .store-badge .glyph { display: flex; align-items: center; justify-content: center; width: 26px; flex-shrink: 0; }
+.tdx-landing .store-badge small { display: block; font-size: 11px; font-weight: 500; opacity: .92; letter-spacing: .01em; }
+.tdx-landing .store-badge b { display: block; font-size: 19px; font-weight: 600; line-height: 1.05; margin-top: 1px; letter-spacing: -.01em; }
 
 .tdx-landing .hero-start { display: none; }
 .tdx-landing .start-card { background: #fff; border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-xl); padding: 10px; max-width: 560px; }
@@ -114,7 +115,7 @@
 .tdx-landing .m-ring svg { transform: rotate(-90deg); }
 .tdx-landing .m-ring .val { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .tdx-landing .m-ring .val b { font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
-.tdx-landing .m-ring .val span { font-size: 9px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.tdx-landing .m-ring .val span { font-size: 7px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .01em; margin-top: 2px; }
 .tdx-landing .v-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 7px; letter-spacing: .02em; }
 .tdx-landing .v-chip .dot { width: 7px; height: 7px; border-radius: 50%; }
 .tdx-landing .v-go { background: var(--go-bg); color: var(--go-fg); }
