@@ -9,6 +9,7 @@ import { ArrowLeft, Send, Phone, FileText, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { CAProfile } from "@/hooks/useCAProfile";
+import { useCompanyMessages } from "@/hooks/useCompanyMessages";
 
 interface ChatMessage {
   id: string;
@@ -27,6 +28,8 @@ interface Props {
   caInitials: string;
   /** Rendu desktop (espace messagerie pleine hauteur, design system .tdx-app) */
   desktop?: boolean;
+  /** ID de l'entreprise : active la conversation RÉELLE (company_messages) pour le fil CA direct */
+  companyId?: string;
 }
 
 function getNow() {
@@ -61,25 +64,43 @@ const DOSSIER_INITIAL_MESSAGES: ChatMessage[] = [
   },
 ];
 
-export function DemoChat({ dossierTitle, onBack, isCADirect = false, ca, caInitials, desktop = false }: Props) {
-  const [messages, setMessages] = useState<ChatMessage[]>(
+export function DemoChat({ dossierTitle, onBack, isCADirect = false, ca, caInitials, desktop = false, companyId }: Props) {
+  // Mode RÉEL : conversation directe entreprise ↔ CA persistée (company_messages).
+  const realMode = isCADirect && !!companyId;
+  const { messages: realMsgs, send: sendReal, markRead } = useCompanyMessages(realMode ? companyId : null);
+
+  const [localMessages, setLocalMessages] = useState<ChatMessage[]>(
     isCADirect ? CA_WELCOME_MESSAGES : DOSSIER_INITIAL_MESSAGES
   );
   const [body, setBody] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Liste affichée : en mode réel = message de bienvenue + messages persistés.
+  const messages: ChatMessage[] = realMode
+    ? [
+        ...CA_WELCOME_MESSAGES,
+        ...realMsgs.map((m) => ({
+          id: m.id,
+          body: m.body,
+          mine: m.sender_role === "company",
+          time: new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
+        })),
+      ]
+    : localMessages;
+
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
+  // Marque les messages du CA comme lus à l'ouverture / à la réception.
+  useEffect(() => { if (realMode) markRead("company"); }, [realMode, markRead, realMsgs.length]);
+
   const handleSend = () => {
     const t = body.trim();
     if (!t) return;
-    setMessages((prev) => [
-      ...prev,
-      { id: String(Date.now()), body: t, mine: true, time: getNow() },
-    ]);
     setBody("");
+    if (realMode) { sendReal(t, "company"); return; }
+    setLocalMessages((prev) => [...prev, { id: String(Date.now()), body: t, mine: true, time: getNow() }]);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

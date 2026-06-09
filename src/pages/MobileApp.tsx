@@ -16,6 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import { useCAProfile } from "@/hooks/useCAProfile";
 import { useCredits } from "@/hooks/useCredits";
 import { useAuth } from "@/hooks/useAuth";
+import { useCurrentCompany } from "@/hooks/useCurrentCompany";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
 
 type Tab = "opportunites" | "dossiers" | "compte";
@@ -29,6 +30,7 @@ interface OpenedChat {
 export default function MobileApp() {
   const { ca, initials: caInitials } = useCAProfile();
   const { user } = useAuth();
+  const { company } = useCurrentCompany();
   const [searchParams] = useSearchParams();
 
   // Permet d'arriver directement sur un onglet via /app?tab=dossiers
@@ -129,7 +131,7 @@ export default function MobileApp() {
   ) : tarifOpen ? (
     <Tarification onBack={() => setTarifOpen(false)} />
   ) : openedChat ? (
-    <DemoChat dossierTitle={openedChat.title} onBack={() => setOpenedChat(null)} isCADirect={openedChat.isCADirect} ca={ca} caInitials={caInitials} />
+    <DemoChat dossierTitle={openedChat.title} onBack={() => setOpenedChat(null)} isCADirect={openedChat.isCADirect} ca={ca} caInitials={caInitials} companyId={company?.id} />
   ) : messagesOpen ? (
     <MessagesInbox onBack={() => setMessagesOpen(false)} onOpenChat={(id, title, isCADirect) => { setMessagesOpen(false); setOpenedChat({ id, title, isCADirect }); }} ca={ca} caInitials={caInitials} />
   ) : (

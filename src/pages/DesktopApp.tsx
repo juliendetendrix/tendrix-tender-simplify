@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import tendrixLogo from "@/assets/tendrix-logo-blue.png";
 import { MatchBar, VChip, Deadline, Avatar, useCountUp } from "@/components/desktop/DesignKit";
+import { useCompanyMessages } from "@/hooks/useCompanyMessages";
 import {
   LayoutDashboard, Briefcase, FileSearch, Sparkles, Building2, Coins, Plus, Search, Loader2,
   MapPin, Calendar, CheckCircle2, ChevronRight, MessageSquare, Phone, Mail, Star,
@@ -118,9 +119,9 @@ export default function DesktopApp() {
 
   const goPage = (p: Page) => { setOpenedChat(null); setView(null); setPage(p); };
 
-  const NAV: { id: Page; label: string; icon: typeof LayoutDashboard; badge?: number }[] = [
+  const NAV: { id: Page; label: string; icon: typeof LayoutDashboard }[] = [
     { id: "accueil", label: "Accueil", icon: LayoutDashboard },
-    { id: "marches", label: "Marchés", icon: Briefcase, badge: tenders.length || undefined },
+    { id: "marches", label: "Marchés", icon: Briefcase },
     { id: "analyses", label: "Analyses", icon: FileSearch },
     { id: "reponses", label: "Réponses", icon: Sparkles },
   ];
@@ -129,6 +130,20 @@ export default function DesktopApp() {
     !hidden.has(t.id) && (!query || `${t.title} ${t.organisme ?? ""} ${t.location ?? ""}`.toLowerCase().includes(query.toLowerCase())));
 
   const analyses = dossiers.filter((d) => d.analysisId);
+
+  // Messagerie directe entreprise ↔ CA (badge + aperçu sur la carte CA)
+  const { unreadFor, lastMessage: lastCAMessage } = useCompanyMessages(company?.id);
+  const unreadMessages = unreadFor("company");
+  // Compteurs pour les badges de la sidebar
+  const analysesInProgress = dossiers.filter((d) => d.analysisStatus && IN_PROGRESS.includes(d.analysisStatus)).length;
+  const [generatingResp, setGeneratingResp] = useState(0);
+  useEffect(() => {
+    if (!company?.id) { setGeneratingResp(0); return; }
+    supabase.from("tender_responses").select("id", { count: "exact", head: true })
+      .eq("company_id", company.id).eq("status", "generating")
+      .then(({ count }) => setGeneratingResp(count ?? 0));
+  }, [company?.id, dossiers.length]);
+
   const isMainPage = !view && !openedChat && !previewTender;
   const showTopbar = isMainPage && page !== "entreprise";
 
@@ -170,16 +185,20 @@ export default function DesktopApp() {
           <button className="side-cta" onClick={() => setAddOpen(true)}><Plus className="ico-sm" /> <span className="lbl">Analyser un AO</span></button>
           <nav className="side-nav scrollbar">
             <div className="side-sec lbl">Pilotage</div>
-            {NAV.map(({ id, label, icon: Icon, badge }) => (
-              <button key={id} onClick={() => goPage(id)} className={`nav-item ${isMainPage && page === id ? "active" : ""}`}>
-                <Icon className="ico-md" /><span className="lbl">{label}</span>
-                {badge ? <span className="badge lbl">{badge}</span> : null}
-              </button>
-            ))}
+            {NAV.map(({ id, label, icon: Icon }) => {
+              const badge = id === "marches" ? tenders.length : id === "analyses" ? analysesInProgress : id === "reponses" ? generatingResp : 0;
+              return (
+                <button key={id} onClick={() => goPage(id)} className={`nav-item ${isMainPage && page === id ? "active" : ""}`}>
+                  <Icon className="ico-md" /><span className="lbl">{label}</span>
+                  {badge ? <span className="badge lbl">{badge}</span> : null}
+                </button>
+              );
+            })}
             <div className="side-sec lbl">Compte</div>
-            <button onClick={() => { setView(null); setOpenedChat({ id: "ca", title: ca.display_name, isCADirect: true }); }}
+            <button onClick={() => { setView(null); setPreviewTender(null); setOpenedChat({ id: "ca", title: ca.display_name, isCADirect: true }); }}
               className={`nav-item ${openedChat ? "active" : ""}`}>
               <MessageSquare className="ico-md" /><span className="lbl">Messages</span>
+              {unreadMessages ? <span className="badge lbl">{unreadMessages}</span> : null}
             </button>
             <button onClick={() => goPage("entreprise")} className={`nav-item ${isMainPage && page === "entreprise" ? "active" : ""}`}>
               <Building2 className="ico-md" /><span className="lbl">Mon entreprise</span>
@@ -225,7 +244,7 @@ export default function DesktopApp() {
           ) : previewTender ? (
             <TenderPreviewDesktop tender={previewTender} onBack={() => setPreviewTender(null)} onAnalyse={(t) => setConfirmT(t)} analysisCost={ANALYSIS_COST} />
           ) : openedChat ? (
-            <DemoChat desktop dossierTitle={openedChat.title} onBack={() => setOpenedChat(null)} isCADirect={openedChat.isCADirect} ca={ca} caInitials={caInitials} />
+            <DemoChat desktop dossierTitle={openedChat.title} onBack={() => setOpenedChat(null)} isCADirect={openedChat.isCADirect} ca={ca} caInitials={caInitials} companyId={company?.id} />
           ) : page === "entreprise" ? (
             <EntrepriseSection tab={entTab} setTab={setEntTab} />
           ) : (
@@ -238,6 +257,7 @@ export default function DesktopApp() {
                   onOpen={(d) => d.analysisId && setView({ kind: "analysis", id: d.analysisId })}
                   onChatCA={() => { setView(null); setOpenedChat({ id: "ca", title: ca.display_name, isCADirect: true }); }}
                   goMarches={() => setPage("marches")}
+                  lastCAMessage={lastCAMessage}
                 />
               )}
               {page === "marches" && (
@@ -272,8 +292,8 @@ function KpiCard({ label, value, suffix, Icon }: { label: string; value: number;
   );
 }
 
-function Accueil({ name, tenders, ca, caInitials, dossiers, onAnalyse, onOpen, onChatCA, goMarches }:
-  { name?: string | null; tenders: BoampTender[]; ca: any; caInitials: string; dossiers: any[]; onAnalyse: (t: BoampTender) => void; onOpen: (d: any) => void; onChatCA: () => void; goMarches: () => void }) {
+function Accueil({ name, tenders, ca, caInitials, dossiers, onAnalyse, onOpen, onChatCA, goMarches, lastCAMessage }:
+  { name?: string | null; tenders: BoampTender[]; ca: any; caInitials: string; dossiers: any[]; onAnalyse: (t: BoampTender) => void; onOpen: (d: any) => void; onChatCA: () => void; goMarches: () => void; lastCAMessage?: { body: string; sender_role: "company" | "ca" } | null }) {
   const lastMinute = tenders.slice(0, 4);
   const analysesDone = dossiers.filter((d) => d.analysisId);
   const recent = analysesDone.slice(0, 4);
@@ -306,7 +326,14 @@ function Accueil({ name, tenders, ca, caInitials, dossiers, onAnalyse, onOpen, o
       {/* Pipeline kanban */}
       <div className="card card-pad">
         <div className="card-h"><span className="ico"><Kanban className="ico-md" /></span><span className="t">Mes appels d'offres en cours</span></div>
-        {dossiers.length === 0 ? <Empty text="Aucun dossier en cours." /> : (
+        {dossiers.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "18px 0 8px" }}>
+            <Empty text="Aucun dossier en cours pour le moment." />
+            <button className="btn btn-primary" style={{ marginTop: 4 }} onClick={goMarches}>
+              <Sparkles className="ico-sm" /> Lancez votre première analyse
+            </button>
+          </div>
+        ) : (
           <div className="grid" style={{ gridTemplateColumns: "repeat(4, minmax(0,1fr))", gap: 14 }}>
             {STATUS_COLS.map((col) => {
               const items = dossiers.filter((d) => (d.status ?? "demande") === col.id);
@@ -376,6 +403,14 @@ function Accueil({ name, tenders, ca, caInitials, dossiers, onAnalyse, onOpen, o
             {ca?.email && <a href={`mailto:${ca.email}`} className="btn btn-ghost btn-sm"><Mail className="ico-sm" /> Email</a>}
           </div>
           <button onClick={onChatCA} className="btn btn-accent" style={{ marginTop: 9 }}><MessageSquare className="ico-sm" /> Écrire à {firstName}</button>
+          {lastCAMessage && (
+            <button onClick={onChatCA} style={{ marginTop: 12, textAlign: "left", background: "var(--surface-2)", border: "1px solid var(--line)", borderRadius: 11, padding: "10px 12px", width: "100%", cursor: "pointer" }}>
+              <div style={{ fontSize: 10.5, fontWeight: 800, color: "var(--muted)", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 3, display: "flex", alignItems: "center", gap: 5 }}>
+                <MessageSquare className="ico-sm" /> {lastCAMessage.sender_role === "ca" ? firstName : "Vous"}
+              </div>
+              <div className="clip2" style={{ fontSize: 12.5, color: "var(--ink-2)", lineHeight: 1.45 }}>{lastCAMessage.body}</div>
+            </button>
+          )}
         </div>
       </div>
 
