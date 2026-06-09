@@ -228,3 +228,10 @@ mobile sous 768 px : **forcer une largeur ≥ 1280** (`preview_resize`) pour voi
 - **2026-06-08** — Fix feed reco : `isPresentable` n'exclut plus les AO publiés le jour même ; le
   fetch BOAMP direct s'enclenche dès < 10 AO *présentables*.
 - **2026-06-08** — Suppression complète de Lovable du repo.
+- **2026-06-08** — Landing : largeur étendue (`--maxw` 1560px) + badges App Store/Google Play.
+- **2026-06-08** — Pop-up « chargé d'affaires assigné » (`ChargeAffairesWelcome`) à la 1re arrivée
+  sur DesktopApp ; flag `tendrix_ca_welcome_seen` posé **à la fermeture** (survit au double-montage
+  StrictMode).
+- **2026-06-08** — Aperçu marché desktop (`TenderPreviewDesktop`) : clic sur une ligne Marchés →
+  infos réelles + compatibilité estimée + résumé IA (`useTenderSummary`) + fiche analyse floutée
+  sous CTA « Lancer l'analyse ». Géré via `previewTender` dans DesktopApp.

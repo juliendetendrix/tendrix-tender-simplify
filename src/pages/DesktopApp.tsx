@@ -14,6 +14,8 @@ import { Tarification } from "@/components/mobile/Tarification";
 import { AddTenderDialog } from "@/components/mobile/AddTenderDialog";
 import { PurchaseSuccessDialog } from "@/components/mobile/PurchaseSuccessDialog";
 import { DemoChat } from "@/components/mobile/DemoChat";
+import { ChargeAffairesWelcome } from "@/components/mobile/ChargeAffairesWelcome";
+import TenderPreviewDesktop from "@/components/desktop/TenderPreviewDesktop";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -61,6 +63,10 @@ export default function DesktopApp() {
   const [launching, setLaunching] = useState(false);
   // Fiche analyse / réponse affichée DANS le shell (sidebar persistante)
   const [view, setView] = useState<{ kind: "analysis" | "response"; id: string } | null>(null);
+  // Aperçu d'un marché recommandé (avant analyse)
+  const [previewTender, setPreviewTender] = useState<BoampTender | null>(null);
+  // Pop-up de bienvenue "chargé d'affaires assigné" (à la 1re arrivée)
+  const [caWelcomeOpen, setCaWelcomeOpen] = useState(false);
 
   // Retour de paiement Stripe
   const purchaseHandled = useRef(false);
@@ -71,6 +77,17 @@ export default function DesktopApp() {
     purchaseHandled.current = true;
     if (p === "success") { setPage("entreprise"); setPurchaseOpen(true); }
   }, [searchParams]);
+
+  // Pop-up chargé d'affaires à la première arrivée sur l'app desktop.
+  // Le flag est posé à la FERMETURE (pas à l'ouverture) pour survivre au
+  // double-montage de React StrictMode en dev.
+  useEffect(() => {
+    if (!localStorage.getItem("tendrix_ca_welcome_seen")) setCaWelcomeOpen(true);
+  }, []);
+  const dismissCaWelcome = () => {
+    setCaWelcomeOpen(false);
+    localStorage.setItem("tendrix_ca_welcome_seen", "1");
+  };
 
   const launch = async () => {
     const t = confirmT;
@@ -94,6 +111,7 @@ export default function DesktopApp() {
       supabase.functions.invoke("resolve-dce", { body: { analysis_id: analysisId } }).catch(() => {});
       supabase.functions.invoke("start-scrape", { body: { analysis_id: analysisId } }).catch(() => {});
       supabase.functions.invoke("notify-ca", { body: { analysis_id: analysisId } }).catch(() => {});
+      setPreviewTender(null);
       setView({ kind: "analysis", id: analysisId as string });
     }
   };
@@ -111,7 +129,7 @@ export default function DesktopApp() {
     !hidden.has(t.id) && (!query || `${t.title} ${t.organisme ?? ""} ${t.location ?? ""}`.toLowerCase().includes(query.toLowerCase())));
 
   const analyses = dossiers.filter((d) => d.analysisId);
-  const isMainPage = !view && !openedChat;
+  const isMainPage = !view && !openedChat && !previewTender;
   const showTopbar = isMainPage && page !== "entreprise";
 
   return (
@@ -119,6 +137,13 @@ export default function DesktopApp() {
       <div className="app">
         <PurchaseSuccessDialog open={purchaseOpen} onOpenChange={setPurchaseOpen} onCompleteProfile={() => { setPurchaseOpen(false); setPage("entreprise"); setEntTab("profil"); }} />
         <AddTenderDialog open={addOpen} onOpenChange={setAddOpen} onCreated={() => { setAddOpen(false); setPage("analyses"); }} />
+        <ChargeAffairesWelcome
+          isOpen={caWelcomeOpen}
+          onClose={dismissCaWelcome}
+          onContactCA={() => { dismissCaWelcome(); setView(null); setPreviewTender(null); setOpenedChat({ id: "ca", title: ca.display_name, isCADirect: true }); }}
+          ca={ca}
+          caInitials={caInitials}
+        />
 
         {/* Confirmation lancement analyse */}
         <Dialog open={!!confirmT} onOpenChange={(o) => !o && setConfirmT(null)}>
@@ -197,6 +222,8 @@ export default function DesktopApp() {
             ) : (
               <ResponseDetail responseId={view.id} onBack={() => setView(null)} />
             )
+          ) : previewTender ? (
+            <TenderPreviewDesktop tender={previewTender} onBack={() => setPreviewTender(null)} onAnalyse={(t) => setConfirmT(t)} analysisCost={ANALYSIS_COST} />
           ) : openedChat ? (
             <DemoChat desktop dossierTitle={openedChat.title} onBack={() => setOpenedChat(null)} isCADirect={openedChat.isCADirect} ca={ca} caInitials={caInitials} />
           ) : page === "entreprise" ? (
@@ -218,6 +245,7 @@ export default function DesktopApp() {
                   tenders={visibleTenders} loading={tendersLoading} query={query} setQuery={setQuery}
                   onRefresh={refetch} onHide={(id) => setHidden((s) => new Set(s).add(id))}
                   onAnalyse={(t) => setConfirmT(t)} onImport={() => setAddOpen(true)}
+                  onPreview={(t) => setPreviewTender(t)}
                 />
               )}
               {page === "analyses" && <Analyses analyses={analyses} onOpen={(d) => d.analysisId && setView({ kind: "analysis", id: d.analysisId })} />}
@@ -367,8 +395,8 @@ function Accueil({ name, tenders, ca, caInitials, dossiers, onAnalyse, onOpen, o
 }
 
 // ─────────────────── Marchés ───────────────────
-function Marches({ tenders, loading, query, setQuery, onRefresh, onHide, onAnalyse, onImport }:
-  { tenders: BoampTender[]; loading: boolean; query: string; setQuery: (s: string) => void; onRefresh: () => void; onHide: (id: string) => void; onAnalyse: (t: BoampTender) => void; onImport: () => void }) {
+function Marches({ tenders, loading, query, setQuery, onRefresh, onHide, onAnalyse, onImport, onPreview }:
+  { tenders: BoampTender[]; loading: boolean; query: string; setQuery: (s: string) => void; onRefresh: () => void; onHide: (id: string) => void; onAnalyse: (t: BoampTender) => void; onImport: () => void; onPreview: (t: BoampTender) => void }) {
   const [filter, setFilter] = useState("Tous");
   const FILTERS = ["Tous", "Compatibilité > 80%", "Échéance proche"];
   let list = tenders;
@@ -409,7 +437,7 @@ function Marches({ tenders, loading, query, setQuery, onRefresh, onHide, onAnaly
           {list.map((t) => (
             <div key={t.id} className="card card-pad">
               <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <button onClick={() => onPreview(t)} style={{ flex: 1, minWidth: 0, textAlign: "left", background: "none", border: "none", padding: 0, cursor: "pointer" }} title="Voir l'aperçu du marché">
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 7, flexWrap: "wrap" }}>
                     {t.procedure && <span className="chip" style={{ color: "var(--navy)", background: "color-mix(in oklab, var(--navy) 7%, white)", borderColor: "transparent" }}>{t.procedure.split(" (")[0]}</span>}
                     {t.famille && <span className="chip">{t.famille}</span>}
@@ -421,7 +449,7 @@ function Marches({ tenders, loading, query, setQuery, onRefresh, onHide, onAnaly
                     {t.budget && <span style={{ display: "flex", alignItems: "center", gap: 5, fontWeight: 700, color: "var(--ink-2)" }}><Coins className="ico-sm" />{t.budget}</span>}
                     {t.deadline && <Deadline date={t.deadline} />}
                   </div>
-                </div>
+                </button>
                 <div style={{ width: 178, flexShrink: 0, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-end" }}>
                   {t.compatibility != null && (
                     <div style={{ width: "100%" }}>
