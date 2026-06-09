@@ -1,7 +1,6 @@
 // Aperçu d'un marché recommandé (avant analyse), dans le shell desktop.
 // Donne les infos disponibles AVANT analyse (méta, compatibilité estimée, résumé IA)
 // + un aperçu flouté de la fiche analyse avec CTA "Lancer l'analyse" par-dessus.
-import { useState } from "react";
 import {
   ArrowLeft, Sparkles, Building2, MapPin, Calendar, Coins, Loader2, FileText, Timer, Lock,
 } from "lucide-react";
@@ -26,8 +25,9 @@ const Bar = ({ w }: { w: string }) => <div style={{ height: 11, borderRadius: 6,
 
 export default function TenderPreviewDesktop({ tender, onBack, onAnalyse, analysisCost = 1 }:
   { tender: BoampTender; onBack: () => void; onAnalyse: (t: BoampTender) => void; analysisCost?: number }) {
-  const [showSummary, setShowSummary] = useState(false);
-  const { summary, loading } = useTenderSummary(showSummary ? tender : null);
+  // Résumé concis (2-3 lignes) généré automatiquement depuis les infos BOAMP,
+  // sans analyse. Disponible d'emblée pour tout marché recommandé.
+  const { summary, loading } = useTenderSummary(tender);
   const compat = tender.compatibility;
   const hasFacts = !!(tender.budget || tender.deadline || tender.location);
 
@@ -74,15 +74,12 @@ export default function TenderPreviewDesktop({ tender, onBack, onAnalyse, analys
           {/* Résumé de l'appel d'offres (dispo avant analyse) */}
           <div className="card card-pad">
             <div className="card-h"><span className="ico"><FileText className="ico-md" /></span><span className="t">Résumé de l'appel d'offres</span></div>
-            {!showSummary ? (
-              <div style={{ textAlign: "center", padding: "6px 0 2px" }}>
-                <p style={{ fontSize: 13.5, color: "var(--muted)", marginBottom: 12, lineHeight: 1.5 }}>Obtenez un résumé clair de ce marché en quelques secondes, avant de lancer l'analyse complète.</p>
-                <button className="btn btn-ghost" onClick={() => setShowSummary(true)}><Sparkles className="ico-sm" /> Lire le résumé</button>
-              </div>
-            ) : loading ? (
+            {loading ? (
               <div style={{ display: "flex", gap: 10, alignItems: "center", color: "var(--muted)", fontSize: 13.5 }}><Loader2 className="ico-sm animate-spin" /> Génération du résumé…</div>
+            ) : summary ? (
+              <p style={{ fontSize: 14, lineHeight: 1.65, color: "var(--ink-2)", whiteSpace: "pre-line" }}>{summary}</p>
             ) : (
-              <p style={{ fontSize: 14, lineHeight: 1.65, color: "var(--ink-2)", whiteSpace: "pre-line" }}>{summary ?? "Résumé indisponible pour le moment."}</p>
+              <p style={{ fontSize: 13.5, color: "var(--muted)" }}>Résumé indisponible pour le moment.</p>
             )}
           </div>
 
