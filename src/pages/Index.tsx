@@ -295,7 +295,11 @@ const Index = () => {
           </div>
           <div className="footer-bottom">
             <span>© 2026 Tendrix. Tous droits réservés.</span>
-            <span className="src"><ShieldCheck size={16} style={{ color: "var(--go-dot)" }} /> Données officielles BOAMP &amp; PLACE</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+              <button onClick={login} style={{ fontSize: 13, fontWeight: 700, color: "var(--ink-2)", background: "none", border: "none", cursor: "pointer" }}>Connexion entreprise</button>
+              <a href="/login-ca" style={{ fontSize: 13, fontWeight: 700, color: "var(--navy)" }}>Espace chargé d'affaires</a>
+              <span className="src"><ShieldCheck size={16} style={{ color: "var(--go-dot)" }} /> Données officielles BOAMP &amp; PLACE</span>
+            </div>
           </div>
         </div>
       </footer>
