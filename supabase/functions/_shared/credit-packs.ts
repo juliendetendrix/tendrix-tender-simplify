@@ -4,7 +4,7 @@
 // sont des bundles ; l'offre sur-mesure applique une remise.
 
 export const CREDIT_UNIT_CENTS = 10;        // 0,10 € HT / crédit (plein tarif)
-export const CUSTOM_UNIT_CENTS = 7.7;       // 0,077 € HT / crédit (sur-mesure, ~23% de remise)
+export const CUSTOM_UNIT_CENTS = 10;        // 0,10 € HT / crédit — tarif unique (réponse = 350 € partout)
 
 // Coût en crédits par service.
 export const SERVICE_COSTS: Record<string, number> = {

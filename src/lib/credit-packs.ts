@@ -2,7 +2,7 @@
 // supabase/functions/_shared/credit-packs.ts. PRIX/CRÉDITS = placeholders.
 
 export const CREDIT_UNIT_CENTS = 10;   // 0,10 € HT / crédit
-export const CUSTOM_UNIT_CENTS = 7.7;  // 0,077 € HT / crédit (sur-mesure, ~23% remise)
+export const CUSTOM_UNIT_CENTS = 10;   // 0,10 € HT / crédit — tarif unique (réponse = 350 € partout)
 
 // ── Coût en crédits par service + descriptif (table "Utilisation des crédits") ──
 export interface ServiceCost {
