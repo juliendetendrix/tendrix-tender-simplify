@@ -8,7 +8,7 @@ export const CUSTOM_UNIT_CENTS = 7.7;       // 0,077 € HT / crédit (sur-mesur
 
 // Coût en crédits par service.
 export const SERVICE_COSTS: Record<string, number> = {
-  analyse: 50,
+  analyse: 500,
   reponse: 3500,
   memoire: 2500,
   depot: 2000,

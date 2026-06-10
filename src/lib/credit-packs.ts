@@ -13,7 +13,7 @@ export interface ServiceCost {
 }
 export const SERVICE_COSTS: ServiceCost[] = [
   {
-    id: "analyse", label: "Analyse", credits: 50,
+    id: "analyse", label: "Analyse", credits: 500,
     description: [
       "Vérification rapide de la pertinence du marché (Go / No-Go)",
       "Compatibilité entre les exigences de l'AO et votre entreprise",

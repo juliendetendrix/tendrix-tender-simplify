@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 
 type Page = "accueil" | "marches" | "analyses" | "reponses" | "entreprise";
-const ANALYSIS_COST = 50; // crédits déduits par la RPC (grille : 50 = 5 € HT)
+const ANALYSIS_COST = 500; // crédits déduits par la RPC (grille : 500 = 50 € HT)
 const IN_PROGRESS = ["pending", "scraping", "analyzing", "manual_intervention_required"];
 
 const STATUS_COLS = [
