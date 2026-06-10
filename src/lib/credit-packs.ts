@@ -67,15 +67,15 @@ export interface Offer {
 }
 export const OFFERS: Offer[] = [
   {
-    id: "essentiel", name: "Offre Essentiel", credits: 3650, priceCents: 36500,
+    id: "essentiel", name: "Offre Essentiel", credits: 5000, priceCents: 50000,
     features: [{ label: "3 analyses" }, { label: "1 réponse", sub: "1 lot par réponse" }],
   },
   {
-    id: "expertise", name: "Offre Expertise", credits: 6150, priceCents: 61500, popular: true,
+    id: "expertise", name: "Offre Expertise", credits: 7500, priceCents: 75000, popular: true,
     features: [{ label: "3 analyses" }, { label: "1 réponse", sub: "1 lot par réponse" }, { label: "1 mémoire technique" }],
   },
   {
-    id: "serenite", name: "Offre Sérénité", credits: 8150, priceCents: 81500,
+    id: "serenite", name: "Offre Sérénité", credits: 9500, priceCents: 95000,
     features: [{ label: "3 analyses" }, { label: "1 réponse", sub: "1 lot par réponse" }, { label: "1 mémoire technique" }, { label: "1 dépôt" }],
   },
 ];
