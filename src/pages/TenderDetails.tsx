@@ -476,7 +476,7 @@ const TenderDetails = () => {
               <Sparkles className="w-5 h-5 mr-2" />
               Lancer l'analyse complète
               <span className="ml-2 text-xs font-bold bg-white/20 px-2 py-0.5 rounded-full">
-                💡 1 crédit
+                💡 50 crédits
               </span>
             </Button>
           )}
@@ -518,7 +518,7 @@ const TenderDetails = () => {
               className="w-full font-bold text-base py-6 rounded-xl border-destructive/40 text-destructive hover:bg-destructive/5"
               onClick={() => setConfirmOpen(true)}
             >
-              Analyse échouée — relancer (1 crédit)
+              Analyse échouée — relancer (50 crédits)
             </Button>
           )}
 
@@ -546,7 +546,7 @@ const TenderDetails = () => {
               vous donner un verdict <strong>GO / NO GO</strong>, vos points forts et les
               informations manquantes. Votre chargé d'affaires est prévenu.
               <span className="block mt-2 font-medium text-foreground">
-                Cette analyse utilise <strong>1 crédit</strong>
+                Cette analyse utilise <strong>50 crédits</strong>
                 {typeof company?.credits === "number" ? ` (solde : ${company.credits})` : ""}.
               </span>
             </DialogDescription>
@@ -566,7 +566,7 @@ const TenderDetails = () => {
               style={{ backgroundColor: "#0c1c98" }}
               disabled={launching}
             >
-              {launching ? <Loader2 className="w-4 h-4 animate-spin" /> : "Lancer (1 crédit)"}
+              {launching ? <Loader2 className="w-4 h-4 animate-spin" /> : "Lancer (50 crédits)"}
             </Button>
           </DialogFooter>
         </DialogContent>

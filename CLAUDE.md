@@ -119,8 +119,11 @@ design/                   # (si présent) maquettes de référence du handoff, N
 - **Crédits / paiement** : packs Stripe via `price_data` inline (pas de produits Stripe). Webhook
   `--no-verify-jwt`, `constructEventAsync` + `createSubtleCryptoProvider` (Deno). Créditation
   idempotente via RPC `grant_credits_for_session` (update du pending → paid puis crédit).
-  Coûts (placeholders) : analyse = **1** crédit (RPC `spend_credit_and_start_analysis`),
-  réponse = **5** (RPC `spend_credits`). Grille « cible » dans `lib/credit-packs.ts`.
+  **Valeur du crédit = 0,10 € HT** (`CREDIT_UNIT_CENTS=10`). Coûts ALIGNÉS sur la grille
+  (`lib/credit-packs.ts`) : **analyse = 50 crédits** (RPC `spend_credit_and_start_analysis`,
+  déduit 50 ; `refund_credit` rembourse 50 ; UI `ANALYSIS_COST=50`), **réponse = 3500**
+  (RPC `spend_credits`, `RESPONSE_CREDIT_COST=3500`). Mémoire 2500 / Dépôt 2000 / Lot 1000.
+  **Crédits offerts à l'inscription = 50** (`companies.credits default 50` = 1 analyse gratuite).
 - **Robot DCE** : le DCE n'est pas dans le BOAMP → on extrait le lien du profil acheteur
   (`resolve-dce`/`dce-resolver`), puis Trigger.dev + Playwright télécharge selon la plateforme.
   Réf. consultation = `cac:CallForTendersDocumentReference > cbc:ID` (eForms), **pas**

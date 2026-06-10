@@ -194,7 +194,7 @@ export function AddTenderDialog({ open, onOpenChange, onCreated }: Props) {
             <Coins className="w-3.5 h-3.5" style={{ color: "#f9bd43" }} />
             {noCredits
               ? "Vous n'avez plus de crédits disponibles."
-              : `Cette analyse utilise 1 crédit · il vous en reste ${credits}.`}
+              : `Cette analyse utilise 50 crédits · il vous en reste ${credits}.`}
           </p>
         </div>
       </DialogContent>

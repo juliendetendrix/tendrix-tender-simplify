@@ -75,7 +75,7 @@ const VERDICT_UI: Record<string, { label: string; phrase: string; bg: string; co
 };
 
 const IN_PROGRESS = ["pending", "scraping", "analyzing", "manual_intervention_required"];
-const RESPONSE_CREDIT_COST = 5;
+const RESPONSE_CREDIT_COST = 3500; // grille : 3500 = 350 € HT (réponse + accompagnement)
 
 interface DocInfo { type: DocType; label: string; key: boolean }
 
