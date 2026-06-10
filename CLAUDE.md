@@ -119,11 +119,14 @@ design/                   # (si présent) maquettes de référence du handoff, N
 - **Crédits / paiement** : packs Stripe via `price_data` inline (pas de produits Stripe). Webhook
   `--no-verify-jwt`, `constructEventAsync` + `createSubtleCryptoProvider` (Deno). Créditation
   idempotente via RPC `grant_credits_for_session` (update du pending → paid puis crédit).
-  **Valeur du crédit = 0,10 € HT** (`CREDIT_UNIT_CENTS=10`). Coûts ALIGNÉS sur la grille
-  (`lib/credit-packs.ts`) : **analyse = 50 crédits** (RPC `spend_credit_and_start_analysis`,
-  déduit 50 ; `refund_credit` rembourse 50 ; UI `ANALYSIS_COST=50`), **réponse = 3500**
-  (RPC `spend_credits`, `RESPONSE_CREDIT_COST=3500`). Mémoire 2500 / Dépôt 2000 / Lot 1000.
-  **Crédits offerts à l'inscription = 50** (`companies.credits default 50` = 1 analyse gratuite).
+  **Valeur du crédit = 0,10 € HT** (`CREDIT_UNIT_CENTS=10`). Coûts (grille `lib/credit-packs.ts`
+  + `_shared/credit-packs.ts`, à garder synchrones) : **analyse = 500 crédits (50 €)** (RPC
+  `spend_credit_and_start_analysis` déduit 500 ; `refund_credit` rembourse 500 ; UI
+  `ANALYSIS_COST=500`), **réponse = 3500 (350 €)** (`spend_credits`, `RESPONSE_CREDIT_COST=3500`),
+  mémoire 2500 / dépôt 2000 / lot 1000.
+  **Inscription = 1500 crédits offerts** (`companies.credits default 1500` = 3 analyses, < 1 réponse).
+  **Packs** (cohérents au crédit près) : Essentiel 5000/500 €, Expertise 7500/750 €, Sérénité 9500/950 €.
+  **Stripe est en LIVE et fonctionnel** (paiement réel testé le 10/06 → `cs_live_`/paid/crédité).
 - **Robot DCE** : le DCE n'est pas dans le BOAMP → on extrait le lien du profil acheteur
   (`resolve-dce`/`dce-resolver`), puis Trigger.dev + Playwright télécharge selon la plateforme.
   Réf. consultation = `cac:CallForTendersDocumentReference > cbc:ID` (eForms), **pas**
@@ -238,3 +241,10 @@ mobile sous 768 px : **forcer une largeur ≥ 1280** (`preview_resize`) pour voi
 - **2026-06-08** — Aperçu marché desktop (`TenderPreviewDesktop`) : clic sur une ligne Marchés →
   infos réelles + compatibilité estimée + résumé IA (`useTenderSummary`) + fiche analyse floutée
   sous CTA « Lancer l'analyse ». Géré via `previewTender` dans DesktopApp.
+- **2026-06-10** — Messagerie directe entreprise↔CA (`company_messages` + `useCompanyMessages`,
+  RLS, realtime) ; badges sidebar (Marchés/Analyses/Réponses/Messages) ; aperçu conversation sur
+  carte CA ; lien Espace CA dans le footer landing.
+- **2026-06-10** — **Stripe passé en LIVE** (`sk_live` + webhook live `whsec`) — paiement réel
+  validé en base (`cs_live_`/paid/crédité).
+- **2026-06-10** — Crédits : **analyse = 500** (50 €), **inscription = 1500** offerts (3 analyses,
+  < 1 réponse), **packs recalculés** (Essentiel 5000/500 €, Expertise 7500/750 €, Sérénité 9500/950 €).
