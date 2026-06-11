@@ -23,9 +23,9 @@ export interface Offer {
   priceCents: number;
 }
 export const OFFERS: Offer[] = [
-  { id: "essentiel", name: "Offre Essentiel", credits: 5000, priceCents: 50000 },
-  { id: "expertise", name: "Offre Expertise", credits: 7500, priceCents: 75000 },
-  { id: "serenite",  name: "Offre Sérénité",  credits: 9500, priceCents: 95000 },
+  { id: "essentiel", name: "Offre Essentiel", credits: 3500, priceCents: 35000 },
+  { id: "expertise", name: "Offre Expertise", credits: 6000, priceCents: 60000 },
+  { id: "serenite",  name: "Offre Sérénité",  credits: 8000, priceCents: 80000 },
 ];
 export const getOffer = (id: string): Offer | null =>
   OFFERS.find((o) => o.id === id) ?? null;

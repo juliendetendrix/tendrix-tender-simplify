@@ -5,18 +5,8 @@ import "@/styles/landing.css";
 import {
   ChevronsRight, ArrowRight, PlayCircle, Briefcase, MapPin, Lock, CircleCheckBig, FileCheck2,
   Clock, Coins, FileText, Star, Radar, Sparkles, UserRoundCheck, ChevronRight, MessageCircle,
-  Download, FileSearch, Handshake, Landmark, Check, ShieldCheck, Apple,
+  Download, FileSearch, Handshake, Landmark, Check, ShieldCheck,
 } from "lucide-react";
-
-// Glyphe Google Play (logo couleur officiel, approximé en SVG)
-const PlayStoreGlyph = () => (
-  <svg width="22" height="24" viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M3.6 1.3C3.3 1.6 3.1 2.1 3.1 2.7v18.6c0 .6.2 1.1.5 1.4l.1.1 10.4-10.4v-.2L3.6 1.3z" fill="#00C3FF" />
-    <path d="M17.5 15.3l-3.5-3.5v-.2l3.5-3.5.1.1 4.1 2.3c1.2.7 1.2 1.8 0 2.5l-4.2 2.3z" fill="#FFCE00" />
-    <path d="M17.6 15.2L14 11.7 3.6 22.1c.4.4 1.1.5 1.8.1l12.2-7" fill="#FF3D00" />
-    <path d="M17.6 8.2L5.4 1.2C4.7.8 4 .9 3.6 1.3L14 11.7l3.6-3.5z" fill="#00E676" />
-  </svg>
-);
 
 const Index = () => {
   const navigate = useNavigate();
@@ -72,17 +62,6 @@ const Index = () => {
               </div>
 
               <div className="hero-microtrust"><span className="dot" /> Importez les marchés que vous avez repérés, ou laissez-vous guider par nos recommandations.</div>
-
-              <div className="store-badges">
-                <button className="store-badge" onClick={go} aria-label="Télécharger dans l'App Store">
-                  <span className="glyph"><Apple size={26} fill="#fff" /></span>
-                  <span><small>Télécharger dans</small><b>l'App Store</b></span>
-                </button>
-                <button className="store-badge" onClick={go} aria-label="Disponible sur Google Play">
-                  <span className="glyph"><PlayStoreGlyph /></span>
-                  <span><small style={{ textTransform: "uppercase" }}>Disponible sur</small><b>Google Play</b></span>
-                </button>
-              </div>
             </div>
 
             {/* Mockup produit */}
