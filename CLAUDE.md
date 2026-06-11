@@ -125,7 +125,9 @@ design/                   # (si présent) maquettes de référence du handoff, N
   `ANALYSIS_COST=500`), **réponse = 3500 (350 €)** (`spend_credits`, `RESPONSE_CREDIT_COST=3500`),
   mémoire 2500 / dépôt 2000 / lot 1000.
   **Inscription = 1500 crédits offerts** (`companies.credits default 1500` = 3 analyses, < 1 réponse).
-  **Packs** (cohérents au crédit près) : Essentiel 5000/500 €, Expertise 7500/750 €, Sérénité 9500/950 €.
+  **Packs réponse-centrés** (les 3 analyses sont offertes à l'inscription) : Essentiel = 1 réponse
+  3500 cr / **350 €**, Expertise = + mémoire 6000 cr / 600 €, Sérénité = + dépôt 8000 cr / 800 €.
+  Tarif **unique 0,10 €/crédit** (pas de remise sur-mesure). Pas de badges stores sur la landing.
   **Stripe est en LIVE et fonctionnel** (paiement réel testé le 10/06 → `cs_live_`/paid/crédité).
 - **Robot DCE** : le DCE n'est pas dans le BOAMP → on extrait le lien du profil acheteur
   (`resolve-dce`/`dce-resolver`), puis Trigger.dev + Playwright télécharge selon la plateforme.
